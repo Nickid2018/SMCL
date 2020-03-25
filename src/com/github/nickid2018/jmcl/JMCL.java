@@ -1,6 +1,6 @@
-package com.cj.jmcl;
+package com.github.nickid2018.jmcl;
 
-import com.cj.jmcl.func.*;
+import com.github.nickid2018.jmcl.func.*;
 
 public class JMCL {
 

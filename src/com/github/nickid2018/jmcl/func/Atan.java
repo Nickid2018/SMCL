@@ -1,7 +1,8 @@
-package com.cj.jmcl.func;
+package com.github.nickid2018.jmcl.func;
 
 import java.util.*;
-import com.cj.jmcl.*;
+
+import com.github.nickid2018.jmcl.*;
 
 public class Atan extends Function {
 

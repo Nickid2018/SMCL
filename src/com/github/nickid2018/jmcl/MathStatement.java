@@ -1,7 +1,8 @@
-package com.cj.jmcl;
+package com.github.nickid2018.jmcl;
 
 import java.util.*;
-import com.cj.jmcl.Number;
+
+import com.github.nickid2018.jmcl.Number;
 
 public class MathStatement {
 	

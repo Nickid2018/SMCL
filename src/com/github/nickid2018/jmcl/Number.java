@@ -1,4 +1,4 @@
-package com.cj.jmcl;
+package com.github.nickid2018.jmcl;
 
 import java.util.*;
 

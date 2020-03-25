@@ -1,8 +1,8 @@
-package com.cj.jmcl;
+package com.github.nickid2018.jmcl;
 
 import java.util.*;
 
-import com.cj.jmcl.func.Function;
+import com.github.nickid2018.jmcl.func.Function;
 
 public class MultiplyStatement extends MathStatement{
 	

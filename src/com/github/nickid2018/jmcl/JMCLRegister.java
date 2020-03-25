@@ -1,9 +1,11 @@
-package com.cj.jmcl;
+package com.github.nickid2018.jmcl;
 
 import java.util.*;
 import java.util.Map.*;
+
+import com.github.nickid2018.jmcl.func.*;
+
 import java.lang.reflect.*;
-import com.cj.jmcl.func.*;
 
 public class JMCLRegister {
 
