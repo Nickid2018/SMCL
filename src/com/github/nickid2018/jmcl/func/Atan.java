@@ -10,12 +10,13 @@ public class Atan extends Function {
 	public double calc(Map<String, Double> values) {
 		return Math.atan(ms.calc(values));
 	}
-	
+
 	@Override
 	public String toString() {
-		if(!ms.getClass().equals(Variable.class))
-			return "atan("+ms+")";
-		else return "atan"+ms;
+		if (!ms.getClass().equals(Variable.class))
+			return "atan(" + ms + ")";
+		else
+			return "atan" + ms;
 	}
 
 	public static final Atan format(String s) throws MathException {

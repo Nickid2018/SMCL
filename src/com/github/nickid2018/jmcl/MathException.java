@@ -6,27 +6,28 @@ public class MathException extends Exception {
 	 * 
 	 */
 	private static final long serialVersionUID = -7821386249067385803L;
-	
+
 	private String statement;
 	private int pos;
 
-	public MathException(String s,String statement,int pos) {
+	public MathException(String s, String statement, int pos) {
 		super(s);
-		this.statement=statement;
-		this.pos=pos;
+		this.statement = statement;
+		this.pos = pos;
 	}
-	
-	public MathException(String s,String statement,int pos,Throwable e) {
-		super(s,e);
-		this.statement=statement;
-		this.pos=pos;
+
+	public MathException(String s, String statement, int pos, Throwable e) {
+		super(s, e);
+		this.statement = statement;
+		this.pos = pos;
 	}
-	
+
 	@Override
 	public String getMessage() {
-		String s="";
-		for(int i=0;i<pos;i++)s+=" ";
-		return super.getMessage()+"\n"+statement+"\n"+s+"^";
+		String s = "";
+		for (int i = 0; i < pos; i++)
+			s += " ";
+		return super.getMessage() + "\n" + statement + "\n" + s + "^";
 	}
 
 	public String getStatement() {

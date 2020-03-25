@@ -10,12 +10,13 @@ public class Cos extends Function {
 	public double calc(Map<String, Double> values) {
 		return Math.cos(ms.calc(values));
 	}
-	
+
 	@Override
 	public String toString() {
-		if(!ms.getClass().equals(Variable.class))
-			return "cos("+ms+")";
-		else return "cos"+ms;
+		if (!ms.getClass().equals(Variable.class))
+			return "cos(" + ms + ")";
+		else
+			return "cos" + ms;
 	}
 
 	public static final Cos format(String s) throws MathException {

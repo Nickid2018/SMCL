@@ -5,10 +5,10 @@ import com.github.nickid2018.jmcl.func.*;
 public class JMCL {
 
 	public static final void init() {
-		JMCLRegister.register(MathStatement.class, new char[]{'+','-'});
-		JMCLRegister.register(MultiplyStatement.class, new char[]{'*'});
-		JMCLRegister.register(DivideStatement.class, new char[]{'/'});
-		JMCLRegister.register(PowerStatement.class, new char[]{'^'});
+		JMCLRegister.register(MathStatement.class, new char[] { '+', '-' });
+		JMCLRegister.register(MultiplyStatement.class, new char[] { '*' });
+		JMCLRegister.register(DivideStatement.class, new char[] { '/' });
+		JMCLRegister.register(PowerStatement.class, new char[] { '^' });
 		JMCLRegister.registerFunc(Sin.class, "sin");
 		JMCLRegister.registerFunc(Cos.class, "cos");
 		JMCLRegister.registerFunc(Tan.class, "tan");

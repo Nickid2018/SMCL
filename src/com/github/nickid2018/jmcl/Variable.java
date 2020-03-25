@@ -3,11 +3,11 @@ package com.github.nickid2018.jmcl;
 import java.util.*;
 
 public class Variable extends MathStatement {
-	
+
 	private String name;
 
 	public Variable(String s) {
-		name=s;
+		name = s;
 	}
 
 	public String getName() {
@@ -17,10 +17,10 @@ public class Variable extends MathStatement {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public double calc(Map<String, Double> values) {
-		double v=0;
+		double v = 0;
 		try {
 			v = values.get(name);
 		} catch (Exception e) {
@@ -28,7 +28,7 @@ public class Variable extends MathStatement {
 		}
 		return v;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;

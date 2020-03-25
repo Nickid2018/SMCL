@@ -3,11 +3,11 @@ package com.github.nickid2018.jmcl;
 import java.util.*;
 
 public class Number extends MathStatement {
-	
+
 	private double num;
 
 	public Number(double num) {
-		this.num=num;
+		this.num = num;
 	}
 
 	public double getNumber() {
@@ -17,14 +17,14 @@ public class Number extends MathStatement {
 	public void setNumber(double num) {
 		this.num = num;
 	}
-	
+
 	@Override
 	public double calc(Map<String, Double> values) {
 		return num;
 	}
-	
+
 	@Override
 	public String toString() {
-		return num+"";
+		return num + "";
 	}
 }

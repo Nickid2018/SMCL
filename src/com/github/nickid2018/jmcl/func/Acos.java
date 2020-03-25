@@ -10,12 +10,13 @@ public class Acos extends Function {
 	public double calc(Map<String, Double> values) {
 		return Math.acos(ms.calc(values));
 	}
-	
+
 	@Override
 	public String toString() {
-		if(!ms.getClass().equals(Variable.class))
-			return "acos("+ms+")";
-		else return "acos"+ms;
+		if (!ms.getClass().equals(Variable.class))
+			return "acos(" + ms + ")";
+		else
+			return "acos" + ms;
 	}
 
 	public static final Acos format(String s) throws MathException {
