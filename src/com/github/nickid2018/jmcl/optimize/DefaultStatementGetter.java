@@ -5,7 +5,7 @@ import com.github.nickid2018.jmcl.*;
 public class DefaultStatementGetter implements StatementGetter {
 
 	@Override
-	public <T extends MathStatement> T obtain(Class<T> cls) {
+	public <T extends Statement> T obtain(Class<T> cls) {
 		try {
 			return cls.newInstance();
 		} catch (Exception e) {
@@ -14,6 +14,6 @@ public class DefaultStatementGetter implements StatementGetter {
 	}
 
 	@Override
-	public void free(MathStatement statement) {
+	public void free(Statement statement) {
 	}
 }

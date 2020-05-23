@@ -1,12 +1,12 @@
 package com.github.nickid2018.jmcl;
 
-import java.util.*;
 import com.github.nickid2018.jmcl.func.*;
 import com.github.nickid2018.jmcl.optimize.*;
+import com.github.nickid2018.jmcl.statements.*;
 
 public class JMCL {
-	
-	public static final Map<String,Double> EMPTY_ARGS = new HashMap<>();
+
+	public static final VariableList EMPTY_ARGS = new VariableList();
 
 	public static final void init() {
 		JMCLRegister.register(MathStatement.class, new char[] { '+', '-' });
@@ -33,11 +33,11 @@ public class JMCL {
 		return getter;
 	}
 
-	public static final <T extends MathStatement> T obtain(Class<T> cls) {
+	public static final <T extends Statement> T obtain(Class<T> cls) {
 		return getter.obtain(cls);
 	}
 
-	public static final void free(MathStatement statement) {
+	public static final void free(Statement statement) {
 		getter.free(statement);
 	}
 }

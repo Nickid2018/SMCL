@@ -1,14 +1,12 @@
 package com.github.nickid2018.jmcl.func;
 
-import java.util.*;
-
 import com.github.nickid2018.jmcl.*;
 
 public class Atan extends FunctionStatement {
 
 	@Override
-	public double calc(Map<String, Double> values) {
-		return Math.atan(ms.calc(values));
+	public double calc(VariableList list) {
+		return Math.atan(ms.calc(list));
 	}
 
 	@Override
@@ -20,7 +18,7 @@ public class Atan extends FunctionStatement {
 	}
 
 	public static final Atan format(String s) throws MathException {
-		Atan atan = new Atan();
+		Atan atan = JMCL.obtain(Atan.class);
 		if (s.startsWith("atan")) {
 			atan.ms = JMCLRegister.getStatement(s.substring(4));
 		}

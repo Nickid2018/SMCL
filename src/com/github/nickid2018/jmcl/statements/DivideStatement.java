@@ -1,20 +1,19 @@
-package com.github.nickid2018.jmcl;
+package com.github.nickid2018.jmcl.statements;
 
 import java.util.*;
-
-import com.github.nickid2018.jmcl.NumberStatement;
+import com.github.nickid2018.jmcl.*;
 import com.github.nickid2018.jmcl.func.*;
 
-public class DivideStatement extends MathStatement {
+public class DivideStatement extends Statement {
 
-	private MathStatement first;
-	private Set<MathStatement> divs = new HashSet<>();
+	private Statement first;
+	private List<Statement> divs = new ArrayList<>();
 
 	@Override
-	public double calc(Map<String, Double> values) {
-		double ret = first.calc(values);
-		for (MathStatement ms : divs) {
-			double v = ms.calc(values);
+	public double calc(VariableList list) {
+		double ret = first.calc(list);
+		for (Statement ms : divs) {
+			double v = ms.calc(list);
 			if (v == 0)
 				throw new ArithmeticException("divide by 0");
 			ret /= v;
@@ -26,15 +25,36 @@ public class DivideStatement extends MathStatement {
 	public boolean isAllNum() {
 		if (!(first instanceof NumberStatement))
 			return false;
-		for (MathStatement en : divs) {
+		for (Statement en : divs) {
 			if (!(en instanceof NumberStatement))
 				return false;
 		}
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(first.toString());
+		for (Statement en : divs) {
+			if (!(en instanceof NumberStatement) && !(en instanceof Variable) && !(en instanceof FunctionStatement))
+				sb.append("/(" + en + ")");
+			else
+				sb.append("/" + en);
+		}
+		return sb + "";
+	}
+
+	@Override
+	public void setValues(Statement... statements) {
+		first = statements[0];
+		for (int i = 1; i < statements.length; i++) {
+			divs.add(statements[i]);
+		}
+	}
+
 	public static final DivideStatement format(String s) throws MathException {
-		DivideStatement ms = new DivideStatement();
+		DivideStatement ms = JMCL.obtain(DivideStatement.class);
 		boolean a = true;
 		int begin = 0;
 		int intimes = 0;
@@ -50,7 +70,7 @@ public class DivideStatement extends MathStatement {
 				if (i == 0)
 					continue;
 				if (i != 0) {
-					MathStatement tmp = JMCLRegister.getStatement(sub);
+					Statement tmp = JMCLRegister.getStatement(sub);
 					if (a) {
 						ms.first = tmp;
 						a = false;
@@ -64,23 +84,10 @@ public class DivideStatement extends MathStatement {
 					throw new MathException("Parentheses are not paired", s, i);
 				}
 				String sub = s.substring(begin, s.length());
-				MathStatement tmp = JMCLRegister.getStatement(sub);
+				Statement tmp = JMCLRegister.getStatement(sub);
 				ms.divs.add(tmp);
 			}
 		}
 		return ms;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(first.toString());
-		for (MathStatement en : divs) {
-			if (!(en instanceof NumberStatement) && !(en instanceof Variable) && !(en instanceof FunctionStatement))
-				sb.append("/(" + en + ")");
-			else
-				sb.append("/" + en);
-		}
-		return sb + "";
 	}
 }

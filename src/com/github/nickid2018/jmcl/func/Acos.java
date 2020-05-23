@@ -1,14 +1,12 @@
 package com.github.nickid2018.jmcl.func;
 
-import java.util.*;
-
 import com.github.nickid2018.jmcl.*;
 
 public class Acos extends FunctionStatement {
 
 	@Override
-	public double calc(Map<String, Double> values) {
-		return Math.acos(ms.calc(values));
+	public double calc(VariableList list) {
+		return Math.acos(ms.calc(list));
 	}
 
 	@Override
@@ -20,7 +18,7 @@ public class Acos extends FunctionStatement {
 	}
 
 	public static final Acos format(String s) throws MathException {
-		Acos acos = new Acos();
+		Acos acos = JMCL.obtain(Acos.class);
 		if (s.startsWith("acos")) {
 			acos.ms = JMCLRegister.getStatement(s.substring(4));
 		}

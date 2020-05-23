@@ -1,14 +1,12 @@
 package com.github.nickid2018.jmcl.func;
 
-import java.util.*;
-
 import com.github.nickid2018.jmcl.*;
 
 public class Cos extends FunctionStatement {
 
 	@Override
-	public double calc(Map<String, Double> values) {
-		return Math.cos(ms.calc(values));
+	public double calc(VariableList list) {
+		return Math.cos(ms.calc(list));
 	}
 
 	@Override
@@ -20,7 +18,7 @@ public class Cos extends FunctionStatement {
 	}
 
 	public static final Cos format(String s) throws MathException {
-		Cos cos = new Cos();
+		Cos cos = JMCL.obtain(Cos.class);
 		if (s.startsWith("cos")) {
 			cos.ms = JMCLRegister.getStatement(s.substring(3));
 		}

@@ -1,8 +1,6 @@
 package com.github.nickid2018.jmcl;
 
-import java.util.*;
-
-public class Variable extends MathStatement {
+public class Variable extends Statement {
 
 	private String name;
 
@@ -19,18 +17,27 @@ public class Variable extends MathStatement {
 	}
 
 	@Override
-	public double calc(Map<String, Double> values) {
-		double v = 0;
-		try {
-			v = values.get(name);
-		} catch (Exception e) {
-			return 0;
-		}
-		return v;
+	public double calc(VariableList list) {
+		return list.getVariableValue(name);
 	}
 
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public boolean canClose() {
+		// Avoid being free
+		return false;
+	}
+
+	@Override
+	public boolean isAllNum() {
+		return false;
+	}
+
+	@Override
+	public void setValues(Statement... statements) {
 	}
 }

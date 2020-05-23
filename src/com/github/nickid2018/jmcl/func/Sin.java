@@ -1,14 +1,12 @@
 package com.github.nickid2018.jmcl.func;
 
-import java.util.*;
-
 import com.github.nickid2018.jmcl.*;
 
 public class Sin extends FunctionStatement {
 
 	@Override
-	public double calc(Map<String, Double> values) {
-		return Math.sin(ms.calc(values));
+	public double calc(VariableList list) {
+		return Math.sin(ms.calc(list));
 	}
 
 	@Override
@@ -20,7 +18,7 @@ public class Sin extends FunctionStatement {
 	}
 
 	public static final Sin format(String s) throws MathException {
-		Sin sin = new Sin();
+		Sin sin = JMCL.obtain(Sin.class);
 		if (s.startsWith("sin")) {
 			sin.ms = JMCLRegister.getStatement(s.substring(3));
 		}

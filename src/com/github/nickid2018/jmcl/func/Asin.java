@@ -1,14 +1,12 @@
 package com.github.nickid2018.jmcl.func;
 
-import java.util.*;
-
 import com.github.nickid2018.jmcl.*;
 
 public class Asin extends FunctionStatement {
 
 	@Override
-	public double calc(Map<String, Double> values) {
-		return Math.asin(ms.calc(values));
+	public double calc(VariableList list) {
+		return Math.asin(ms.calc(list));
 	}
 
 	@Override
@@ -20,7 +18,7 @@ public class Asin extends FunctionStatement {
 	}
 
 	public static final Asin format(String s) throws MathException {
-		Asin asin = new Asin();
+		Asin asin = JMCL.obtain(Asin.class);
 		if (s.startsWith("asin")) {
 			asin.ms = JMCLRegister.getStatement(s.substring(4));
 		}

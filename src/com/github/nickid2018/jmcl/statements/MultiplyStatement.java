@@ -1,25 +1,25 @@
-package com.github.nickid2018.jmcl;
+package com.github.nickid2018.jmcl.statements;
 
 import java.util.*;
+import com.github.nickid2018.jmcl.*;
+import com.github.nickid2018.jmcl.func.*;
 
-import com.github.nickid2018.jmcl.func.FunctionStatement;
+public class MultiplyStatement extends Statement {
 
-public class MultiplyStatement extends MathStatement {
-
-	private Set<MathStatement> subs = new HashSet<>();
+	private Set<Statement> subs = new HashSet<>();
 
 	@Override
-	public double calc(Map<String, Double> values) {
+	public double calc(VariableList list) {
 		double all = 1;
-		for (MathStatement ms : subs) {
-			all *= ms.calc(values);
+		for (Statement ms : subs) {
+			all *= ms.calc(list);
 		}
 		return all;
 	}
 
 	@Override
 	public boolean isAllNum() {
-		for (MathStatement en : subs) {
+		for (Statement en : subs) {
 			if (!(en instanceof NumberStatement))
 				return false;
 		}
@@ -30,7 +30,7 @@ public class MultiplyStatement extends MathStatement {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (MathStatement ms : subs) {
+		for (Statement ms : subs) {
 			if (first)
 				first = false;
 			else
@@ -44,8 +44,15 @@ public class MultiplyStatement extends MathStatement {
 		return sb.toString();
 	}
 
+	@Override
+	public void setValues(Statement... statements) {
+		for (Statement statement : statements) {
+			subs.add(statement);
+		}
+	}
+
 	public static final MultiplyStatement format(String s) throws MathException {
-		MultiplyStatement ms = new MultiplyStatement();
+		MultiplyStatement ms = JMCL.obtain(MultiplyStatement.class);
 		int begin = 0;
 		int intimes = 0;
 		for (int i = 0; i < s.length(); i++) {
@@ -60,7 +67,7 @@ public class MultiplyStatement extends MathStatement {
 				if (i == 0)
 					continue;
 				if (i != 0) {
-					MathStatement tmp = JMCLRegister.getStatement(sub);
+					Statement tmp = JMCLRegister.getStatement(sub);
 					ms.subs.add(tmp);
 				}
 			}
@@ -69,12 +76,12 @@ public class MultiplyStatement extends MathStatement {
 					throw new MathException("Parentheses are not paired", s, i);
 				}
 				String sub = s.substring(begin, s.length());
-				MathStatement tmp = JMCLRegister.getStatement(sub);
+				Statement tmp = JMCLRegister.getStatement(sub);
 				ms.subs.add(tmp);
 			}
 		}
 		Set<MultiplyStatement> mss = new HashSet<>();
-		for (MathStatement en : ms.subs) {
+		for (Statement en : ms.subs) {
 			if (en.getClass().equals(MultiplyStatement.class)) {
 				mss.add((MultiplyStatement) en);
 			}

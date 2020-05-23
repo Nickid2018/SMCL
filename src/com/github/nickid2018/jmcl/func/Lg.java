@@ -1,14 +1,12 @@
 package com.github.nickid2018.jmcl.func;
 
-import java.util.*;
-
 import com.github.nickid2018.jmcl.*;
 
 public class Lg extends FunctionStatement {
 
 	@Override
-	public double calc(Map<String, Double> values) {
-		double v = ms.calc(values);
+	public double calc(VariableList list) {
+		double v = ms.calc(list);
 		if (v <= 0)
 			throw new ArithmeticException("lg:argument is invalid-" + v);
 		return Math.log10(v);
@@ -23,7 +21,7 @@ public class Lg extends FunctionStatement {
 	}
 
 	public static final Lg format(String s) throws MathException {
-		Lg lg = new Lg();
+		Lg lg = JMCL.obtain(Lg.class);
 		if (s.startsWith("lg")) {
 			lg.ms = JMCLRegister.getStatement(s.substring(2));
 		}
