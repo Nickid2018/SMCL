@@ -2,7 +2,7 @@ package com.github.nickid2018.jmcl;
 
 import java.util.*;
 
-import com.github.nickid2018.jmcl.Number;
+import com.github.nickid2018.jmcl.NumberStatement;
 import com.github.nickid2018.jmcl.func.*;
 
 public class DivideStatement extends MathStatement {
@@ -24,10 +24,10 @@ public class DivideStatement extends MathStatement {
 
 	@Override
 	public boolean isAllNum() {
-		if (!(first instanceof Number))
+		if (!(first instanceof NumberStatement))
 			return false;
 		for (MathStatement en : divs) {
-			if (!(en instanceof Number))
+			if (!(en instanceof NumberStatement))
 				return false;
 		}
 		return true;
@@ -76,7 +76,7 @@ public class DivideStatement extends MathStatement {
 		StringBuilder sb = new StringBuilder();
 		sb.append(first.toString());
 		for (MathStatement en : divs) {
-			if (!(en instanceof Number) && !(en instanceof Variable) && !(en instanceof Function))
+			if (!(en instanceof NumberStatement) && !(en instanceof Variable) && !(en instanceof FunctionStatement))
 				sb.append("/(" + en + ")");
 			else
 				sb.append("/" + en);

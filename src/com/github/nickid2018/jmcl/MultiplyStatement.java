@@ -2,7 +2,7 @@ package com.github.nickid2018.jmcl;
 
 import java.util.*;
 
-import com.github.nickid2018.jmcl.func.Function;
+import com.github.nickid2018.jmcl.func.FunctionStatement;
 
 public class MultiplyStatement extends MathStatement {
 
@@ -20,7 +20,7 @@ public class MultiplyStatement extends MathStatement {
 	@Override
 	public boolean isAllNum() {
 		for (MathStatement en : subs) {
-			if (!(en instanceof Number))
+			if (!(en instanceof NumberStatement))
 				return false;
 		}
 		return true;
@@ -35,8 +35,8 @@ public class MultiplyStatement extends MathStatement {
 				first = false;
 			else
 				sb.append("*");
-			if (ms.getClass().equals(Variable.class) || ms.getClass().getSuperclass().equals(Function.class)
-					|| ms instanceof Number)
+			if (ms.getClass().equals(Variable.class) || ms.getClass().getSuperclass().equals(FunctionStatement.class)
+					|| ms instanceof NumberStatement)
 				sb.append(ms);
 			else
 				sb.append("(" + ms + ")");

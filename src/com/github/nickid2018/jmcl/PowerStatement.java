@@ -2,7 +2,7 @@ package com.github.nickid2018.jmcl;
 
 import java.util.*;
 
-import com.github.nickid2018.jmcl.func.Function;
+import com.github.nickid2018.jmcl.func.FunctionStatement;
 
 public class PowerStatement extends MathStatement {
 
@@ -21,10 +21,10 @@ public class PowerStatement extends MathStatement {
 
 	@Override
 	public boolean isAllNum() {
-		if (!(first instanceof Number))
+		if (!(first instanceof NumberStatement))
 			return false;
 		for (MathStatement en : muls) {
-			if (!(en instanceof Number))
+			if (!(en instanceof NumberStatement))
 				return false;
 		}
 		return true;
@@ -73,7 +73,7 @@ public class PowerStatement extends MathStatement {
 		StringBuilder sb = new StringBuilder();
 		sb.append(first.toString());
 		for (MathStatement en : muls) {
-			if (!(en instanceof Number) && !(en instanceof Variable) && !(en instanceof Function))
+			if (!(en instanceof NumberStatement) && !(en instanceof Variable) && !(en instanceof FunctionStatement))
 				sb.append("^(" + en + ")");
 			else
 				sb.append("^" + en);

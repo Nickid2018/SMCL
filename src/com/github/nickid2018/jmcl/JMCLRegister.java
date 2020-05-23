@@ -2,10 +2,8 @@ package com.github.nickid2018.jmcl;
 
 import java.util.*;
 import java.util.Map.*;
-
-import com.github.nickid2018.jmcl.func.*;
-
 import java.lang.reflect.*;
+import com.github.nickid2018.jmcl.func.*;
 
 public class JMCLRegister {
 
@@ -17,7 +15,7 @@ public class JMCLRegister {
 		registered.put(clazz, sign);
 	}
 
-	public static final void registerFunc(Class<? extends Function> clazz, String sign) {
+	public static final void registerFunc(Class<? extends FunctionStatement> clazz, String sign) {
 		registeredfunc.put(clazz, sign);
 	}
 
@@ -45,10 +43,12 @@ public class JMCLRegister {
 						Method m = cls.getMethod("format", String.class);
 						MathStatement ms = (MathStatement) m.invoke(cls, s);
 						if (ms.isAllNum())
-							ms = new Number(ms.calc(new HashMap<>()));
+							ms = new NumberStatement(ms.calc(JMCL.EMPTY_ARGS));
 						return ms;
 					} catch (Exception e) {
-						throw new RuntimeException("JMCL Error");
+						if (e instanceof InvocationTargetException)
+							throw new MathException("Parsing error", s, 0, e.getCause());
+						throw new RuntimeException("JMCL Error", e);
 					}
 				}
 		}
@@ -59,12 +59,12 @@ public class JMCLRegister {
 					Method m = cls.getMethod("format", String.class);
 					MathStatement ms = (MathStatement) m.invoke(cls, s);
 					if (ms.isAllNum())
-						ms = new Number(ms.calc(new HashMap<>()));
+						ms = new NumberStatement(ms.calc(JMCL.EMPTY_ARGS));
 					return ms;
 				} catch (Exception e) {
 					if (e instanceof InvocationTargetException)
 						throw new MathException("Parsing error", s, 0, e.getCause());
-					throw new RuntimeException("JMCL Error");
+					throw new RuntimeException("JMCL Error", e);
 				}
 			}
 		}
@@ -76,7 +76,7 @@ public class JMCLRegister {
 		} else {
 			try {
 				double num = Double.parseDouble(s);
-				return new Number(num);
+				return new NumberStatement(num);
 			} catch (NumberFormatException e) {
 				throw new MathException("Parsing error", s, 0);
 			}

@@ -2,9 +2,7 @@ package com.github.nickid2018.jmcl;
 
 import java.util.*;
 
-import com.github.nickid2018.jmcl.Number;
-
-public class MathStatement {
+public class MathStatement implements AutoCloseable {
 
 	private Map<MathStatement, Boolean> subs = new HashMap<>();
 
@@ -34,9 +32,14 @@ public class MathStatement {
 		return sb.toString();
 	}
 
+	@Override
+	public void close() throws Exception {
+		
+	}
+
 	public boolean isAllNum() {
 		for (Map.Entry<MathStatement, Boolean> en : subs.entrySet()) {
-			if (!(en.getKey() instanceof Number))
+			if (!(en.getKey() instanceof NumberStatement))
 				return false;
 		}
 		return true;
@@ -86,7 +89,7 @@ public class MathStatement {
 		if (ms.subs.size() == 1 && ms.subs.containsValue(true))
 			return (MathStatement) ms.subs.keySet().toArray()[0];
 		if (ms.isAllNum())
-			ms = new Number(ms.calc(new HashMap<>()));
+			ms = new NumberStatement(ms.calc(new HashMap<>()));
 		Set<MathStatement> mss = new HashSet<>();
 		for (Map.Entry<MathStatement, Boolean> en : ms.subs.entrySet()) {
 			if (en.getKey().getClass().equals(MathStatement.class)) {
@@ -100,10 +103,10 @@ public class MathStatement {
 			}
 		}
 		double all = 0;
-		Set<Number> set = new HashSet<>();
+		Set<NumberStatement> set = new HashSet<>();
 		for (Map.Entry<MathStatement, Boolean> en : ms.subs.entrySet()) {
-			if (en.getKey() instanceof Number) {
-				set.add((Number) en.getKey());
+			if (en.getKey() instanceof NumberStatement) {
+				set.add((NumberStatement) en.getKey());
 				if (en.getValue())
 					all += en.getKey().calc(null);
 				else
@@ -111,11 +114,11 @@ public class MathStatement {
 			}
 		}
 		if (set.size() > 1) {
-			for (Number n : set) {
+			for (NumberStatement n : set) {
 				ms.subs.remove(n);
 			}
 			if (all != 0) {
-				Number num = new Number(Math.abs(all));
+				NumberStatement num = new NumberStatement(Math.abs(all));
 				ms.subs.put(num, all > 0);
 			}
 		}

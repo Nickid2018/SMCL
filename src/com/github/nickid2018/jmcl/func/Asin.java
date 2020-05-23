@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.github.nickid2018.jmcl.*;
 
-public class Asin extends Function {
+public class Asin extends FunctionStatement {
 
 	@Override
 	public double calc(Map<String, Double> values) {
