@@ -19,6 +19,6 @@ public class VariableList {
 	}
 
 	public final void changeValue(String var, double v) {
-		value.replace(var, v);
+		value.put(var, v);
 	}
 }
