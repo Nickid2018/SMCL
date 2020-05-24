@@ -2,7 +2,7 @@ package com.github.nickid2018.jmcl.statements;
 
 import java.util.*;
 import com.github.nickid2018.jmcl.*;
-import com.github.nickid2018.jmcl.func.*;
+import com.github.nickid2018.jmcl.functions.*;
 
 public class DivideStatement extends Statement {
 
@@ -10,10 +10,10 @@ public class DivideStatement extends Statement {
 	private List<Statement> divs = new ArrayList<>();
 
 	@Override
-	public double calc(VariableList list) {
-		double ret = first.calc(list);
+	public double calculate(VariableList list) {
+		double ret = first.calculate(list);
 		for (Statement ms : divs) {
-			double v = ms.calc(list);
+			double v = ms.calculate(list);
 			if (v == 0)
 				throw new ArithmeticException("divide by 0");
 			ret /= v;
@@ -51,6 +51,16 @@ public class DivideStatement extends Statement {
 		for (int i = 1; i < statements.length; i++) {
 			divs.add(statements[i]);
 		}
+	}
+
+	@Override
+	public void doOnFree() {
+		first.free();
+		for (Statement statement : divs) {
+			statement.free();
+		}
+		first = null;
+		divs.clear();
 	}
 
 	public static final DivideStatement format(String s) throws MathException {

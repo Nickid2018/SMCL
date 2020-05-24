@@ -1,12 +1,12 @@
-package com.github.nickid2018.jmcl.func;
+package com.github.nickid2018.jmcl.functions;
 
 import com.github.nickid2018.jmcl.*;
 
 public class Atan extends FunctionStatement {
 
 	@Override
-	public double calc(VariableList list) {
-		return Math.atan(ms.calc(list));
+	public double calculate(VariableList list) {
+		return JMCL.radium ? Math.atan(ms.calculate(list)) : Math.toDegrees(Math.atan(ms.calculate(list)));
 	}
 
 	@Override

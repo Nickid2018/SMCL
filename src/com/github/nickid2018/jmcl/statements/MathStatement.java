@@ -8,10 +8,10 @@ public class MathStatement extends Statement {
 
 	private List<Pair<Statement, Boolean>> subs = new ArrayList<>();
 
-	public double calc(VariableList list) {
+	public double calculate(VariableList list) {
 		double t = 0;
-		for (Pair<Statement, Boolean> en : subs) {
-			t += en.getValue() ? en.getKey().calc(list) : -en.getKey().calc(list);
+		for (Pair<Statement, Boolean> en : getSubs()) {
+			t += en.getValue() ? en.getKey().calculate(list) : -en.getKey().calculate(list);
 		}
 		return t;
 	}
@@ -20,7 +20,7 @@ public class MathStatement extends Statement {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (Pair<Statement, Boolean> en : subs) {
+		for (Pair<Statement, Boolean> en : getSubs()) {
 			char a = en.getValue() ? '+' : '-';
 			if (first) {
 				first = false;
@@ -47,6 +47,18 @@ public class MathStatement extends Statement {
 		for (Statement statement : statements) {
 			subs.add(new Pair<>(statement, Boolean.TRUE));
 		}
+	}
+
+	@Override
+	public void doOnFree() {
+		for (Pair<Statement, Boolean> statement : subs) {
+			statement.key.free();
+		}
+		subs.clear();
+	}
+
+	public List<Pair<Statement, Boolean>> getSubs() {
+		return subs;
 	}
 
 	public static Statement format(String s) throws MathException {
@@ -94,53 +106,6 @@ public class MathStatement extends Statement {
 			}
 		}
 
-		// Shorten Distance
-		if (ms.subs.size() == 1 && ms.subs.get(0).value) {
-			Statement statement = ms.subs.get(0).key;
-			ms.free();
-			return statement;
-		}
-
-		// Number-Onlys
-		if (ms.isAllNum())
-			return NumberPool.getNumber(ms.calc(JMCL.EMPTY_ARGS));
-
-		// Merge Math Statements
-		Set<Pair<Statement, Boolean>> mss = new HashSet<>();
-		for (Pair<Statement, Boolean> en : ms.subs) {
-			if (en.getKey().getClass().equals(MathStatement.class)) {
-				mss.add(en);
-			}
-		}
-		if (mss.size() > 0) {
-			for (Pair<Statement, Boolean> n : mss) {
-				ms.subs.remove(n);
-				ms.subs.addAll(((MathStatement) (n.key)).subs);
-			}
-		}
-
-		// Merge Numbers
-		double all = 0;
-		Set<Pair<Statement, Boolean>> set = new HashSet<>();
-		for (Pair<Statement, Boolean> en : ms.subs) {
-			if (en.getKey() instanceof NumberStatement) {
-				set.add(en);
-				if (en.getValue())
-					all += en.getKey().calc(null);
-				else
-					all -= en.getKey().calc(null);
-			}
-		}
-		if (set.size() > 1) {
-			for (Pair<Statement, Boolean> n : set) {
-				ms.subs.remove(n);
-			}
-			if (all != 0) {
-				NumberStatement num = NumberPool.getNumber(Math.abs(all));
-				ms.subs.add(new Pair<>(num, all > 0));
-			}
-		}
-
-		return ms;
+		return JMCL.optimize ? StatementOptimize.optimizeMathStatement(ms) : ms;
 	}
 }

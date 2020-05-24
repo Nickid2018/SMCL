@@ -1,15 +1,17 @@
-package com.github.nickid2018.jmcl.func;
+package com.github.nickid2018.jmcl.functions;
 
 import com.github.nickid2018.jmcl.*;
 
 public class Tan extends FunctionStatement {
 
 	@Override
-	public double calc(VariableList list) {
-		double v = ms.calc(list);
-		if (v % Math.PI == Math.PI / 2)
+	public double calculate(VariableList list) {
+		double v = ms.calculate(list);
+		if (v % Math.PI == Math.PI / 2 && JMCL.radium)
 			throw new ArithmeticException("tan:argument is invalid-" + v);
-		return Math.tan(v);
+		if (v % 180 == 90 && !JMCL.radium)
+			throw new ArithmeticException("tan:argument is invalid-" + v);
+		return JMCL.radium ? Math.tan(ms.calculate(list)) : Math.tan(Math.toRadians(ms.calculate(list)));
 	}
 
 	@Override

@@ -1,12 +1,12 @@
-package com.github.nickid2018.jmcl.func;
+package com.github.nickid2018.jmcl.functions;
 
 import com.github.nickid2018.jmcl.*;
 
 public class Ln extends FunctionStatement {
 
 	@Override
-	public double calc(VariableList list) {
-		double v = ms.calc(list);
+	public double calculate(VariableList list) {
+		double v = ms.calculate(list);
 		if (v <= 0)
 			throw new ArithmeticException("ln:argument is invalid-" + v);
 		return Math.log(v);

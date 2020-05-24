@@ -2,17 +2,17 @@ package com.github.nickid2018.jmcl.statements;
 
 import java.util.*;
 import com.github.nickid2018.jmcl.*;
-import com.github.nickid2018.jmcl.func.*;
+import com.github.nickid2018.jmcl.functions.*;
 
 public class MultiplyStatement extends Statement {
 
-	private Set<Statement> subs = new HashSet<>();
+	private List<Statement> subs = new ArrayList<>();
 
 	@Override
-	public double calc(VariableList list) {
+	public double calculate(VariableList list) {
 		double all = 1;
 		for (Statement ms : subs) {
-			all *= ms.calc(list);
+			all *= ms.calculate(list);
 		}
 		return all;
 	}
@@ -49,6 +49,14 @@ public class MultiplyStatement extends Statement {
 		for (Statement statement : statements) {
 			subs.add(statement);
 		}
+	}
+
+	@Override
+	public void doOnFree() {
+		for (Statement statement : subs) {
+			statement.free();
+		}
+		subs.clear();
 	}
 
 	public static final MultiplyStatement format(String s) throws MathException {

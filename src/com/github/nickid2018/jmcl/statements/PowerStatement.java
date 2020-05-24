@@ -2,7 +2,7 @@ package com.github.nickid2018.jmcl.statements;
 
 import java.util.*;
 import com.github.nickid2018.jmcl.*;
-import com.github.nickid2018.jmcl.func.*;
+import com.github.nickid2018.jmcl.functions.*;
 
 public class PowerStatement extends Statement {
 
@@ -10,10 +10,10 @@ public class PowerStatement extends Statement {
 	private Set<Statement> muls = new HashSet<>();
 
 	@Override
-	public double calc(VariableList list) {
-		double ret = first.calc(list);
+	public double calculate(VariableList list) {
+		double ret = first.calculate(list);
 		for (Statement ms : muls) {
-			double mul = ms.calc(list);
+			double mul = ms.calculate(list);
 			ret = Math.pow(ret, mul);
 		}
 		return ret;
@@ -52,6 +52,16 @@ public class PowerStatement extends Statement {
 		for (int i = 1; i < statements.length; i++) {
 			muls.add(statements[i]);
 		}
+	}
+	
+	@Override
+	public void doOnFree() {
+		first.free();
+		for (Statement statement : muls) {
+			statement.free();
+		}
+		first = null;
+		muls.clear();
 	}
 
 	public static final PowerStatement format(String s) throws MathException {

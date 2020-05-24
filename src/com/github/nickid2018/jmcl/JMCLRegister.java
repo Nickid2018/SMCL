@@ -3,7 +3,8 @@ package com.github.nickid2018.jmcl;
 import java.util.*;
 import java.util.Map.*;
 import java.lang.reflect.*;
-import com.github.nickid2018.jmcl.func.*;
+
+import com.github.nickid2018.jmcl.functions.*;
 import com.github.nickid2018.jmcl.optimize.*;
 import com.github.nickid2018.jmcl.statements.*;
 
@@ -51,8 +52,8 @@ public class JMCLRegister {
 					try {
 						Method m = cls.getMethod("format", String.class);
 						Statement ms = (Statement) m.invoke(cls, s);
-						if (ms.isAllNum())
-							ms = NumberPool.getNumber(ms.calc(JMCL.EMPTY_ARGS));
+						if (ms.isAllNum() && JMCL.optimize)
+							ms = NumberPool.getNumber(ms.calculate(JMCL.EMPTY_ARGS));
 						return ms;
 					} catch (Exception e) {
 						if (e instanceof InvocationTargetException)
@@ -69,8 +70,8 @@ public class JMCLRegister {
 				try {
 					Method m = cls.getMethod("format", String.class);
 					Statement ms = (Statement) m.invoke(cls, s);
-					if (ms.isAllNum())
-						ms = NumberPool.getNumber(ms.calc(JMCL.EMPTY_ARGS));
+					if (ms.isAllNum() && JMCL.optimize)
+						ms = NumberPool.getNumber(ms.calculate(JMCL.EMPTY_ARGS));
 					return ms;
 				} catch (Exception e) {
 					if (e instanceof InvocationTargetException)

@@ -1,12 +1,12 @@
-package com.github.nickid2018.jmcl.func;
+package com.github.nickid2018.jmcl.functions;
 
 import com.github.nickid2018.jmcl.*;
 
 public class Cos extends FunctionStatement {
 
 	@Override
-	public double calc(VariableList list) {
-		return Math.cos(ms.calc(list));
+	public double calculate(VariableList list) {
+		return JMCL.radium ? Math.cos(ms.calculate(list)) : Math.cos(Math.toRadians(ms.calculate(list)));
 	}
 
 	@Override

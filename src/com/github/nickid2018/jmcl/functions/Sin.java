@@ -1,12 +1,12 @@
-package com.github.nickid2018.jmcl.func;
+package com.github.nickid2018.jmcl.functions;
 
 import com.github.nickid2018.jmcl.*;
 
 public class Sin extends FunctionStatement {
 
 	@Override
-	public double calc(VariableList list) {
-		return Math.sin(ms.calc(list));
+	public double calculate(VariableList list) {
+		return JMCL.radium ? Math.sin(ms.calculate(list)) : Math.sin(Math.toRadians(ms.calculate(list)));
 	}
 
 	@Override

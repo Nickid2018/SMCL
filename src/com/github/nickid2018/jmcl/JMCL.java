@@ -1,12 +1,14 @@
 package com.github.nickid2018.jmcl;
 
-import com.github.nickid2018.jmcl.func.*;
+import com.github.nickid2018.jmcl.functions.*;
 import com.github.nickid2018.jmcl.optimize.*;
 import com.github.nickid2018.jmcl.statements.*;
 
 public class JMCL {
 
 	public static final VariableList EMPTY_ARGS = new VariableList();
+	public static boolean optimize = true;
+	public static boolean radium = true;
 
 	public static final void init() {
 		JMCLRegister.register(MathStatement.class, new char[] { '+', '-' });

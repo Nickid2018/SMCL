@@ -1,12 +1,12 @@
-package com.github.nickid2018.jmcl.func;
+package com.github.nickid2018.jmcl.functions;
 
 import com.github.nickid2018.jmcl.*;
 
 public class Acos extends FunctionStatement {
 
 	@Override
-	public double calc(VariableList list) {
-		return Math.acos(ms.calc(list));
+	public double calculate(VariableList list) {
+		return JMCL.radium ? Math.acos(ms.calculate(list)) : Math.toDegrees(Math.acos(ms.calculate(list)));
 	}
 
 	@Override

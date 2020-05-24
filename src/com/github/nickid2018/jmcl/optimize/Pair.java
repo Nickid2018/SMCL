@@ -11,6 +11,14 @@ public class Pair<K, V> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Pair))
+			return false;
+		Pair<?, ?> pair = (Pair<?, ?>) obj;
+		return pair.key.equals(key) && pair.value.equals(value);
+	}
+
+	@Override
 	public int hashCode() {
 		return key.hashCode() + value.hashCode();
 	}
@@ -19,7 +27,7 @@ public class Pair<K, V> {
 	public String toString() {
 		return key + ":" + value;
 	}
-	
+
 	public K getKey() {
 		return key;
 	}

@@ -1,4 +1,4 @@
-package com.github.nickid2018.jmcl.func;
+package com.github.nickid2018.jmcl.functions;
 
 import com.github.nickid2018.jmcl.*;
 import com.github.nickid2018.jmcl.statements.*;
@@ -15,5 +15,11 @@ public abstract class FunctionStatement extends Statement {
 	@Override
 	public void setValues(Statement... statements) {
 		ms = statements[0];
+	}
+
+	@Override
+	public void doOnFree() {
+		ms.free();
+		ms = null;
 	}
 }

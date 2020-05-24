@@ -17,7 +17,7 @@ public class Variable extends Statement {
 	}
 
 	@Override
-	public double calc(VariableList list) {
+	public double calculate(VariableList list) {
 		return list.getVariableValue(name);
 	}
 

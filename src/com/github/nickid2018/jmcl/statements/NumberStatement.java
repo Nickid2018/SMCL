@@ -19,7 +19,7 @@ public class NumberStatement extends Statement {
 	}
 
 	@Override
-	public double calc(VariableList list) {
+	public double calculate(VariableList list) {
 		return num;
 	}
 

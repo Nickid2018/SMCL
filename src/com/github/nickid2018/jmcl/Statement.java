@@ -15,17 +15,30 @@ public abstract class Statement implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public final void close() {
 		free();
 	}
 
-	public boolean free() {
+	public final boolean free() {
+		shares--;
+		if (shares < 1 && canClose()) {
+			JMCL.free(this);
+			doOnFree();
+			return true;
+		}
+		return false;
+	}
+
+	public final boolean tryOnlyFree() {
 		shares--;
 		if (shares < 1 && canClose()) {
 			JMCL.free(this);
 			return true;
 		}
 		return false;
+	}
+
+	public void doOnFree() {
 	}
 
 	public boolean canClose() {
@@ -37,7 +50,7 @@ public abstract class Statement implements AutoCloseable {
 
 	public abstract boolean isAllNum();
 
-	public abstract double calc(VariableList list);
+	public abstract double calculate(VariableList list);
 
 	public abstract void setValues(Statement... statements);
 
