@@ -6,7 +6,7 @@ public class CachedStatementDemo {
 
 	public static void main(String[] args) throws MathException {
 		JMCL.init();
-		Variables.registerVariable("x");
+		GlobalVariables.registerVariable("x");
 		long now = System.nanoTime();
 		Statement ms = Statement.format("(x+1)^2");
 		CachedStatement statement = new CachedStatement(ms);

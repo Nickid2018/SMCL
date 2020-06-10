@@ -87,8 +87,8 @@ public class JMCLRegister {
 		}
 
 		// Last Choice
-		if (Variables.haveVariable(s)) {
-			return Variables.getVariable(s);
+		if (GlobalVariables.haveVariable(s)) {
+			return GlobalVariables.getVariable(s);
 		} else {
 			try {
 				double num = Double.parseDouble(s);
