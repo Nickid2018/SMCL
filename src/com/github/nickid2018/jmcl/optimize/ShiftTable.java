@@ -23,7 +23,6 @@ public class ShiftTable {
 
 	private int internalFill(String expr, int shift, int level) throws MathException {
 		ShiftKey key = new ShiftKey();
-		int priority = Integer.MAX_VALUE;
 		String sign = "";
 		key.start = shift;
 		key.level = level;
