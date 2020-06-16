@@ -6,7 +6,7 @@ public class Sin extends FunctionStatement {
 
 	@Override
 	public double calculate(VariableList list) {
-		return JMCL.radium ? Math.sin(ms.calculate(list)) : Math.sin(Math.toRadians(ms.calculate(list)));
+		return jmcl.settings.degreeAngle ? Math.sin(Math.toRadians(ms.calculate(list))) : Math.sin(ms.calculate(list));
 	}
 
 	@Override
@@ -17,10 +17,10 @@ public class Sin extends FunctionStatement {
 			return "sin" + ms;
 	}
 
-	public static final Sin format(String s) throws MathException {
+	public static final Sin format(String s, JMCL jmcl) throws MathException {
 		Sin sin = JMCL.obtain(Sin.class);
 		if (s.startsWith("sin")) {
-			sin.ms = JMCLRegister.getStatement(s.substring(3));
+			sin.ms = JMCLRegister.getStatement(s.substring(3), jmcl);
 		}
 		return sin;
 	}

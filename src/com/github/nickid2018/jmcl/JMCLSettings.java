@@ -28,6 +28,7 @@ public class JMCLSettings {
 	public boolean strictVariableCheck = false;
 
 	// Optimizing settings
+	public boolean disableInitialOptimize = false;
 	public boolean disableNumberPool = false;
 	public boolean mergeNumbers = true;
 	public boolean pushStackWhenParse = false;

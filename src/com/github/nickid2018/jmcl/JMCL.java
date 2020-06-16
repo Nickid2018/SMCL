@@ -7,8 +7,18 @@ import com.github.nickid2018.jmcl.statements.*;
 public class JMCL {
 
 	public static final VariableList EMPTY_ARGS = new VariableList();
-	public static boolean optimize = true;
-	public static boolean radium = true;
+	
+	private static JMCL instance;
+	
+	public static synchronized JMCL getInstance() {
+		return instance == null? instance = new JMCL(new JMCLSettings()) : instance;
+	}
+	
+	public final JMCLSettings settings;
+	
+	public JMCL(JMCLSettings setting) {
+		settings = setting;
+	}
 
 	public static final void init() {
 		JMCLRegister.register(MathStatement.class, new char[] { '+', '-' });

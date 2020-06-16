@@ -5,6 +5,7 @@ import com.github.nickid2018.jmcl.statements.*;
 public abstract class Statement implements AutoCloseable {
 
 	protected int shares = 1;
+	protected JMCL jmcl;
 
 	public void share() {
 		shares++;
