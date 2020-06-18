@@ -6,7 +6,8 @@ public class Asin extends FunctionStatement {
 
 	@Override
 	public double calculate(VariableList list) {
-		return JMCL.radium ? Math.asin(ms.calculate(list)) : Math.toDegrees(Math.asin(ms.calculate(list)));
+		return jmcl.settings.degreeAngle ? Math.toDegrees(Math.asin(ms.calculate(list)))
+				: Math.asin(ms.calculate(list));
 	}
 
 	@Override
@@ -17,10 +18,10 @@ public class Asin extends FunctionStatement {
 			return "asin" + ms;
 	}
 
-	public static final Asin format(String s) throws MathException {
-		Asin asin = JMCL.obtain(Asin.class);
+	public static final Asin format(String s, JMCL jmcl) throws MathException {
+		Asin asin = jmcl.obtain(Asin.class);
 		if (s.startsWith("asin")) {
-			asin.ms = JMCLRegister.getStatement(s.substring(4));
+			asin.ms = JMCLRegister.getStatement(s.substring(4), jmcl);
 		}
 		return asin;
 	}

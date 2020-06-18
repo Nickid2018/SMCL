@@ -6,7 +6,8 @@ public class Acos extends FunctionStatement {
 
 	@Override
 	public double calculate(VariableList list) {
-		return JMCL.radium ? Math.acos(ms.calculate(list)) : Math.toDegrees(Math.acos(ms.calculate(list)));
+		return jmcl.settings.degreeAngle ? Math.toDegrees(Math.acos(ms.calculate(list)))
+				: Math.acos(ms.calculate(list));
 	}
 
 	@Override
@@ -17,10 +18,10 @@ public class Acos extends FunctionStatement {
 			return "acos" + ms;
 	}
 
-	public static final Acos format(String s) throws MathException {
-		Acos acos = JMCL.obtain(Acos.class);
+	public static final Acos format(String s, JMCL jmcl) throws MathException {
+		Acos acos = jmcl.obtain(Acos.class);
 		if (s.startsWith("acos")) {
-			acos.ms = JMCLRegister.getStatement(s.substring(4));
+			acos.ms = JMCLRegister.getStatement(s.substring(4), jmcl);
 		}
 		return acos;
 	}

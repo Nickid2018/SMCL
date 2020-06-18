@@ -18,7 +18,7 @@ public class Sin extends FunctionStatement {
 	}
 
 	public static final Sin format(String s, JMCL jmcl) throws MathException {
-		Sin sin = JMCL.obtain(Sin.class);
+		Sin sin = jmcl.obtain(Sin.class);
 		if (s.startsWith("sin")) {
 			sin.ms = JMCLRegister.getStatement(s.substring(3), jmcl);
 		}

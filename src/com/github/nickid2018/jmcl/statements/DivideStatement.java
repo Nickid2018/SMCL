@@ -63,8 +63,8 @@ public class DivideStatement extends Statement {
 		divs.clear();
 	}
 
-	public static final DivideStatement format(String s) throws MathException {
-		DivideStatement ms = JMCL.obtain(DivideStatement.class);
+	public static final DivideStatement format(String s, JMCL jmcl) throws MathException {
+		DivideStatement ms = jmcl.obtain(DivideStatement.class);
 		boolean a = true;
 		int begin = 0;
 		int intimes = 0;
@@ -80,7 +80,7 @@ public class DivideStatement extends Statement {
 				if (i == 0)
 					continue;
 				if (i != 0) {
-					Statement tmp = JMCLRegister.getStatement(sub);
+					Statement tmp = JMCLRegister.getStatement(sub, jmcl);
 					if (a) {
 						ms.first = tmp;
 						a = false;
@@ -94,7 +94,7 @@ public class DivideStatement extends Statement {
 					throw new MathException("Parentheses are not paired", s, i);
 				}
 				String sub = s.substring(begin, s.length());
-				Statement tmp = JMCLRegister.getStatement(sub);
+				Statement tmp = JMCLRegister.getStatement(sub, jmcl);
 				ms.divs.add(tmp);
 			}
 		}

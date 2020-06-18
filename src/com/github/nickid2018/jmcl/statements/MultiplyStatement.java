@@ -59,8 +59,8 @@ public class MultiplyStatement extends Statement {
 		subs.clear();
 	}
 
-	public static final MultiplyStatement format(String s) throws MathException {
-		MultiplyStatement ms = JMCL.obtain(MultiplyStatement.class);
+	public static final MultiplyStatement format(String s, JMCL jmcl) throws MathException {
+		MultiplyStatement ms = jmcl.obtain(MultiplyStatement.class);
 		int begin = 0;
 		int intimes = 0;
 		for (int i = 0; i < s.length(); i++) {
@@ -75,7 +75,7 @@ public class MultiplyStatement extends Statement {
 				if (i == 0)
 					continue;
 				if (i != 0) {
-					Statement tmp = JMCLRegister.getStatement(sub);
+					Statement tmp = JMCLRegister.getStatement(sub, jmcl);
 					ms.subs.add(tmp);
 				}
 			}
@@ -84,7 +84,7 @@ public class MultiplyStatement extends Statement {
 					throw new MathException("Parentheses are not paired", s, i);
 				}
 				String sub = s.substring(begin, s.length());
-				Statement tmp = JMCLRegister.getStatement(sub);
+				Statement tmp = JMCLRegister.getStatement(sub, jmcl);
 				ms.subs.add(tmp);
 			}
 		}

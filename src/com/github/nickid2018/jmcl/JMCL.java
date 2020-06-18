@@ -35,21 +35,23 @@ public class JMCL {
 		JMCLRegister.registerFunc(Ln.class, "ln");
 	}
 
-	private static StatementGetter getter = new DefaultStatementGetter();
+	private StatementGetter getter = new DefaultStatementGetter();
 
-	public static final void setStatementGetter(StatementGetter getter) {
-		JMCL.getter = getter;
+	public final void setStatementGetter(StatementGetter getter) {
+		this.getter = getter;
 	}
 
-	public static final StatementGetter getGetter() {
+	public final StatementGetter getGetter() {
 		return getter;
 	}
 
-	public static final <T extends Statement> T obtain(Class<T> cls) {
-		return getter.obtain(cls);
+	public final <T extends Statement> T obtain(Class<T> cls) {
+		T obj = getter.obtain(cls);
+		obj.jmcl = this;
+		return obj;
 	}
 
-	public static final void free(Statement statement) {
+	public final void free(Statement statement) {
 		getter.free(statement);
 	}
 }

@@ -6,7 +6,8 @@ public class Atan extends FunctionStatement {
 
 	@Override
 	public double calculate(VariableList list) {
-		return JMCL.radium ? Math.atan(ms.calculate(list)) : Math.toDegrees(Math.atan(ms.calculate(list)));
+		return jmcl.settings.degreeAngle ? Math.toDegrees(Math.atan(ms.calculate(list)))
+				: Math.atan(ms.calculate(list));
 	}
 
 	@Override
@@ -17,10 +18,10 @@ public class Atan extends FunctionStatement {
 			return "atan" + ms;
 	}
 
-	public static final Atan format(String s) throws MathException {
-		Atan atan = JMCL.obtain(Atan.class);
+	public static final Atan format(String s, JMCL jmcl) throws MathException {
+		Atan atan = jmcl.obtain(Atan.class);
 		if (s.startsWith("atan")) {
-			atan.ms = JMCLRegister.getStatement(s.substring(4));
+			atan.ms = JMCLRegister.getStatement(s.substring(4), jmcl);
 		}
 		return atan;
 	}

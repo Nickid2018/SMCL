@@ -27,7 +27,7 @@ public class MathException extends Exception {
 		String s = "";
 		for (int i = 0; i < pos; i++)
 			s += " ";
-		return super.getMessage() + "\n" + statement + "\n" + s + "^";
+		return super.getMessage() + " (Position: " + pos + ")\n" + statement + "\n" + s + "^";
 	}
 
 	public String getStatement() {

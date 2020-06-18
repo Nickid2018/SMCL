@@ -6,7 +6,7 @@ public class Cos extends FunctionStatement {
 
 	@Override
 	public double calculate(VariableList list) {
-		return JMCL.radium ? Math.cos(ms.calculate(list)) : Math.cos(Math.toRadians(ms.calculate(list)));
+		return jmcl.settings.degreeAngle ? Math.cos(Math.toRadians(ms.calculate(list))) : Math.cos(ms.calculate(list));
 	}
 
 	@Override
@@ -17,10 +17,10 @@ public class Cos extends FunctionStatement {
 			return "cos" + ms;
 	}
 
-	public static final Cos format(String s) throws MathException {
-		Cos cos = JMCL.obtain(Cos.class);
+	public static final Cos format(String s, JMCL jmcl) throws MathException {
+		Cos cos = jmcl.obtain(Cos.class);
 		if (s.startsWith("cos")) {
-			cos.ms = JMCLRegister.getStatement(s.substring(3));
+			cos.ms = JMCLRegister.getStatement(s.substring(3), jmcl);
 		}
 		return cos;
 	}

@@ -23,7 +23,7 @@ public abstract class Statement implements AutoCloseable {
 	public final boolean free() {
 		shares--;
 		if (shares < 1 && canClose()) {
-			JMCL.free(this);
+			jmcl.free(this);
 			doOnFree();
 			return true;
 		}
@@ -33,7 +33,7 @@ public abstract class Statement implements AutoCloseable {
 	public final boolean tryOnlyFree() {
 		shares--;
 		if (shares < 1 && canClose()) {
-			JMCL.free(this);
+			jmcl.free(this);
 			return true;
 		}
 		return false;

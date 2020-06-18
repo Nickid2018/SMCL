@@ -29,7 +29,7 @@ public class JMCLRegister {
 		registeredfunc.remove(clazz);
 	}
 
-	public static final Statement getStatement(String s, JMCLSettings setting) throws MathException {
+	public static final Statement getStatement(String s, JMCL jmcl) throws MathException {
 
 		// Operator & String mapping
 		String mapping = "";
@@ -52,7 +52,7 @@ public class JMCLRegister {
 					try {
 						Method m = cls.getMethod("format", String.class);
 						Statement ms = (Statement) m.invoke(cls, s);
-						if (ms.isAllNum() && setting.mergeNumbers)
+						if (ms.isAllNum() && jmcl.settings.mergeNumbers)
 							ms = NumberPool.getNumber(ms.calculate(JMCL.EMPTY_ARGS));
 						return ms;
 					} catch (Exception e) {
@@ -70,7 +70,7 @@ public class JMCLRegister {
 				try {
 					Method m = cls.getMethod("format", String.class);
 					Statement ms = (Statement) m.invoke(cls, s);
-					if (ms.isAllNum() && setting.mergeNumbers)
+					if (ms.isAllNum() && jmcl.settings.mergeNumbers)
 						ms = NumberPool.getNumber(ms.calculate(JMCL.EMPTY_ARGS));
 					return ms;
 				} catch (Exception e) {

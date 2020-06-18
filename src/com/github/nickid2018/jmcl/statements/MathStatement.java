@@ -65,7 +65,7 @@ public class MathStatement extends Statement {
 		if (s.isEmpty())
 			throw new MathException("Empty Statement", s, 0);
 
-		MathStatement ms = JMCL.obtain(MathStatement.class);
+		MathStatement ms = jmcl.obtain(MathStatement.class);
 		ms.jmcl = jmcl;
 
 		// Split
@@ -84,7 +84,7 @@ public class MathStatement extends Statement {
 				if (i == 0)
 					continue;
 				if (i != 0) {
-					Statement tmp = JMCLRegister.getStatement(sub, jmcl.settings);
+					Statement tmp = JMCLRegister.getStatement(sub, jmcl);
 					ms.subs.add(new Pair<>(tmp, plus));
 				}
 				plus = true;
@@ -92,7 +92,7 @@ public class MathStatement extends Statement {
 				String sub = s.substring(begin, i);
 				begin = i + 1;
 				if (i != 0) {
-					Statement tmp = JMCLRegister.getStatement(sub, jmcl.settings);
+					Statement tmp = JMCLRegister.getStatement(sub, jmcl);
 					ms.subs.add(new Pair<>(tmp, plus));
 				}
 				plus = false;
@@ -102,11 +102,11 @@ public class MathStatement extends Statement {
 					throw new MathException("Parentheses are not paired", s, i);
 				}
 				String sub = s.substring(begin, s.length());
-				Statement tmp = JMCLRegister.getStatement(sub, jmcl.settings);
+				Statement tmp = JMCLRegister.getStatement(sub, jmcl);
 				ms.subs.add(new Pair<>(tmp, plus));
 			}
 		}
 
-		return !jmcl.settings.disableInitialOptimize ? StatementOptimize.optimizeMathStatement(ms) : ms;
+		return jmcl.settings.disableInitialOptimize ? ms : StatementOptimize.optimizeMathStatement(ms);
 	}
 }
