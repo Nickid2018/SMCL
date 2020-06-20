@@ -26,7 +26,7 @@ public class IntArray {
 	private void ensurePosition() {
 		if (length == array.length) {
 			int[] tmp = array;
-			array = new int[(int)(length * factor)];
+			array = new int[(int)(length * (factor + 1))];
 			System.arraycopy(tmp, 0, array, 0, length);
 		}
 	}
