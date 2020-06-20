@@ -62,12 +62,12 @@ public class MathStatement extends Statement {
 		return subs;
 	}
 
-	public static Statement format(String s, SMCL jmcl) throws MathException {
+	public static Statement format(String s, SMCL smcl) throws MathException {
 		if (s.isEmpty())
 			throw new MathException("Empty Statement", s, 0);
 
-		MathStatement ms = jmcl.obtain(MathStatement.class);
-		ms.jmcl = jmcl;
+		MathStatement ms = smcl.obtain(MathStatement.class);
+		ms.smcl = smcl;
 
 		// Split
 		int begin = 0;
@@ -85,7 +85,7 @@ public class MathStatement extends Statement {
 				if (i == 0)
 					continue;
 				if (i != 0) {
-					Statement tmp = SMCLRegister.getStatement(sub, jmcl);
+					Statement tmp = smcl.register.getStatement(sub);
 					ms.subs.add(new Pair<>(tmp, plus));
 				}
 				plus = true;
@@ -93,7 +93,7 @@ public class MathStatement extends Statement {
 				String sub = s.substring(begin, i);
 				begin = i + 1;
 				if (i != 0) {
-					Statement tmp = SMCLRegister.getStatement(sub, jmcl);
+					Statement tmp = smcl.register.getStatement(sub);
 					ms.subs.add(new Pair<>(tmp, plus));
 				}
 				plus = false;
@@ -103,11 +103,11 @@ public class MathStatement extends Statement {
 					throw new MathException("Parentheses are not paired", s, i);
 				}
 				String sub = s.substring(begin, s.length());
-				Statement tmp = SMCLRegister.getStatement(sub, jmcl);
+				Statement tmp = smcl.register.getStatement(sub);
 				ms.subs.add(new Pair<>(tmp, plus));
 			}
 		}
 
-		return jmcl.settings.disableInitialOptimize ? ms : StatementOptimize.optimizeMathStatement(ms);
+		return smcl.settings.disableInitialOptimize ? ms : StatementOptimize.optimizeMathStatement(ms);
 	}
 }

@@ -5,7 +5,7 @@ import com.github.nickid2018.smcl.statements.*;
 public abstract class Statement implements AutoCloseable {
 
 	protected int shares = 1;
-	protected SMCL jmcl;
+	protected SMCL smcl;
 
 	public void share() {
 		shares++;
@@ -23,7 +23,7 @@ public abstract class Statement implements AutoCloseable {
 	public final boolean free() {
 		shares--;
 		if (shares < 1 && canClose()) {
-			jmcl.free(this);
+			smcl.free(this);
 			doOnFree();
 			return true;
 		}
@@ -33,7 +33,7 @@ public abstract class Statement implements AutoCloseable {
 	public final boolean tryOnlyFree() {
 		shares--;
 		if (shares < 1 && canClose()) {
-			jmcl.free(this);
+			smcl.free(this);
 			return true;
 		}
 		return false;

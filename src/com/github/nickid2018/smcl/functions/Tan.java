@@ -7,11 +7,11 @@ public class Tan extends FunctionStatement {
 	@Override
 	public double calculate(VariableList list) {
 		double v = ms.calculate(list);
-		if (v % Math.PI == Math.PI / 2 && !jmcl.settings.degreeAngle)
+		if (v % Math.PI == Math.PI / 2 && !smcl.settings.degreeAngle)
 			throw new ArithmeticException("tan:argument is invalid-" + v);
-		if (v % 180 == 90 && jmcl.settings.degreeAngle)
+		if (v % 180 == 90 && smcl.settings.degreeAngle)
 			throw new ArithmeticException("tan:argument is invalid-" + v);
-		return jmcl.settings.degreeAngle ? Math.tan(Math.toRadians(ms.calculate(list))) : Math.tan(ms.calculate(list));
+		return smcl.settings.degreeAngle ? Math.tan(Math.toRadians(ms.calculate(list))) : Math.tan(ms.calculate(list));
 	}
 
 	@Override
@@ -22,10 +22,10 @@ public class Tan extends FunctionStatement {
 			return "tan" + ms;
 	}
 
-	public static final Tan format(String s, SMCL jmcl) throws MathException {
-		Tan tan = jmcl.obtain(Tan.class);
+	public static final Tan format(String s, SMCL smcl) throws MathException {
+		Tan tan = smcl.obtain(Tan.class);
 		if (s.startsWith("tan")) {
-			tan.ms = SMCLRegister.getStatement(s.substring(3), jmcl);
+			tan.ms = smcl.register.getStatement(s.substring(3));
 		}
 		return tan;
 	}

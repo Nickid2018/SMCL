@@ -3,32 +3,37 @@ package com.github.nickid2018.smcl;
 import java.util.*;
 import java.util.Map.*;
 import java.lang.reflect.*;
-import com.github.nickid2018.smcl.functions.*;
 import com.github.nickid2018.smcl.optimize.*;
+import com.github.nickid2018.smcl.functions.*;
 import com.github.nickid2018.smcl.statements.*;
 
 public class SMCLRegister {
 
-	private static final Map<Class<? extends Statement>, char[]> registered = new HashMap<>();
-	private static final Map<Class<? extends Statement>, String> registeredfunc = new HashMap<>();
+	private final Map<Class<? extends Statement>, char[]> registered = new HashMap<>();
+	private final Map<Class<? extends Statement>, String> registeredfunc = new HashMap<>();
+	private final SMCL smcl;
 
-	public static final void register(Class<? extends Statement> clazz, char[] sign) {
+	public SMCLRegister(SMCL smcl) {
+		this.smcl = smcl;
+	}
+
+	public final void register(Class<? extends Statement> clazz, char[] sign) {
 		registered.put(clazz, sign);
 	}
 
-	public static final void unregister(Class<? extends Statement> clazz) {
+	public final void unregister(Class<? extends Statement> clazz) {
 		registered.remove(clazz);
 	}
 
-	public static final void registerFunc(Class<? extends FunctionStatement> clazz, String sign) {
+	public final void registerFunc(Class<? extends FunctionStatement> clazz, String sign) {
 		registeredfunc.put(clazz, sign);
 	}
 
-	public static final void unregisterFunc(Class<? extends FunctionStatement> clazz) {
+	public final void unregisterFunc(Class<? extends FunctionStatement> clazz) {
 		registeredfunc.remove(clazz);
 	}
 
-	public static final Statement getStatement(String s, SMCL jmcl) throws MathException {
+	public final Statement getStatement(String s) throws MathException {
 
 		// Operator & String mapping
 		String mapping = "";
@@ -51,13 +56,13 @@ public class SMCLRegister {
 					try {
 						Method m = cls.getMethod("format", String.class);
 						Statement ms = (Statement) m.invoke(cls, s);
-						if (ms.isAllNum() && jmcl.settings.mergeNumbers)
+						if (ms.isAllNum() && smcl.settings.mergeNumbers)
 							ms = NumberPool.getNumber(ms.calculate(SMCL.EMPTY_ARGS));
 						return ms;
 					} catch (Exception e) {
 						if (e instanceof InvocationTargetException)
 							throw new MathException("Parsing error", s, 0, e.getCause());
-						throw new RuntimeException("JMCL Error", e);
+						throw new RuntimeException("smcl Error", e);
 					}
 				}
 		}
@@ -69,13 +74,13 @@ public class SMCLRegister {
 				try {
 					Method m = cls.getMethod("format", String.class);
 					Statement ms = (Statement) m.invoke(cls, s);
-					if (ms.isAllNum() && jmcl.settings.mergeNumbers)
+					if (ms.isAllNum() && smcl.settings.mergeNumbers)
 						ms = NumberPool.getNumber(ms.calculate(SMCL.EMPTY_ARGS));
 					return ms;
 				} catch (Exception e) {
 					if (e instanceof InvocationTargetException)
 						throw new MathException("Parsing error", s, 0, e.getCause());
-					throw new RuntimeException("JMCL Error", e);
+					throw new RuntimeException("smcl Error", e);
 				}
 			}
 		}

@@ -5,7 +5,6 @@ import com.github.nickid2018.smcl.*;
 public class CachedStatementDemo {
 
 	public static void main(String[] args) throws MathException {
-		SMCL.init();
 		GlobalVariables.registerVariable("x");
 		long now = System.nanoTime();
 		Statement ms = Statement.format("(x+1)^2");

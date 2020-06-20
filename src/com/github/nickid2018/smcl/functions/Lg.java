@@ -20,10 +20,10 @@ public class Lg extends FunctionStatement {
 			return "lg" + ms;
 	}
 
-	public static final Lg format(String s, SMCL jmcl) throws MathException {
-		Lg lg = jmcl.obtain(Lg.class);
+	public static final Lg format(String s, SMCL smcl) throws MathException {
+		Lg lg = smcl.obtain(Lg.class);
 		if (s.startsWith("lg")) {
-			lg.ms = SMCLRegister.getStatement(s.substring(2), jmcl);
+			lg.ms = smcl.register.getStatement(s.substring(2));
 		}
 		return lg;
 	}

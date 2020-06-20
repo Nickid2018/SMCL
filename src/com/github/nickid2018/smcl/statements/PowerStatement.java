@@ -65,8 +65,8 @@ public class PowerStatement extends Statement {
 		muls.clear();
 	}
 
-	public static final PowerStatement format(String s, SMCL jmcl) throws MathException {
-		PowerStatement ms = jmcl.obtain(PowerStatement.class);
+	public static final PowerStatement format(String s, SMCL smcl) throws MathException {
+		PowerStatement ms = smcl.obtain(PowerStatement.class);
 		boolean a = true;
 		int begin = 0;
 		int intimes = 0;
@@ -82,7 +82,7 @@ public class PowerStatement extends Statement {
 				if (i == 0)
 					continue;
 				if (i != 0) {
-					Statement tmp = SMCLRegister.getStatement(sub, jmcl);
+					Statement tmp = smcl.register.getStatement(sub);
 					if (a) {
 						ms.first = tmp;
 						a = false;
@@ -96,7 +96,7 @@ public class PowerStatement extends Statement {
 					throw new MathException("Parentheses are not paired", s, i);
 				}
 				String sub = s.substring(begin, s.length());
-				Statement tmp = SMCLRegister.getStatement(sub, jmcl);
+				Statement tmp = smcl.register.getStatement(sub);
 				ms.muls.add(tmp);
 			}
 		}

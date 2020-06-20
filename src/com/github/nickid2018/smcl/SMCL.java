@@ -1,38 +1,40 @@
 package com.github.nickid2018.smcl;
 
-import com.github.nickid2018.smcl.functions.*;
 import com.github.nickid2018.smcl.optimize.*;
+import com.github.nickid2018.smcl.functions.*;
 import com.github.nickid2018.smcl.statements.*;
 
 public class SMCL {
 
 	public static final VariableList EMPTY_ARGS = new VariableList();
-	
+
 	private static SMCL instance;
-	
+
 	public static synchronized SMCL getInstance() {
-		return instance == null? instance = new SMCL(new SMCLSettings()) : instance;
-	}
-	
-	public final SMCLSettings settings;
-	
-	public SMCL(SMCLSettings setting) {
-		settings = setting;
+		return instance == null ? instance = new SMCL(new SMCLSettings()) : instance;
 	}
 
-	public static final void init() {
-		SMCLRegister.register(MathStatement.class, new char[] { '+', '-' });
-		SMCLRegister.register(MultiplyStatement.class, new char[] { '*' });
-		SMCLRegister.register(DivideStatement.class, new char[] { '/' });
-		SMCLRegister.register(PowerStatement.class, new char[] { '^' });
-		SMCLRegister.registerFunc(Sin.class, "sin");
-		SMCLRegister.registerFunc(Cos.class, "cos");
-		SMCLRegister.registerFunc(Tan.class, "tan");
-		SMCLRegister.registerFunc(Asin.class, "asin");
-		SMCLRegister.registerFunc(Acos.class, "acos");
-		SMCLRegister.registerFunc(Atan.class, "atan");
-		SMCLRegister.registerFunc(Lg.class, "lg");
-		SMCLRegister.registerFunc(Ln.class, "ln");
+	public final SMCLSettings settings;
+	public final SMCLRegister register;
+
+	public SMCL(SMCLSettings setting) {
+		settings = setting;
+		register = new SMCLRegister(this);
+	}
+
+	public final void init() {
+		register.register(MathStatement.class, new char[] { '+', '-' });
+		register.register(MultiplyStatement.class, new char[] { '*' });
+		register.register(DivideStatement.class, new char[] { '/' });
+		register.register(PowerStatement.class, new char[] { '^' });
+		register.registerFunc(Sin.class, "sin");
+		register.registerFunc(Cos.class, "cos");
+		register.registerFunc(Tan.class, "tan");
+		register.registerFunc(Asin.class, "asin");
+		register.registerFunc(Acos.class, "acos");
+		register.registerFunc(Atan.class, "atan");
+		register.registerFunc(Lg.class, "lg");
+		register.registerFunc(Ln.class, "ln");
 	}
 
 	private StatementGetter getter = new DefaultStatementGetter();
@@ -47,7 +49,7 @@ public class SMCL {
 
 	public final <T extends Statement> T obtain(Class<T> cls) {
 		T obj = getter.obtain(cls);
-		obj.jmcl = this;
+		obj.smcl = this;
 		return obj;
 	}
 
