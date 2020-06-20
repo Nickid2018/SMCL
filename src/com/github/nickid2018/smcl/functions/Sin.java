@@ -17,10 +17,10 @@ public class Sin extends FunctionStatement {
 			return "sin" + ms;
 	}
 
-	public static final Sin format(String s, JMCL jmcl) throws MathException {
+	public static final Sin format(String s, SMCL jmcl) throws MathException {
 		Sin sin = jmcl.obtain(Sin.class);
 		if (s.startsWith("sin")) {
-			sin.ms = JMCLRegister.getStatement(s.substring(3), jmcl);
+			sin.ms = SMCLRegister.getStatement(s.substring(3), jmcl);
 		}
 		return sin;
 	}

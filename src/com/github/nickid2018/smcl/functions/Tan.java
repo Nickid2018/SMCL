@@ -22,10 +22,10 @@ public class Tan extends FunctionStatement {
 			return "tan" + ms;
 	}
 
-	public static final Tan format(String s, JMCL jmcl) throws MathException {
+	public static final Tan format(String s, SMCL jmcl) throws MathException {
 		Tan tan = jmcl.obtain(Tan.class);
 		if (s.startsWith("tan")) {
-			tan.ms = JMCLRegister.getStatement(s.substring(3), jmcl);
+			tan.ms = SMCLRegister.getStatement(s.substring(3), jmcl);
 		}
 		return tan;
 	}

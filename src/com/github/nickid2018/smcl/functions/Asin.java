@@ -18,10 +18,10 @@ public class Asin extends FunctionStatement {
 			return "asin" + ms;
 	}
 
-	public static final Asin format(String s, JMCL jmcl) throws MathException {
+	public static final Asin format(String s, SMCL jmcl) throws MathException {
 		Asin asin = jmcl.obtain(Asin.class);
 		if (s.startsWith("asin")) {
-			asin.ms = JMCLRegister.getStatement(s.substring(4), jmcl);
+			asin.ms = SMCLRegister.getStatement(s.substring(4), jmcl);
 		}
 		return asin;
 	}

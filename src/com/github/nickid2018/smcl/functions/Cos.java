@@ -17,10 +17,10 @@ public class Cos extends FunctionStatement {
 			return "cos" + ms;
 	}
 
-	public static final Cos format(String s, JMCL jmcl) throws MathException {
+	public static final Cos format(String s, SMCL jmcl) throws MathException {
 		Cos cos = jmcl.obtain(Cos.class);
 		if (s.startsWith("cos")) {
-			cos.ms = JMCLRegister.getStatement(s.substring(3), jmcl);
+			cos.ms = SMCLRegister.getStatement(s.substring(3), jmcl);
 		}
 		return cos;
 	}

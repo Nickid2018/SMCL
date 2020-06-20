@@ -32,7 +32,7 @@ public class StatementOptimize {
 
 		// Number-Onlys
 		if (ms.isAllNum())
-			return NumberPool.getNumber(ms.calculate(JMCL.EMPTY_ARGS));
+			return NumberPool.getNumber(ms.calculate(SMCL.EMPTY_ARGS));
 
 		// Merge Numbers
 		double all = 0;
@@ -41,9 +41,9 @@ public class StatementOptimize {
 			if (en.getKey() instanceof NumberStatement) {
 				mss.add(en);
 				if (en.getValue())
-					all += en.getKey().calculate(JMCL.EMPTY_ARGS);
+					all += en.getKey().calculate(SMCL.EMPTY_ARGS);
 				else
-					all -= en.getKey().calculate(JMCL.EMPTY_ARGS);
+					all -= en.getKey().calculate(SMCL.EMPTY_ARGS);
 			}
 		}
 		if (mss.size() > 1) {

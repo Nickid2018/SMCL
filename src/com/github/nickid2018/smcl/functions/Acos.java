@@ -18,10 +18,10 @@ public class Acos extends FunctionStatement {
 			return "acos" + ms;
 	}
 
-	public static final Acos format(String s, JMCL jmcl) throws MathException {
+	public static final Acos format(String s, SMCL jmcl) throws MathException {
 		Acos acos = jmcl.obtain(Acos.class);
 		if (s.startsWith("acos")) {
-			acos.ms = JMCLRegister.getStatement(s.substring(4), jmcl);
+			acos.ms = SMCLRegister.getStatement(s.substring(4), jmcl);
 		}
 		return acos;
 	}

@@ -5,7 +5,7 @@ import com.github.nickid2018.smcl.statements.*;
 public abstract class Statement implements AutoCloseable {
 
 	protected int shares = 1;
-	protected JMCL jmcl;
+	protected SMCL jmcl;
 
 	public void share() {
 		shares++;

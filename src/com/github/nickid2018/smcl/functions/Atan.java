@@ -18,10 +18,10 @@ public class Atan extends FunctionStatement {
 			return "atan" + ms;
 	}
 
-	public static final Atan format(String s, JMCL jmcl) throws MathException {
+	public static final Atan format(String s, SMCL jmcl) throws MathException {
 		Atan atan = jmcl.obtain(Atan.class);
 		if (s.startsWith("atan")) {
-			atan.ms = JMCLRegister.getStatement(s.substring(4), jmcl);
+			atan.ms = SMCLRegister.getStatement(s.substring(4), jmcl);
 		}
 		return atan;
 	}
