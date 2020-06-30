@@ -91,8 +91,8 @@ public class SMCLRegister {
 		}
 
 		// Last Choice
-		if (GlobalVariables.haveVariable(s)) {
-			return GlobalVariables.getVariable(s);
+		if (smcl.globalvars.haveVariable(s)) {
+			return smcl.globalvars.getVariable(s);
 		} else {
 			try {
 				double num = Double.parseDouble(s);

@@ -46,8 +46,15 @@ public class MathStatement extends Statement {
 	@Override
 	public void setValues(Statement... statements) {
 		for (Statement statement : statements) {
-			subs.add(new Pair<>(statement, Boolean.TRUE));
+			subs.add(new Pair<Statement,Boolean>(statement, Boolean.TRUE));
 		}
+	}
+
+	public MathStatement setValues(Pair<Statement,Boolean>... pairs) {
+		for (Pair<Statement,Boolean> pair : pairs) {
+			subs.add(pair);
+		}
+		return this;
 	}
 
 	@Override
@@ -86,7 +93,7 @@ public class MathStatement extends Statement {
 					continue;
 				if (i != 0) {
 					Statement tmp = smcl.register.getStatement(sub);
-					ms.subs.add(new Pair<>(tmp, plus));
+					ms.subs.add(new Pair<Statement,Boolean>(tmp, plus));
 				}
 				plus = true;
 			} else if (c == '-' && intimes == 0) {
@@ -94,7 +101,7 @@ public class MathStatement extends Statement {
 				begin = i + 1;
 				if (i != 0) {
 					Statement tmp = smcl.register.getStatement(sub);
-					ms.subs.add(new Pair<>(tmp, plus));
+					ms.subs.add(new Pair<Statement,Boolean>(tmp, plus));
 				}
 				plus = false;
 			}
@@ -104,7 +111,7 @@ public class MathStatement extends Statement {
 				}
 				String sub = s.substring(begin, s.length());
 				Statement tmp = smcl.register.getStatement(sub);
-				ms.subs.add(new Pair<>(tmp, plus));
+				ms.subs.add(new Pair<Statement,Boolean>(tmp, plus));
 			}
 		}
 

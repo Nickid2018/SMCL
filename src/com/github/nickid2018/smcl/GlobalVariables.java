@@ -4,21 +4,21 @@ import java.util.*;
 
 public class GlobalVariables {
 
-	private static final Map<String, Variable> variablemap = new HashMap<>();
+	private final Map<String, Variable> variablemap = new HashMap<>();
 
-	public static void registerVariable(String var) {
+	public void registerVariable(String var) {
 		variablemap.put(var, new Variable(var));
 	}
 
-	public static void unregisterVariable(String var) {
+	public void unregisterVariable(String var) {
 		variablemap.remove(var);
 	}
 
-	public static boolean haveVariable(String var) {
+	public boolean haveVariable(String var) {
 		return variablemap.containsKey(var);
 	}
 
-	public static Variable getVariable(String var) {
+	public Variable getVariable(String var) {
 		return variablemap.get(var);
 	}
 }

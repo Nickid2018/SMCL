@@ -16,10 +16,12 @@ public class SMCL {
 
 	public final SMCLSettings settings;
 	public final SMCLRegister register;
+	public final GlobalVariables globalvars;
 
 	public SMCL(SMCLSettings setting) {
 		settings = setting;
 		register = new SMCLRegister(this);
+		globalvars = new GlobalVariables();
 	}
 
 	public final void init() {
