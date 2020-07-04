@@ -44,8 +44,8 @@ public class IntArray {
 
 	public int deleteAndShift(int pos) {
 		int value = array[pos];
-		System.arraycopy(array, pos + 1, array, pos, length - pos);
-		length--;
+		System.arraycopy(array, pos + 1, array, pos, length - pos - 1);
+		array[--length] = 0;
 		return value;
 	}
 
