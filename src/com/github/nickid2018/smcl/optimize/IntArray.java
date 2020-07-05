@@ -31,23 +31,38 @@ public class IntArray {
 		}
 	}
 
+    private void testPostion(int pos) {
+        if (pos >= length)
+			throw new ArrayIndexOutOfBoundsException(pos);
+    }
+
 	public void putInt(int value) {
 		ensurePosition();
 		array[length++] = value;
 	}
 
 	public int setInt(int pos, int value) {
+        testPostion(pos);
 		int source = array[pos];
 		array[pos] = value;
 		return source;
 	}
 
 	public int deleteAndShift(int pos) {
+        testPostion(pos);
 		int value = array[pos];
 		System.arraycopy(array, pos + 1, array, pos, length - pos - 1);
 		array[--length] = 0;
 		return value;
 	}
+
+    public void deleteRangeAndShift(int start, int len) {
+        testPostion(start);
+        testPostion(start + len);
+        System.arraycopy(array, start + len, array, start, length - start - len);
+        Arrays.fill(array, length - start - len, length - len, 0);
+        length -= len;
+    }
 
 	/**
 	 * @deprecated This function may cause sorting error.
@@ -55,18 +70,19 @@ public class IntArray {
 	 */
 	@Deprecated
 	public int delete(int pos) {
+        testPostion(pos);
 		int value = array[pos];
 		array[pos] = 0;
 		return value;
 	}
 
 	public int deleteLast() {
+        testPostion(0);
 		return array[--length];
 	}
 
 	public int get(int pos) {
-		if (pos >= length)
-			throw new ArrayIndexOutOfBoundsException(pos);
+		testPostion(pos);
 		return array[pos];
 	}
 
@@ -97,6 +113,7 @@ public class IntArray {
 
 	public void insertInt(int pos, int value) {
 		ensurePosition();
+        testPostion(pos);
 		System.arraycopy(array, pos, array, pos + 1, length - pos);
 		array[pos] = value;
 		length++;
