@@ -12,6 +12,11 @@ public class EmptySet extends NumberSet {
 		return true;
 	}
 
+    @Override
+    public boolean isInfinite() {
+        return false;
+    }
+
 	@Override
 	public boolean isBelongTo(double value) {
 		return false;

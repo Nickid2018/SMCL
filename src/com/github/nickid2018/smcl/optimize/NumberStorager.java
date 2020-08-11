@@ -19,8 +19,8 @@ public class NumberStorager {
 	public void putLong(long integer) {
 		long up = integer >>> 32;
 		long down = integer & 0xFFFFFFFFL;
-		array.putInt((int)((up & 0x80000000L) ==0L ?up : up | 0xFFFFFFFF80000000L));
-		array.putInt((int)((down &0x80000000L)==0L ?down: down | 0xFFFFFFFF80000000L));
+		array.putInt((int)((up & 0x80000000L) == 0L ?up : up | 0xFFFFFFFF80000000L));
+		array.putInt((int)((down & 0x80000000L) == 0L ?down: down | 0xFFFFFFFF80000000L));
 	}
 
 	public void putDouble(double dou) {
@@ -36,7 +36,7 @@ public class NumberStorager {
 	}
 
 	public long getLong() {
-		return (((long)getInt()) << 32 ) | (((long)getInt()) & 0xFFFFFFFFL);
+		return (((long)getInt()) << 32) | (((long)getInt()) & 0xFFFFFFFFL);
 	}
 
 	public double getDouble() {

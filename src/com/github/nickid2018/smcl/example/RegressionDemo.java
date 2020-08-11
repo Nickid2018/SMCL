@@ -7,7 +7,7 @@ import com.github.nickid2018.smcl.regression.*;
 public class RegressionDemo {
 
 	public static final void main(String[] args) {
-		SMCL smcl = SMCL.getInstance();
+        SMCL smcl = SMCL.getInstance();
 		smcl.globalvars.registerVariable("x");
 		Map<Double,Double> map = new HashMap<>();
 		map.put(1.0, 64.0);
@@ -19,5 +19,6 @@ public class RegressionDemo {
 		Statement statement = Regression.doRegression(smcl, map, InvertedIndexModel.MODEL);
 		System.out.println("Regression Result: " + statement);
         System.out.println("R2=" + Regression.getCoefficient(map, InvertedIndexModel.MODEL));
+        System.out.println(Math.pow(Math.sqrt(3),2));
 	}
 }

@@ -38,6 +38,11 @@ public class Interval extends NumberSet {
 		return (leftRange < rightRange) || (!(leftInfinite || rightInfinite) && (leftClose && rightClose) && leftRange == rightRange);
 	}
 
+    @Override
+    public boolean isInfinite() {
+        return isValid() && leftRange != rightRange;
+    }
+
 	@Override
 	public boolean isBelongTo(double value) {
 		return (leftClose && leftRange == value && !leftInfinite) || (rightClose && rightRange == value && !rightInfinite) || (leftRange < value && rightRange > value);
