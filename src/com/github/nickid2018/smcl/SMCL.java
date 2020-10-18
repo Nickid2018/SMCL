@@ -58,11 +58,11 @@ public class SMCL {
 	public final void free(Statement statement) {
 		getter.free(statement);
 	}
-	
+
 	public final Statement format(String expr) {
 		return format(expr, DefinedVariables.EMPTY_VARIABLES);
 	}
-	
+
 	public final Statement format(String expr, DefinedVariables variables) {
 		return null;
 	}

@@ -7,7 +7,7 @@ import com.github.nickid2018.smcl.statements.*;
 public class InvertedIndexModel extends RegressionModel {
 
 	public static final InvertedIndexModel MODEL = new InvertedIndexModel();
-	
+
 	@Override
 	public double transformIndependent(double x) {
 		return 1 / x;

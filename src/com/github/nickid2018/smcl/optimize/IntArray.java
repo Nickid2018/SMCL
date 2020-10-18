@@ -26,15 +26,15 @@ public class IntArray {
 	private void ensurePosition() {
 		if (length == array.length) {
 			int[] tmp = array;
-			array = new int[(int)(length * (factor + 1))];
+			array = new int[(int) (length * (factor + 1))];
 			System.arraycopy(tmp, 0, array, 0, length);
 		}
 	}
 
-    private void testPostion(int pos) {
-        if (pos >= length)
+	private void testPostion(int pos) {
+		if (pos >= length)
 			throw new ArrayIndexOutOfBoundsException(pos);
-    }
+	}
 
 	public void putInt(int value) {
 		ensurePosition();
@@ -42,42 +42,42 @@ public class IntArray {
 	}
 
 	public int setInt(int pos, int value) {
-        testPostion(pos);
+		testPostion(pos);
 		int source = array[pos];
 		array[pos] = value;
 		return source;
 	}
 
 	public int deleteAndShift(int pos) {
-        testPostion(pos);
+		testPostion(pos);
 		int value = array[pos];
 		System.arraycopy(array, pos + 1, array, pos, length - pos - 1);
 		array[--length] = 0;
 		return value;
 	}
 
-    public void deleteRangeAndShift(int start, int len) {
-        testPostion(start);
-        testPostion(start + len);
-        System.arraycopy(array, start + len, array, start, length - start - len);
-        Arrays.fill(array, length - start - len, length - len, 0);
-        length -= len;
-    }
+	public void deleteRangeAndShift(int start, int len) {
+		testPostion(start);
+		testPostion(start + len);
+		System.arraycopy(array, start + len, array, start, length - start - len);
+		Arrays.fill(array, length - start - len, length - len, 0);
+		length -= len;
+	}
 
 	/**
-	 * @deprecated This function may cause sorting error.
-	 * Please use {@linkplain #deleteAndShift(int)}.
+	 * @deprecated This function may cause sorting error. Please use
+	 *             {@linkplain #deleteAndShift(int)}.
 	 */
 	@Deprecated
 	public int delete(int pos) {
-        testPostion(pos);
+		testPostion(pos);
 		int value = array[pos];
 		array[pos] = 0;
 		return value;
 	}
 
 	public int deleteLast() {
-        testPostion(0);
+		testPostion(0);
 		return array[--length];
 	}
 
@@ -113,7 +113,7 @@ public class IntArray {
 
 	public void insertInt(int pos, int value) {
 		ensurePosition();
-        testPostion(pos);
+		testPostion(pos);
 		System.arraycopy(array, pos, array, pos + 1, length - pos);
 		array[pos] = value;
 		length++;
@@ -129,7 +129,7 @@ public class IntArray {
 			int len = array.length;
 			int[] tmp = array;
 			while (len < lenLimit) {
-				len = (int)(len * factor);
+				len = (int) (len * factor);
 			}
 			array = new int[len];
 			System.arraycopy(tmp, 0, array, 0, tmp.length);

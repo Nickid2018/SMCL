@@ -1,7 +1,5 @@
 package com.github.nickid2018.smcl.optimize;
 
-import java.util.*;
-
 public class ShiftValue {
 
 	public ShiftKey key;
@@ -20,7 +18,7 @@ public class ShiftValue {
 		priorityList.clear();
 		priorities.clear();
 	}
-	
+
 	public void putNextOperator(int pos, char op) {
 		mappingChars.putInt(pos);
 	}

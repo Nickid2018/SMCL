@@ -4,5 +4,5 @@ import java.util.*;
 
 public class StructsInfo {
 
-    public Queue<StructEntry> entryQueue = new LinkedList<>();
+	public Queue<StructEntry> entryQueue = new LinkedList<>();
 }

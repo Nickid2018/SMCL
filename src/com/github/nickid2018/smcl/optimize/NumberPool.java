@@ -18,8 +18,8 @@ public class NumberPool {
 	}
 
 	public static Statement get(SMCL smcl, double value) {
-		Statement get =  smcl.settings.disableNumberPool ?new NumberStatement(value): getNumber(value);
-		get = value < 0 ?smcl.obtain(MathStatement.class).setValues(new Pair<Statement,Boolean>(get, false)): get;
+		Statement get = smcl.settings.disableNumberPool ? new NumberStatement(value) : getNumber(value);
+		get = value < 0 ? smcl.obtain(MathStatement.class).setValues(new Pair<>(get, false)) : get;
 		return get;
 	}
 }

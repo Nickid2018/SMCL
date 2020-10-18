@@ -35,17 +35,19 @@ public class Interval extends NumberSet {
 
 	@Override
 	public boolean isValid() {
-		return (leftRange < rightRange) || (!(leftInfinite || rightInfinite) && (leftClose && rightClose) && leftRange == rightRange);
+		return (leftRange < rightRange)
+				|| (!(leftInfinite || rightInfinite) && (leftClose && rightClose) && leftRange == rightRange);
 	}
 
-    @Override
-    public boolean isInfinite() {
-        return isValid() && leftRange != rightRange;
-    }
+	@Override
+	public boolean isInfinite() {
+		return isValid() && leftRange != rightRange;
+	}
 
 	@Override
 	public boolean isBelongTo(double value) {
-		return (leftClose && leftRange == value && !leftInfinite) || (rightClose && rightRange == value && !rightInfinite) || (leftRange < value && rightRange > value);
+		return (leftClose && leftRange == value && !leftInfinite)
+				|| (rightClose && rightRange == value && !rightInfinite) || (leftRange < value && rightRange > value);
 	}
 
 	@Override
@@ -53,8 +55,10 @@ public class Interval extends NumberSet {
 		if (other instanceof EmptySet)
 			return true;
 		if (other instanceof Interval) {
-			Interval i = (Interval)other;
-			return (leftInfinite || (leftRange == i.leftRange && leftClose == i.leftClose) || leftRange < i.leftRange) && (rightInfinite || (rightRange == i.rightRange && rightClose == i.rightClose) || rightRange > i.rightRange);
+			Interval i = (Interval) other;
+			return (leftInfinite || (leftRange == i.leftRange && leftClose == i.leftClose) || leftRange < i.leftRange)
+					&& (rightInfinite || (rightRange == i.rightRange && rightClose == i.rightClose)
+							|| rightRange > i.rightRange);
 		}
 		return false;
 	}
@@ -64,8 +68,11 @@ public class Interval extends NumberSet {
 		if (other instanceof EmptySet)
 			return false;
 		if (other instanceof Interval) {
-			Interval i = (Interval) other;;
-			return (leftRange - i.rightRange) * (rightRange - i.leftRange) < 0 || (leftRange == i.leftRange && leftClose && i.leftClose) || (rightRange == i.rightRange && rightClose && i.rightClose);
+			Interval i = (Interval) other;
+			;
+			return (leftRange - i.rightRange) * (rightRange - i.leftRange) < 0
+					|| (leftRange == i.leftRange && leftClose && i.leftClose)
+					|| (rightRange == i.rightRange && rightClose && i.rightClose);
 		}
 		return false;
 	}

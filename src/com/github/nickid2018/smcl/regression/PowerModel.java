@@ -5,7 +5,7 @@ import com.github.nickid2018.smcl.optimize.*;
 import com.github.nickid2018.smcl.statements.*;
 
 public class PowerModel extends RegressionModel {
-	
+
 	public static final PowerModel MODEL = new PowerModel();
 
 	@Override

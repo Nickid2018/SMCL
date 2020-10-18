@@ -8,7 +8,7 @@ import com.github.nickid2018.smcl.statements.*;
 public class StatementOptimize {
 
 	public static Statement optimizeMathStatement(MathStatement ms) {
-		
+
 		// Shorten Distance
 		if (ms.getSubs().size() == 1 && ms.getSubs().get(0).value) {
 			Statement statement = ms.getSubs().get(0).key;

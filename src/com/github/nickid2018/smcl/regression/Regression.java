@@ -9,13 +9,13 @@ public class Regression {
 	public static String independentVariable = "x";
 	public static String dependentVariable = "y";
 
-	private static final ThreadLocal<NumberStorager> storagers = new ThreadLocal<>();
+	protected static final ThreadLocal<NumberStorager> storagers = new ThreadLocal<>();
 
-	public static Statement doRegression(SMCL smcl, Map<Double,Double> values) {
+	public static Statement doRegression(SMCL smcl, Map<Double, Double> values) {
 		return doRegression(smcl, values, LinearModel.MODEL);
 	}
 
-	public static Statement doRegression(SMCL smcl, Map<Double,Double> values, RegressionModel model) {
+	public static Statement doRegression(SMCL smcl, Map<Double, Double> values, RegressionModel model) {
 		if (storagers.get() == null)
 			storagers.set(new NumberStorager());
 		NumberStorager storager = storagers.get();
@@ -26,13 +26,13 @@ public class Regression {
 		return model.getTransformed(smcl, b, a);
 	}
 
-	public static void computeLSM(Map<Double,Double> values, RegressionModel model, NumberStorager storage) {
+	public static void computeLSM(Map<Double, Double> values, RegressionModel model, NumberStorager storage) {
 		int n = values.size();
 		double xysum = 0;
 		double xsum = 0;
 		double ysum = 0;
 		double x2sum = 0;
-		for (Map.Entry<Double,Double> en:values.entrySet()) {
+		for (Map.Entry<Double, Double> en : values.entrySet()) {
 			double x = model.transformIndependent(en.getKey());
 			double y = model.transformDependent(en.getValue());
 			xysum += x * y;
@@ -48,27 +48,27 @@ public class Regression {
 
 	public static double getAverage(Collection<Double> total) {
 		double sum = 0;
-		for (double v:total) {
+		for (double v : total) {
 			sum += v;
 		}
 		return sum / total.size();
 	}
 
-	public static double getCoefficient(Map<Double,Double> values, RegressionModel model) {
-        if (storagers.get() == null)
-            storagers.set(new NumberStorager());
-        NumberStorager storager = storagers.get();
-        computeLSM(values, model, storager);
-        double b = storager.getDouble();
+	public static double getCoefficient(Map<Double, Double> values, RegressionModel model) {
+		if (storagers.get() == null)
+			storagers.set(new NumberStorager());
+		NumberStorager storager = storagers.get();
+		computeLSM(values, model, storager);
+		double b = storager.getDouble();
 		double a = storager.getDouble();
-        double yavg = storager.getDouble();
-        double tss = 0;
-        double ess = 0;
-        for (Map.Entry<Double,Double> xy:values.entrySet()) {
-            tss += Math.pow(model.transformDependent(xy.getValue()) - yavg, 2);
-            ess += Math.pow(b * model.transformIndependent(xy.getKey()) + a - yavg, 2);
-        }
-        storager.clear();
+		double yavg = storager.getDouble();
+		double tss = 0;
+		double ess = 0;
+		for (Map.Entry<Double, Double> xy : values.entrySet()) {
+			tss += Math.pow(model.transformDependent(xy.getValue()) - yavg, 2);
+			ess += Math.pow(b * model.transformIndependent(xy.getKey()) + a - yavg, 2);
+		}
+		storager.clear();
 		return ess / tss;
 	}
 }

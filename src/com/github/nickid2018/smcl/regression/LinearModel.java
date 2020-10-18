@@ -5,7 +5,7 @@ import com.github.nickid2018.smcl.optimize.*;
 import com.github.nickid2018.smcl.statements.*;
 
 public class LinearModel extends RegressionModel {
-	
+
 	public static final LinearModel MODEL = new LinearModel();
 
 	@Override
