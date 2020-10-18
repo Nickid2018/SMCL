@@ -21,6 +21,11 @@ public class SMCLSettings {
 	public int minFunctionNameLength = 2;
 	public int maxFunctionNameLength = 5;
 	public boolean strictFunction = false;
+    
+    /**
+     * The character to override
+     */
+    public char overrideCharacter = '#';
 
 	// Calculating settings
 	public boolean degreeAngle = false;

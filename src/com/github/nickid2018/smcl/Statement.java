@@ -6,6 +6,9 @@ public abstract class Statement implements AutoCloseable {
 
 	protected int shares = 1;
 	protected SMCL smcl;
+    protected boolean isNegative;
+
+    // Resource Manage
 
 	public void share() {
 		shares++;
@@ -40,11 +43,22 @@ public abstract class Statement implements AutoCloseable {
 	}
 
 	public void doOnFree() {
+        isNegative = false;
 	}
 
 	public boolean canClose() {
 		return true;
 	}
+
+    //Statement Base Functions
+
+    public boolean isNegative() {
+        return isNegative;
+    }
+
+    public void setNegative(boolean negative) {
+        isNegative = negative;
+    }
 
 	@Override
 	public abstract String toString();
@@ -52,6 +66,8 @@ public abstract class Statement implements AutoCloseable {
 	public abstract boolean isAllNum();
 
 	public abstract double calculate(VariableList list);
+
+    // Object Reuse
 
 	public abstract void setValues(Statement... statements);
 

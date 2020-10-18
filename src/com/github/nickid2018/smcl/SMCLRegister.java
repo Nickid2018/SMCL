@@ -3,15 +3,21 @@ package com.github.nickid2018.smcl;
 import java.util.*;
 import java.util.Map.*;
 import java.lang.reflect.*;
+import com.github.nickid2018.smcl.parser.*;
 import com.github.nickid2018.smcl.optimize.*;
 import com.github.nickid2018.smcl.functions.*;
 import com.github.nickid2018.smcl.statements.*;
 
 public class SMCLRegister {
 
+    //Will be removed
 	private final Map<Class<? extends Statement>, char[]> registered = new HashMap<>();
 	private final Map<Class<? extends Statement>, String> registeredfunc = new HashMap<>();
+
 	private final SMCL smcl;
+
+    private final Map<Character,Integer> priorityMap = new HashMap<>();
+    private final Map<Character,AbstractParser<?>> parsers = new HashMap<>();
 
 	public SMCLRegister(SMCL smcl) {
 		this.smcl = smcl;
@@ -21,9 +27,25 @@ public class SMCLRegister {
 		registered.put(clazz, sign);
 	}
 
+    public final void register(char sign, AbstractParser<?> parser, int priority) {
+        priorityMap.put(sign, priority);
+        parsers.put(sign, parser);
+	}
+
 	public final void unregister(Class<? extends Statement> clazz) {
 		registered.remove(clazz);
 	}
+
+    public final void unregister(char sign) {
+        priorityMap.remove(sign);
+        parsers.remove(sign);
+	}
+
+    public final int getCharPriority(char ch) {
+        if (!priorityMap.containsKey(ch))
+            return Integer.MAX_VALUE;
+        return priorityMap.get(ch);
+    }
 
 	public final void registerFunc(Class<? extends FunctionStatement> clazz, String sign) {
 		registeredfunc.put(clazz, sign);
