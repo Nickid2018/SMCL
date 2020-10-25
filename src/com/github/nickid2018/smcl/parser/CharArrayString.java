@@ -14,4 +14,8 @@ public class CharArrayString {
 		Arrays.fill(string, start, end, ch);
 		return this;
 	}
+
+    public String substring(int start, int end) {
+        return new String(string, start, end - start);
+    }
 }

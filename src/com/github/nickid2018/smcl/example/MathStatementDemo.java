@@ -1,16 +1,20 @@
 package com.github.nickid2018.smcl.example;
 
-import com.github.nickid2018.smcl.optimize.*;
+import com.github.nickid2018.smcl.*;
+import com.github.nickid2018.smcl.parser.*;
 
 public class MathStatementDemo {
 
 	public static void main(String[] args) throws Exception {
-		ShiftTable table = new ShiftTable();
-		String a;
-		table.fill(a = "x*(x-1+(x)*(y-1))-0");
-		System.out.println(a);
-		for (ShiftKey key : table.table.keySet()) {
-			System.out.println(key + " " + table.table.get(key).toString(table));
-		}
-	}
+        SMCL smcl = SMCL.getInstance();
+        smcl.init();
+        long t = System.currentTimeMillis();
+        Statement statement = BaseParser.parseStatement("2", smcl);
+        System.out.println(System.currentTimeMillis() - t);
+        t = System.currentTimeMillis();
+        System.out.println(statement.calculate(new VariableList()));
+        System.out.println(System.currentTimeMillis() - t);
+        t = System.currentTimeMillis();
+        System.out.println(System.currentTimeMillis() - t);
+    }
 }

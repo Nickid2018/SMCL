@@ -10,6 +10,7 @@ public class StructEntry {
 	public Statement formatted;
 
 	public CharArrayString markRead(CharArrayString now, SMCL smcl) {
-		return now.fillWithChar(startIndex, endIndex, smcl.settings.overrideCharacter);
+		now.string[startIndex] = smcl.settings.overrideCharacter;
+        return now;
 	}
 }
