@@ -38,6 +38,7 @@ public class Variable extends Statement {
 	}
 
 	@Override
-	public void setValues(Statement... statements) {
+	public Statement setValues(Statement... statements) {
+		return this;
 	}
 }

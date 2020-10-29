@@ -2,7 +2,11 @@ package com.github.nickid2018.smcl.functions;
 
 import com.github.nickid2018.smcl.*;
 
-public class Atan extends FunctionStatement {
+public class Atan extends UnaryFunctionStatement {
+
+	public Atan(Statement statement) {
+		super(statement);
+	}
 
 	@Override
 	public double calculate(VariableList list) {
@@ -16,13 +20,5 @@ public class Atan extends FunctionStatement {
 			return "atan(" + ms + ")";
 		else
 			return "atan" + ms;
-	}
-
-	public static final Atan format(String s, SMCL smcl) throws MathException {
-		Atan atan = smcl.obtain(Atan.class);
-		if (s.startsWith("atan")) {
-			atan.ms = smcl.register.getStatement(s.substring(4));
-		}
-		return atan;
 	}
 }

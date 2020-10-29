@@ -8,6 +8,8 @@ public class NumberStatement extends Statement {
 
 	public NumberStatement(double num) {
 		this.num = num;
+		if (num < 0)
+			isNegative = true;
 	}
 
 	public double getNumber() {
@@ -41,6 +43,7 @@ public class NumberStatement extends Statement {
 	}
 
 	@Override
-	public void setValues(Statement... statements) {
+	public Statement setValues(Statement... statements) {
+		return this;
 	}
 }

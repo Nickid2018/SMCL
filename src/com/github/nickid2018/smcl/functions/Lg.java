@@ -2,7 +2,11 @@ package com.github.nickid2018.smcl.functions;
 
 import com.github.nickid2018.smcl.*;
 
-public class Lg extends FunctionStatement {
+public class Lg extends UnaryFunctionStatement {
+
+	public Lg(Statement statement) {
+		super(statement);
+	}
 
 	@Override
 	public double calculate(VariableList list) {
@@ -18,13 +22,5 @@ public class Lg extends FunctionStatement {
 			return "lg(" + ms + ")";
 		else
 			return "lg" + ms;
-	}
-
-	public static final Lg format(String s, SMCL smcl) throws MathException {
-		Lg lg = smcl.obtain(Lg.class);
-		if (s.startsWith("lg")) {
-			lg.ms = smcl.register.getStatement(s.substring(2));
-		}
-		return lg;
 	}
 }

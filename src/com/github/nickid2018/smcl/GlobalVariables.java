@@ -21,4 +21,8 @@ public class GlobalVariables {
 	public Variable getVariable(String var) {
 		return variablemap.get(var);
 	}
+	
+	public Set<String> getAllRegistered(){
+		return variablemap.keySet();
+	}
 }

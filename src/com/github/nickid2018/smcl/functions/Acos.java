@@ -2,7 +2,11 @@ package com.github.nickid2018.smcl.functions;
 
 import com.github.nickid2018.smcl.*;
 
-public class Acos extends FunctionStatement {
+public class Acos extends UnaryFunctionStatement {
+
+	public Acos(Statement statement) {
+		super(statement);
+	}
 
 	@Override
 	public double calculate(VariableList list) {
@@ -16,13 +20,5 @@ public class Acos extends FunctionStatement {
 			return "acos(" + ms + ")";
 		else
 			return "acos" + ms;
-	}
-
-	public static final Acos format(String s, SMCL smcl) throws MathException {
-		Acos acos = smcl.obtain(Acos.class);
-		if (s.startsWith("acos")) {
-			acos.ms = smcl.register.getStatement(s.substring(4));
-		}
-		return acos;
 	}
 }

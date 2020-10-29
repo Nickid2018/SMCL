@@ -13,10 +13,20 @@ public class DefinedVariables {
 		variables = new HashSet<>();
 	}
 
-	public void register(String var) {
+	public DefinedVariables register(String var) {
 		variables.add(var);
 		if (!sharedVariables.containsKey(var))
 			sharedVariables.put(var, new Variable(var));
+		return this;
+	}
+
+	public DefinedVariables registerAll(Set<String> vars) {
+		vars.forEach(this::register);
+		return this;
+	}
+	
+	public DefinedVariables registerAll(DefinedVariables vars) {
+		return registerAll(vars.variables);
 	}
 
 	public void unregister(String var) {

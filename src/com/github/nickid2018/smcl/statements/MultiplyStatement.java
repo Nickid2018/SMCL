@@ -36,7 +36,8 @@ public class MultiplyStatement extends Statement {
 				first = false;
 			else
 				sb.append("*");
-			if (ms.getClass().equals(Variable.class) || ms.getClass().getSuperclass().equals(FunctionStatement.class)
+			if (ms.getClass().equals(Variable.class)
+					|| ms.getClass().getSuperclass().equals(UnaryFunctionStatement.class)
 					|| ms instanceof NumberStatement)
 				sb.append(ms);
 			else
@@ -46,10 +47,16 @@ public class MultiplyStatement extends Statement {
 	}
 
 	@Override
-	public void setValues(Statement... statements) {
+	public Statement setValues(Statement... statements) {
 		for (Statement statement : statements) {
 			subs.add(statement);
 		}
+		return this;
+	}
+
+	public MultiplyStatement addStatement(Statement statement) {
+		subs.add(statement);
+		return this;
 	}
 
 	@Override
@@ -58,49 +65,5 @@ public class MultiplyStatement extends Statement {
 			statement.free();
 		}
 		subs.clear();
-	}
-
-	public static final MultiplyStatement format(String s, SMCL smcl) throws MathException {
-		MultiplyStatement ms = smcl.obtain(MultiplyStatement.class);
-		int begin = 0;
-		int intimes = 0;
-		for (int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if (c == '(')
-				intimes++;
-			else if (c == ')')
-				intimes--;
-			else if (c == '*' && intimes == 0) {
-				String sub = s.substring(begin, i);
-				begin = i + 1;
-				if (i == 0)
-					continue;
-				if (i != 0) {
-					Statement tmp = smcl.register.getStatement(sub);
-					ms.subs.add(tmp);
-				}
-			}
-			if (i == s.length() - 1) {
-				if (intimes != 0) {
-					throw new MathException("Parentheses are not paired", s, i);
-				}
-				String sub = s.substring(begin, s.length());
-				Statement tmp = smcl.register.getStatement(sub);
-				ms.subs.add(tmp);
-			}
-		}
-		Set<MultiplyStatement> mss = new HashSet<>();
-		for (Statement en : ms.subs) {
-			if (en.getClass().equals(MultiplyStatement.class)) {
-				mss.add((MultiplyStatement) en);
-			}
-		}
-		if (mss.size() > 0) {
-			for (MultiplyStatement n : mss) {
-				ms.subs.remove(n);
-				ms.subs.addAll(n.subs);
-			}
-		}
-		return ms;
 	}
 }

@@ -2,7 +2,11 @@ package com.github.nickid2018.smcl.functions;
 
 import com.github.nickid2018.smcl.*;
 
-public class Sin extends FunctionStatement {
+public class Sin extends UnaryFunctionStatement {
+
+	public Sin(Statement statement) {
+		super(statement);
+	}
 
 	@Override
 	public double calculate(VariableList list) {
@@ -15,13 +19,5 @@ public class Sin extends FunctionStatement {
 			return "sin(" + ms + ")";
 		else
 			return "sin" + ms;
-	}
-
-	public static final Sin format(String s, SMCL smcl) throws MathException {
-		Sin sin = smcl.obtain(Sin.class);
-		if (s.startsWith("sin")) {
-			sin.ms = smcl.register.getStatement(s.substring(3));
-		}
-		return sin;
 	}
 }

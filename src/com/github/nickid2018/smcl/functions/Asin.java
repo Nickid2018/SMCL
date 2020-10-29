@@ -2,7 +2,11 @@ package com.github.nickid2018.smcl.functions;
 
 import com.github.nickid2018.smcl.*;
 
-public class Asin extends FunctionStatement {
+public class Asin extends UnaryFunctionStatement {
+
+	public Asin(Statement statement) {
+		super(statement);
+	}
 
 	@Override
 	public double calculate(VariableList list) {
@@ -16,13 +20,5 @@ public class Asin extends FunctionStatement {
 			return "asin(" + ms + ")";
 		else
 			return "asin" + ms;
-	}
-
-	public static final Asin format(String s, SMCL smcl) throws MathException {
-		Asin asin = smcl.obtain(Asin.class);
-		if (s.startsWith("asin")) {
-			asin.ms = smcl.register.getStatement(s.substring(4));
-		}
-		return asin;
 	}
 }

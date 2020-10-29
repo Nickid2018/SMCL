@@ -2,16 +2,15 @@ package com.github.nickid2018.smcl.statements;
 
 import java.util.*;
 import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
 
 public class MathStatement extends Statement {
 
-	private List<Pair<Statement, Boolean>> subs = new ArrayList<>();
+	private List<Statement> subs = new ArrayList<>();
 
 	public double calculate(VariableList list) {
 		double t = 0;
-		for (Pair<Statement, Boolean> en : getSubs()) {
-			t += en.getValue() ? en.getKey().calculate(list) : -en.getKey().calculate(list);
+		for (Statement en : subs) {
+			t += en.calculate(list);
 		}
 		return t;
 	}
@@ -20,101 +19,45 @@ public class MathStatement extends Statement {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (Pair<Statement, Boolean> en : getSubs()) {
-			char a = en.getValue() ? '+' : '-';
+		for (Statement en : subs) {
 			if (first) {
 				first = false;
-				if (!en.getValue())
-					sb.append(a);
-			} else {
-				sb.append(a);
+				if (en.isNegative())
+					sb.append("-");
+				sb.append(en.toString());
+				continue;
 			}
-			sb.append(en.getKey());
+			sb.append((en.isNegative() ? "-" : "+") + en.toString());
 		}
 		return sb.toString();
 	}
 
 	public boolean isAllNum() {
-		for (Pair<Statement, Boolean> en : subs) {
-			if (!(en.getKey() instanceof NumberStatement))
+		for (Statement en : subs) {
+			if (!(en instanceof NumberStatement))
 				return false;
 		}
 		return true;
 	}
 
 	@Override
-	public void setValues(Statement... statements) {
+	public Statement setValues(Statement... statements) {
 		for (Statement statement : statements) {
-			subs.add(new Pair<Statement, Boolean>(statement, Boolean.TRUE));
+			subs.add(statement);
 		}
+		return this;
 	}
 
-	@SafeVarargs
-	public final MathStatement setValues(Pair<Statement, Boolean>... pairs) {
-		for (Pair<Statement, Boolean> pair : pairs) {
-			subs.add(pair);
-		}
+	public MathStatement addStatement(Statement statement) {
+		subs.add(statement);
 		return this;
 	}
 
 	@Override
 	public void doOnFree() {
-		for (Pair<Statement, Boolean> statement : subs) {
-			statement.key.free();
+		for (Statement statement : subs) {
+			statement.free();
 		}
 		subs.clear();
-	}
-
-	public List<Pair<Statement, Boolean>> getSubs() {
-		return subs;
-	}
-
-	public static Statement format(String s, SMCL smcl) throws MathException {
-		if (s.isEmpty())
-			throw new MathException("Empty Statement", s, 0);
-
-		MathStatement ms = smcl.obtain(MathStatement.class);
-		ms.smcl = smcl;
-
-		// Split
-		int begin = 0;
-		int intimes = 0;
-		boolean plus = true;
-		for (int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if (c == '(')
-				intimes++;
-			else if (c == ')')
-				intimes--;
-			else if (c == '+' && intimes == 0) {
-				String sub = s.substring(begin, i);
-				begin = i + 1;
-				if (i == 0)
-					continue;
-				if (i != 0) {
-					Statement tmp = smcl.register.getStatement(sub);
-					ms.subs.add(new Pair<Statement, Boolean>(tmp, plus));
-				}
-				plus = true;
-			} else if (c == '-' && intimes == 0) {
-				String sub = s.substring(begin, i);
-				begin = i + 1;
-				if (i != 0) {
-					Statement tmp = smcl.register.getStatement(sub);
-					ms.subs.add(new Pair<Statement, Boolean>(tmp, plus));
-				}
-				plus = false;
-			}
-			if (i == s.length() - 1) {
-				if (intimes != 0) {
-					throw new MathException("Parentheses are not paired", s, i);
-				}
-				String sub = s.substring(begin, s.length());
-				Statement tmp = smcl.register.getStatement(sub);
-				ms.subs.add(new Pair<Statement, Boolean>(tmp, plus));
-			}
-		}
-
-		return smcl.settings.disableInitialOptimize ? ms : StatementOptimize.optimizeMathStatement(ms);
 	}
 }

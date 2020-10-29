@@ -69,7 +69,7 @@ public abstract class Statement implements AutoCloseable {
 
 	// Object Reuse
 
-	public abstract void setValues(Statement... statements);
+	public abstract Statement setValues(Statement... statements);
 
 	public static Statement format(String expr) throws MathException {
 		return MathStatement.format(expr);

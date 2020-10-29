@@ -2,7 +2,11 @@ package com.github.nickid2018.smcl.functions;
 
 import com.github.nickid2018.smcl.*;
 
-public class Tan extends FunctionStatement {
+public class Tan extends UnaryFunctionStatement {
+
+	public Tan(Statement statement) {
+		super(statement);
+	}
 
 	@Override
 	public double calculate(VariableList list) {
@@ -20,13 +24,5 @@ public class Tan extends FunctionStatement {
 			return "tan(" + ms + ")";
 		else
 			return "tan" + ms;
-	}
-
-	public static final Tan format(String s, SMCL smcl) throws MathException {
-		Tan tan = smcl.obtain(Tan.class);
-		if (s.startsWith("tan")) {
-			tan.ms = smcl.register.getStatement(s.substring(3));
-		}
-		return tan;
 	}
 }

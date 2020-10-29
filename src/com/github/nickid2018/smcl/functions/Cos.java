@@ -2,7 +2,11 @@ package com.github.nickid2018.smcl.functions;
 
 import com.github.nickid2018.smcl.*;
 
-public class Cos extends FunctionStatement {
+public class Cos extends UnaryFunctionStatement {
+
+	public Cos(Statement statement) {
+		super(statement);
+	}
 
 	@Override
 	public double calculate(VariableList list) {
@@ -15,13 +19,5 @@ public class Cos extends FunctionStatement {
 			return "cos(" + ms + ")";
 		else
 			return "cos" + ms;
-	}
-
-	public static final Cos format(String s, SMCL smcl) throws MathException {
-		Cos cos = smcl.obtain(Cos.class);
-		if (s.startsWith("cos")) {
-			cos.ms = smcl.register.getStatement(s.substring(3));
-		}
-		return cos;
 	}
 }
