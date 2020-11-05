@@ -9,7 +9,7 @@ public class Acos extends UnaryFunctionStatement {
 	}
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		return smcl.settings.degreeAngle ? Math.toDegrees(Math.acos(ms.calculate(list)))
 				: Math.acos(ms.calculate(list));
 	}

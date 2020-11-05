@@ -3,14 +3,14 @@ package com.github.nickid2018.smcl;
 import java.util.*;
 import com.github.nickid2018.smcl.parser.*;
 
-public class SMCLRegister {
+public final class SMCLRegister {
 
 	private final Map<String, OperatorParser<?>> operators = new HashMap<>();
 	private final Map<String, FunctionParser<?>> functions = new HashMap<>();
 
 	private final SMCL smcl;
 
-	public SMCLRegister(SMCL smcl) {
+	protected SMCLRegister(SMCL smcl) {
 		this.smcl = smcl;
 	}
 
@@ -20,6 +20,10 @@ public class SMCLRegister {
 
 	public void registerOperator(String operator, OperatorParser<?> parser) {
 		operators.put(operator, parser);
+	}
+
+	public void registerUnaryOperator(String operator, UnaryOperatorParser<?> parser) {
+		operators.put(operator + StatementTokenizer.unaryOperatorSuffix, parser);
 	}
 
 	public void removeOperator(String operator) {

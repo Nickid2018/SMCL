@@ -1,7 +1,5 @@
 package com.github.nickid2018.smcl;
 
-import com.github.nickid2018.smcl.statements.*;
-
 public abstract class Statement implements AutoCloseable {
 
 	protected int shares = 1;
@@ -56,8 +54,9 @@ public abstract class Statement implements AutoCloseable {
 		return isNegative;
 	}
 
-	public void setNegative(boolean negative) {
-		isNegative = negative;
+	public Statement getNegative() {
+		isNegative = !isNegative;
+		return this;
 	}
 
 	@Override
@@ -65,13 +64,13 @@ public abstract class Statement implements AutoCloseable {
 
 	public abstract boolean isAllNum();
 
-	public abstract double calculate(VariableList list);
+	public abstract double calculateInternel(VariableList list);
+
+	public double calculate(VariableList list) {
+		return isNegative ? -calculateInternel(list) : calculateInternel(list);
+	}
 
 	// Object Reuse
 
 	public abstract Statement setValues(Statement... statements);
-
-	public static Statement format(String expr) throws MathException {
-		return MathStatement.format(expr);
-	}
 }

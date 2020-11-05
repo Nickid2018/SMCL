@@ -36,19 +36,20 @@ public class SMCL {
 				return statement;
 			}
 		}));
+		register.registerUnaryOperator("+", new UnaryOperatorParser<>(60, false, (smcl, statement) -> statement));
 		register.registerOperator("-", new BinaryOperatorParser<>(20, true, (smcl, statements) -> {
 			if (statements[0] instanceof MathStatement) {
 				MathStatement get = (MathStatement) statements[0];
 				Statement other = statements[1];
-				other.isNegative = true;
-				return get.addStatement(other);
+				return get.addStatement(other.getNegative());
 			} else {
 				MathStatement statement = smcl.obtain(MathStatement.class);
-				statements[1].isNegative = true;
-				statement.setValues(statements);
+				statement.setValues(statements[0], statements[1].getNegative());
 				return statement;
 			}
 		}));
+		register.registerUnaryOperator("-",
+				new UnaryOperatorParser<>(60, false, (smcl, statement) -> statement.getNegative()));
 		register.registerOperator("*", new BinaryOperatorParser<>(30, true, (smcl, statements) -> {
 			if (statements[0] instanceof MultiplyStatement) {
 				MultiplyStatement get = (MultiplyStatement) statements[0];
@@ -120,11 +121,11 @@ public class SMCL {
 		getter.free(statement);
 	}
 
-	public final Statement format(String expr) {
+	public final Statement format(String expr) throws MathException {
 		return format(expr, DefinedVariables.EMPTY_VARIABLES);
 	}
 
-	public final Statement format(String expr, DefinedVariables variables) {
-		return null;
+	public final Statement format(String expr, DefinedVariables variables) throws MathException {
+		return StatementGenerator.createAST(expr, this, variables);
 	}
 }

@@ -11,7 +11,7 @@ public class DivideStatement extends Statement {
 	private List<Statement> divs = new ArrayList<>();
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		double ret = first.calculate(list);
 		for (Statement ms : divs) {
 			double v = ms.calculate(list);

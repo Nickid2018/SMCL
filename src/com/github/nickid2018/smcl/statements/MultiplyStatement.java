@@ -10,7 +10,7 @@ public class MultiplyStatement extends Statement {
 	private List<Statement> subs = new ArrayList<>();
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		double all = 1;
 		for (Statement ms : subs) {
 			all *= ms.calculate(list);

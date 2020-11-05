@@ -32,15 +32,15 @@ public class CachedStatement extends Statement {
 
 	public double calculate() {
 		if (dirty) {
-			result = calculate(list);
+			result = calculateInternel(list);
 			dirty = false;
 		}
 		return result;
 	}
 
 	@Override
-	public double calculate(VariableList list) {
-		return statement.calculate(list);
+	public double calculateInternel(VariableList list) {
+		return statement.calculateInternel(list);
 	}
 
 	@Override

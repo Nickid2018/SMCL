@@ -9,7 +9,7 @@ public class Cos extends UnaryFunctionStatement {
 	}
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		return smcl.settings.degreeAngle ? Math.cos(Math.toRadians(ms.calculate(list))) : Math.cos(ms.calculate(list));
 	}
 

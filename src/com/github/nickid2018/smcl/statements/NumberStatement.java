@@ -1,6 +1,7 @@
 package com.github.nickid2018.smcl.statements;
 
 import com.github.nickid2018.smcl.*;
+import com.github.nickid2018.smcl.optimize.NumberPool;
 
 public class NumberStatement extends Statement {
 
@@ -21,7 +22,7 @@ public class NumberStatement extends Statement {
 	}
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		return num;
 	}
 
@@ -40,6 +41,11 @@ public class NumberStatement extends Statement {
 	public boolean canClose() {
 		// Avoid being free
 		return false;
+	}
+
+	@Override
+	public Statement getNegative() {
+		return NumberPool.getNumber(-num);
 	}
 
 	@Override

@@ -25,7 +25,7 @@ public class VoidStatement extends Statement {
 	}
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		return 0;
 	}
 

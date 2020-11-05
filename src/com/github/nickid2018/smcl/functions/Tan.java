@@ -9,13 +9,13 @@ public class Tan extends UnaryFunctionStatement {
 	}
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		double v = ms.calculate(list);
 		if (v % Math.PI == Math.PI / 2 && !smcl.settings.degreeAngle)
 			throw new ArithmeticException("tan:argument is invalid-" + v);
 		if (v % 180 == 90 && smcl.settings.degreeAngle)
 			throw new ArithmeticException("tan:argument is invalid-" + v);
-		return smcl.settings.degreeAngle ? Math.tan(Math.toRadians(ms.calculate(list))) : Math.tan(ms.calculate(list));
+		return smcl.settings.degreeAngle ? Math.tan(Math.toRadians(v)) : Math.tan(v);
 	}
 
 	@Override

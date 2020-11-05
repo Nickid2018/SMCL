@@ -7,7 +7,7 @@ public class MathStatement extends Statement {
 
 	private List<Statement> subs = new ArrayList<>();
 
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		double t = 0;
 		for (Statement en : subs) {
 			t += en.calculate(list);

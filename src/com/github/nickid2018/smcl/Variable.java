@@ -3,6 +3,7 @@ package com.github.nickid2018.smcl;
 public class Variable extends Statement {
 
 	private String name;
+	private Variable negativeVar;
 
 	public Variable(String s) {
 		name = s;
@@ -17,7 +18,7 @@ public class Variable extends Statement {
 	}
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		return list.getVariableValue(name);
 	}
 
@@ -35,6 +36,16 @@ public class Variable extends Statement {
 	@Override
 	public boolean isAllNum() {
 		return false;
+	}
+
+	@Override
+	public Statement getNegative() {
+		if (negativeVar == null) {
+			negativeVar = new Variable(name);
+			negativeVar.isNegative = true;
+			negativeVar.negativeVar = this;
+		}
+		return negativeVar;
 	}
 
 	@Override

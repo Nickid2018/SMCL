@@ -9,7 +9,7 @@ public class Lg extends UnaryFunctionStatement {
 	}
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		double v = ms.calculate(list);
 		if (v <= 0)
 			throw new ArithmeticException("lg:argument is invalid-" + v);

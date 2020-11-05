@@ -10,7 +10,7 @@ public class PowerStatement extends Statement {
 	private Set<Statement> muls = new HashSet<>();
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		double ret = first.calculate(list);
 		for (Statement ms : muls) {
 			double mul = ms.calculate(list);

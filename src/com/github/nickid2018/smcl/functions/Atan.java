@@ -9,7 +9,7 @@ public class Atan extends UnaryFunctionStatement {
 	}
 
 	@Override
-	public double calculate(VariableList list) {
+	public double calculateInternel(VariableList list) {
 		return smcl.settings.degreeAngle ? Math.toDegrees(Math.atan(ms.calculate(list)))
 				: Math.atan(ms.calculate(list));
 	}
