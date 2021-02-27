@@ -2,7 +2,7 @@ package com.github.nickid2018.smcl.regression;
 
 import com.github.nickid2018.smcl.*;
 import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.statements.*;
+import com.github.nickid2018.smcl.statements.arith.*;
 
 public class InvertedIndexModel extends RegressionModel {
 
@@ -24,9 +24,9 @@ public class InvertedIndexModel extends RegressionModel {
 		PowerStatement pws = smcl.obtain(PowerStatement.class);
 		DivideStatement ds = smcl.obtain(DivideStatement.class);
 		Statement na = NumberPool.get(smcl, Math.exp(a));
-		ds.setValues(NumberPool.get(smcl, 1), smcl.globalvars.getVariable(Regression.independentVariable));
-		pws.setValues(NumberPool.get(smcl, Math.exp(b)), ds);
-		mls.setValues(na, pws);
+		ds.putDividendAndDivisors(NumberPool.get(smcl, 1), smcl.globalvars.getVariable(Regression.independentVariable));
+		pws.putBaseAndExponents(NumberPool.get(smcl, Math.exp(b)), ds);
+		mls.addMultipliers(na, pws);
 		return mls;
 	}
 

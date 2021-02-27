@@ -1,7 +1,7 @@
 package com.github.nickid2018.smcl.statements;
 
 import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.NumberPool;
+import com.github.nickid2018.smcl.optimize.*;
 
 public class NumberStatement extends Statement {
 
@@ -22,34 +22,19 @@ public class NumberStatement extends Statement {
 	}
 
 	@Override
-	public double calculateInternel(VariableList list) {
+	public double calculateInternal(VariableList list) {
 		return num;
 	}
 
 	@Override
 	public String toString() {
-		return num + "";
-	}
-
-	@Override
-	public boolean isAllNum() {
-		// Avoid Roll Action
-		return false;
-	}
-
-	@Override
-	public boolean canClose() {
-		// Avoid being free
-		return false;
+		return Double.toString(num);
 	}
 
 	@Override
 	public Statement getNegative() {
+		if (num == 0)
+			return this;
 		return NumberPool.getNumber(-num);
-	}
-
-	@Override
-	public Statement setValues(Statement... statements) {
-		return this;
 	}
 }

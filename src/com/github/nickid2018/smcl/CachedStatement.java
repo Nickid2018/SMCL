@@ -16,11 +16,6 @@ public class CachedStatement extends Statement {
 		return statement.toString();
 	}
 
-	@Override
-	public boolean isAllNum() {
-		return statement.isAllNum();
-	}
-
 	public void setVariable(String var, double v) {
 		dirty = true;
 		list.addVariableValue(var, v);
@@ -32,21 +27,14 @@ public class CachedStatement extends Statement {
 
 	public double calculate() {
 		if (dirty) {
-			result = calculateInternel(list);
+			result = calculateInternal(list);
 			dirty = false;
 		}
 		return result;
 	}
 
 	@Override
-	public double calculateInternel(VariableList list) {
-		return statement.calculateInternel(list);
+	public double calculateInternal(VariableList list) {
+		return statement.calculateInternal(list);
 	}
-
-	@Override
-	public Statement setValues(Statement... statements) {
-		statement = statements[0];
-		return this;
-	}
-
 }

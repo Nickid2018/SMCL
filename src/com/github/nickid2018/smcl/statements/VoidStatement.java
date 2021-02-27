@@ -10,28 +10,12 @@ public class VoidStatement extends Statement {
 	}
 
 	@Override
-	public boolean canClose() {
-		return false;
-	}
-
-	@Override
 	public String toString() {
 		return "void";
 	}
 
 	@Override
-	public boolean isAllNum() {
-		return false;
-	}
-
-	@Override
-	public double calculateInternel(VariableList list) {
+	public double calculateInternal(VariableList list) {
 		return 0;
 	}
-
-	@Override
-	public Statement setValues(Statement... statements) {
-		return this;
-	}
-
 }

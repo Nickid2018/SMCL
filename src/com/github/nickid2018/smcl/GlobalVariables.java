@@ -1,17 +1,26 @@
 package com.github.nickid2018.smcl;
 
 import java.util.*;
+import com.github.nickid2018.smcl.statements.*;
 
 public class GlobalVariables {
 
 	private final Map<String, Variable> variablemap = new HashMap<>();
 
-	public void registerVariable(String var) {
+	public GlobalVariables registerVariable(String var) {
 		variablemap.put(var, new Variable(var));
+		return this;
 	}
 
-	public void unregisterVariable(String var) {
+	public GlobalVariables registerVariables(String... vars) {
+		for (String var : vars)
+			variablemap.put(var, new Variable(var));
+		return this;
+	}
+
+	public GlobalVariables unregisterVariable(String var) {
 		variablemap.remove(var);
+		return this;
 	}
 
 	public boolean haveVariable(String var) {
@@ -21,8 +30,8 @@ public class GlobalVariables {
 	public Variable getVariable(String var) {
 		return variablemap.get(var);
 	}
-	
-	public Set<String> getAllRegistered(){
+
+	public Set<String> getAllRegistered() {
 		return variablemap.keySet();
 	}
 }

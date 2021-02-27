@@ -3,7 +3,7 @@ package com.github.nickid2018.smcl;
 import com.github.nickid2018.smcl.parser.*;
 import com.github.nickid2018.smcl.optimize.*;
 import com.github.nickid2018.smcl.functions.*;
-import com.github.nickid2018.smcl.statements.*;
+import com.github.nickid2018.smcl.statements.arith.*;
 
 public class SMCL {
 
@@ -32,8 +32,7 @@ public class SMCL {
 				return get.addStatement(statements[1]);
 			} else {
 				MathStatement statement = smcl.obtain(MathStatement.class);
-				statement.setValues(statements);
-				return statement;
+				return statement.addStatements(statements);
 			}
 		}));
 		register.registerUnaryOperator("+", new UnaryOperatorParser<>(60, false, (smcl, statement) -> statement));
@@ -44,8 +43,7 @@ public class SMCL {
 				return get.addStatement(other.getNegative());
 			} else {
 				MathStatement statement = smcl.obtain(MathStatement.class);
-				statement.setValues(statements[0], statements[1].getNegative());
-				return statement;
+				return statement.addStatements(statements[0], statements[1].getNegative());
 			}
 		}));
 		register.registerUnaryOperator("-",
@@ -54,62 +52,48 @@ public class SMCL {
 			if (statements[0] instanceof MultiplyStatement) {
 				MultiplyStatement get = (MultiplyStatement) statements[0];
 				Statement other = statements[1];
-				return get.addStatement(other);
+				return get.addMultiplier(other);
 			} else {
 				MultiplyStatement statement = smcl.obtain(MultiplyStatement.class);
-				statement.setValues(statements);
-				return statement;
+				return statement.addMultipliers(statements);
 			}
 		}));
 		register.registerOperator("/", new BinaryOperatorParser<>(30, true, (smcl, statements) -> {
 			if (statements[0] instanceof DivideStatement) {
 				DivideStatement get = (DivideStatement) statements[0];
 				Statement other = statements[1];
-				return get.addStatement(other);
+				return get.addDivisor(other);
 			} else {
 				DivideStatement statement = smcl.obtain(DivideStatement.class);
-				statement.setValues(statements);
-				return statement;
+				return statement.putDividendAndDivisors(statements);
 			}
 		}));
 		register.registerOperator("^", new BinaryOperatorParser<>(40, true, (smcl, statements) -> {
 			if (statements[0] instanceof PowerStatement) {
 				PowerStatement get = (PowerStatement) statements[0];
 				Statement other = statements[1];
-				return get.addStatement(other);
+				return get.addExponent(other);
 			} else {
 				PowerStatement statement = smcl.obtain(PowerStatement.class);
-				statement.setValues(statements);
-				return statement;
+				return statement.putBaseAndExponents(statements);
 			}
 		}));
-		register.registerFunction("sin", new MathematicsFunctionParser<>(1,
-				(smcl, statements) -> (Sin) (smcl.obtain(Sin.class).setValues(statements[0]))));
-		register.registerFunction("cos", new MathematicsFunctionParser<>(1,
-				(smcl, statements) -> (Cos) (smcl.obtain(Cos.class).setValues(statements[0]))));
-		register.registerFunction("tan", new MathematicsFunctionParser<>(1,
-				(smcl, statements) -> (Tan) (smcl.obtain(Tan.class).setValues(statements[0]))));
-		register.registerFunction("asin", new MathematicsFunctionParser<>(1,
-				(smcl, statements) -> (Asin) (smcl.obtain(Asin.class).setValues(statements[0]))));
-		register.registerFunction("acos", new MathematicsFunctionParser<>(1,
-				(smcl, statements) -> (Acos) (smcl.obtain(Acos.class).setValues(statements[0]))));
-		register.registerFunction("atan", new MathematicsFunctionParser<>(1,
-				(smcl, statements) -> (Atan) (smcl.obtain(Atan.class).setValues(statements[0]))));
-		register.registerFunction("ln", new MathematicsFunctionParser<>(1,
-				(smcl, statements) -> (Ln) (smcl.obtain(Ln.class).setValues(statements[0]))));
-		register.registerFunction("lg", new MathematicsFunctionParser<>(1,
-				(smcl, statements) -> (Lg) (smcl.obtain(Lg.class).setValues(statements[0]))));
+		register.registerFunction("sin", new UnaryMathematicsFunctionParser<>(Functions.SIN));
+		register.registerFunction("cos", new UnaryMathematicsFunctionParser<>(Functions.COS));
+		register.registerFunction("tan", new UnaryMathematicsFunctionParser<>(Functions.TAN));
+		register.registerFunction("asin", new UnaryMathematicsFunctionParser<>(Functions.ASIN));
+		register.registerFunction("acos", new UnaryMathematicsFunctionParser<>(Functions.ACOS));
+		register.registerFunction("atan", new UnaryMathematicsFunctionParser<>(Functions.ATAN));
+		register.registerFunction("ln", new UnaryMathematicsFunctionParser<>(Functions.LN));
+		register.registerFunction("lg", new UnaryMathematicsFunctionParser<>(Functions.LG));
+	}
+
+	public final void initWithLogicOperator() {
+		init();
+
 	}
 
 	private StatementGetter getter = new DefaultStatementGetter();
-
-	public final void setStatementGetter(StatementGetter getter) {
-		this.getter = getter;
-	}
-
-	public final StatementGetter getGetter() {
-		return getter;
-	}
 
 	public final <T extends Statement> T obtain(Class<T> cls) {
 		T obj = getter.obtain(cls);
@@ -117,15 +101,11 @@ public class SMCL {
 		return obj;
 	}
 
-	public final void free(Statement statement) {
-		getter.free(statement);
-	}
-
-	public final Statement format(String expr) throws MathException {
+	public final Statement format(String expr) throws MathParseException {
 		return format(expr, DefinedVariables.EMPTY_VARIABLES);
 	}
 
-	public final Statement format(String expr, DefinedVariables variables) throws MathException {
+	public final Statement format(String expr, DefinedVariables variables) throws MathParseException {
 		return StatementGenerator.createAST(expr, this, variables);
 	}
 }

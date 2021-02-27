@@ -1,10 +1,11 @@
 package com.github.nickid2018.smcl.parser;
 
 public class StatementToken {
-	
+
 	public String detail = "";
 	public StatementTokenType type;
 	public int pos;
+	public int length;
 
 	public void append(char c) {
 		this.detail = this.detail + c;

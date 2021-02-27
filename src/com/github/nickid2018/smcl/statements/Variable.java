@@ -1,4 +1,7 @@
-package com.github.nickid2018.smcl;
+package com.github.nickid2018.smcl.statements;
+
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.VariableList;
 
 public class Variable extends Statement {
 
@@ -18,24 +21,13 @@ public class Variable extends Statement {
 	}
 
 	@Override
-	public double calculateInternel(VariableList list) {
+	public double calculateInternal(VariableList list) {
 		return list.getVariableValue(name);
 	}
 
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	@Override
-	public boolean canClose() {
-		// Avoid being free
-		return false;
-	}
-
-	@Override
-	public boolean isAllNum() {
-		return false;
 	}
 
 	@Override
@@ -46,10 +38,5 @@ public class Variable extends Statement {
 			negativeVar.negativeVar = this;
 		}
 		return negativeVar;
-	}
-
-	@Override
-	public Statement setValues(Statement... statements) {
-		return this;
 	}
 }

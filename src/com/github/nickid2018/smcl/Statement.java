@@ -1,52 +1,9 @@
 package com.github.nickid2018.smcl;
 
-public abstract class Statement implements AutoCloseable {
+public abstract class Statement {
 
-	protected int shares = 1;
 	protected SMCL smcl;
 	protected boolean isNegative;
-
-	// Resource Manage
-
-	public void share() {
-		shares++;
-	}
-
-	public void unshare() {
-		shares--;
-	}
-
-	@Override
-	public final void close() {
-		free();
-	}
-
-	public final boolean free() {
-		shares--;
-		if (shares < 1 && canClose()) {
-			smcl.free(this);
-			doOnFree();
-			return true;
-		}
-		return false;
-	}
-
-	public final boolean tryOnlyFree() {
-		shares--;
-		if (shares < 1 && canClose()) {
-			smcl.free(this);
-			return true;
-		}
-		return false;
-	}
-
-	public void doOnFree() {
-		isNegative = false;
-	}
-
-	public boolean canClose() {
-		return true;
-	}
 
 	// Statement Base Functions
 
@@ -62,15 +19,9 @@ public abstract class Statement implements AutoCloseable {
 	@Override
 	public abstract String toString();
 
-	public abstract boolean isAllNum();
-
-	public abstract double calculateInternel(VariableList list);
+	protected abstract double calculateInternal(VariableList list);
 
 	public double calculate(VariableList list) {
-		return isNegative ? -calculateInternel(list) : calculateInternel(list);
+		return isNegative ? -calculateInternal(list) : calculateInternal(list);
 	}
-
-	// Object Reuse
-
-	public abstract Statement setValues(Statement... statements);
 }

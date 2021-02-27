@@ -2,7 +2,7 @@ package com.github.nickid2018.smcl.regression;
 
 import com.github.nickid2018.smcl.*;
 import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.statements.*;
+import com.github.nickid2018.smcl.statements.arith.*;
 
 public class IndexModel extends RegressionModel {
 
@@ -23,8 +23,9 @@ public class IndexModel extends RegressionModel {
 		MultiplyStatement mls = smcl.obtain(MultiplyStatement.class);
 		PowerStatement pws = smcl.obtain(PowerStatement.class);
 		Statement na = NumberPool.get(smcl, Math.exp(a));
-		pws.setValues(NumberPool.get(smcl, Math.exp(b)), smcl.globalvars.getVariable(Regression.independentVariable));
-		mls.setValues(na, pws);
+		pws.putBaseAndExponents(NumberPool.get(smcl, Math.exp(b)),
+				smcl.globalvars.getVariable(Regression.independentVariable));
+		mls.addMultipliers(na, pws);
 		return mls;
 	}
 

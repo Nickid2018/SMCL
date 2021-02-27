@@ -1,6 +1,7 @@
 package com.github.nickid2018.smcl;
 
 import java.util.*;
+import com.github.nickid2018.smcl.statements.*;
 
 public class DefinedVariables {
 

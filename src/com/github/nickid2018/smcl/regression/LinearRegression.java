@@ -3,7 +3,7 @@ package com.github.nickid2018.smcl.regression;
 import java.util.*;
 import com.github.nickid2018.smcl.*;
 import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.statements.*;
+import com.github.nickid2018.smcl.statements.arith.*;
 
 public class LinearRegression extends Regression {
 
@@ -17,8 +17,8 @@ public class LinearRegression extends Regression {
 		storager.clear();
 		MathStatement ms = smcl.obtain(MathStatement.class);
 		MultiplyStatement mls = smcl.obtain(MultiplyStatement.class);
-		mls.setValues(NumberPool.get(smcl, b), smcl.globalvars.getVariable(independentVariable));
-		ms.setValues(NumberPool.get(smcl, a), mls);
+		mls.addMultipliers(NumberPool.get(smcl, b), smcl.globalvars.getVariable(independentVariable));
+		ms.addStatements(NumberPool.get(smcl, a), mls);
 		return ms;
 	}
 

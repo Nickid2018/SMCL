@@ -30,7 +30,7 @@ public class StatementTokenizer {
 		return this.pos < this.input.length();
 	}
 
-	public StatementToken nextToken() throws MathException {
+	public StatementToken nextToken() throws MathParseException {
 		StatementToken token = new StatementToken();
 		// The string has run out, stop!
 		if (pos >= input.length())
@@ -140,6 +140,7 @@ public class StatementTokenizer {
 		}
 
 		// Finally, we should verify the token
+		token.length = previousToken == null ? pos : pos - previousToken.pos - previousToken.length;
 		if (previousToken == null
 				|| token.type != StatementTokenType.NUMBER && token.type != StatementTokenType.HEX_NUMBER
 						&& token.type != StatementTokenType.VARIABLE && token.type != StatementTokenType.FUNCTION
@@ -150,9 +151,9 @@ public class StatementTokenizer {
 						&& previousToken.type != StatementTokenType.HEX_NUMBER) {
 			return previousToken = token;
 		} else {
-			throw new MathException(
+			throw new MathParseException(
 					"The token \"" + token.detail + "\" can't be after the token \"" + previousToken.detail + "\"",
-					input, pos);
+					input, token);
 		}
 	}
 }
