@@ -64,4 +64,8 @@ public class UnaryFunctionBuilder extends FunctionBuilder<UnaryFunctionGenStatem
 		calcFunction = calcFunction.addThen(function);
 		return this;
 	}
+
+	public UnaryFunctionBuilder copyWithoutFunction(String name) {
+		return createBuilder(name).withDomain(domainCheck).withResolve(resolveVariable).withResolveEnd(resolveEnd);
+	}
 }

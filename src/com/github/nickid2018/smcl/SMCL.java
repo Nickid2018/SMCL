@@ -81,11 +81,31 @@ public class SMCL {
 		register.registerFunction("sin", new UnaryMathematicsFunctionParser<>(Functions.SIN));
 		register.registerFunction("cos", new UnaryMathematicsFunctionParser<>(Functions.COS));
 		register.registerFunction("tan", new UnaryMathematicsFunctionParser<>(Functions.TAN));
+		register.registerFunction("csc", new UnaryMathematicsFunctionParser<>(Functions.CSC));
+		register.registerFunction("sec", new UnaryMathematicsFunctionParser<>(Functions.SEC));
+		register.registerFunction("cot", new UnaryMathematicsFunctionParser<>(Functions.COT));
 		register.registerFunction("asin", new UnaryMathematicsFunctionParser<>(Functions.ASIN));
 		register.registerFunction("acos", new UnaryMathematicsFunctionParser<>(Functions.ACOS));
 		register.registerFunction("atan", new UnaryMathematicsFunctionParser<>(Functions.ATAN));
+		register.registerFunction("arcsin", new UnaryMathematicsFunctionParser<>(Functions.ASIN));
+		register.registerFunction("arccos", new UnaryMathematicsFunctionParser<>(Functions.ACOS));
+		register.registerFunction("arctan", new UnaryMathematicsFunctionParser<>(Functions.ATAN));
+		register.registerFunction("sinh", new UnaryMathematicsFunctionParser<>(Functions.SINH));
+		register.registerFunction("cosh", new UnaryMathematicsFunctionParser<>(Functions.COSH));
+		register.registerFunction("tanh", new UnaryMathematicsFunctionParser<>(Functions.TANH));
+		register.registerFunction("sh", new UnaryMathematicsFunctionParser<>(Functions.SINH));
+		register.registerFunction("ch", new UnaryMathematicsFunctionParser<>(Functions.COSH));
+		register.registerFunction("th", new UnaryMathematicsFunctionParser<>(Functions.TANH));
 		register.registerFunction("ln", new UnaryMathematicsFunctionParser<>(Functions.LN));
 		register.registerFunction("lg", new UnaryMathematicsFunctionParser<>(Functions.LG));
+		register.registerFunction("sqrt", new UnaryMathematicsFunctionParser<>(Functions.SQRT));
+		register.registerFunction("cbrt", new UnaryMathematicsFunctionParser<>(Functions.CBRT));
+		register.registerFunction("exp", new UnaryMathematicsFunctionParser<>(Functions.EXP));
+		register.registerFunction("abs", new UnaryMathematicsFunctionParser<>(Functions.ABS));
+		register.registerFunction("sgn", new UnaryMathematicsFunctionParser<>(Functions.SGN));
+		register.registerFunction("ceil", new UnaryMathematicsFunctionParser<>(Functions.CEIL));
+		register.registerFunction("floor", new UnaryMathematicsFunctionParser<>(Functions.FLOOR));
+		register.registerFunction("round", new UnaryMathematicsFunctionParser<>(Functions.ROUND));
 	}
 
 	public final void initWithLogicOperator() {

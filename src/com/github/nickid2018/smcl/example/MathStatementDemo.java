@@ -12,11 +12,11 @@ public class MathStatementDemo {
 		smcl.globalvars.registerVariables("x");
 		smcl.settings.degreeAngle = true;
 		timer = System.nanoTime();
-		Statement s = smcl.format("x-asin(x)");
+		Statement s = smcl.format("tan(x)");
 		timeOutput();
 		System.out.println(s);
 		timeOutput();
-		System.out.println(s.calculate(new VariableList().addVariableValue("x", 1)));
+		System.out.println(s.calculate(new VariableList().addVariableValue("x", 89.99999999999999)));
 		timeOutput();
 	}
 
