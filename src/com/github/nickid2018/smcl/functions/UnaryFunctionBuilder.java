@@ -21,8 +21,8 @@ public class UnaryFunctionBuilder extends FunctionBuilder<UnaryFunctionGenStatem
 
 	@Override
 	public UnaryFunctionGenStatement create(SMCL smcl, Statement... statements) {
-		return new UnaryFunctionGenStatement(smcl, statements[0], name, calcFunction, domainCheck, resolveVariable,
-				resolveEnd);
+		return (UnaryFunctionGenStatement) smcl.obtain(UnaryFunctionGenStatement.class).setFunction(this)
+				.setInnerStatement(statements[0]);
 	}
 
 	public UnaryFunctionBuilder withResolve(DoubleSMCLFunction resolve) {
@@ -67,5 +67,21 @@ public class UnaryFunctionBuilder extends FunctionBuilder<UnaryFunctionGenStatem
 
 	public UnaryFunctionBuilder copyWithoutFunction(String name) {
 		return createBuilder(name).withDomain(domainCheck).withResolve(resolveVariable).withResolveEnd(resolveEnd);
+	}
+
+	public DoubleConsumer getDomainCheck() {
+		return domainCheck;
+	}
+
+	public Double2DoubleFunction getCalcFunction() {
+		return calcFunction;
+	}
+
+	public DoubleSMCLFunction getResolveVariable() {
+		return resolveVariable;
+	}
+
+	public DoubleSMCLFunction getResolveEnd() {
+		return resolveEnd;
 	}
 }

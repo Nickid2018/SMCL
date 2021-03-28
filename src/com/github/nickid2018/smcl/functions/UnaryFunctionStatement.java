@@ -4,9 +4,19 @@ import com.github.nickid2018.smcl.*;
 
 public abstract class UnaryFunctionStatement extends FunctionStatement {
 
-	protected Statement innerStatement;
+	private Statement innerStatement;
 
 	public UnaryFunctionStatement(Statement statement) {
-		innerStatement = statement;
+		setInnerStatement(statement);
 	}
+
+	public Statement getInnerStatement() {
+		return innerStatement;
+	}
+
+	public UnaryFunctionStatement setInnerStatement(Statement innerStatement) {
+		this.innerStatement = innerStatement;
+		return this;
+	}
+
 }

@@ -1,39 +1,41 @@
 package com.github.nickid2018.smcl.functions;
 
-import java.util.function.*;
 import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.util.*;
 
 public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
 
-	private String name;
-	private DoubleConsumer check;
-	private DoubleSMCLFunction resolveVariable;
-	private Double2DoubleFunction result;
-	private DoubleSMCLFunction resolveEnd;
+	private UnaryFunctionBuilder function;
 
-	public UnaryFunctionGenStatement(SMCL smcl, Statement statement, String name, Double2DoubleFunction result,
-			DoubleConsumer check, DoubleSMCLFunction resolveVariable, DoubleSMCLFunction resolveEnd) {
+	public UnaryFunctionGenStatement(Statement ms) {
+		super(ms);
+	}
+
+	public UnaryFunctionGenStatement(SMCL smcl, Statement statement, UnaryFunctionBuilder function) {
 		super(statement);
 		this.smcl = smcl;
-		this.name = name;
-		this.result = result;
-		this.check = check;
-		this.resolveVariable = resolveVariable;
-		this.resolveEnd = resolveEnd;
+		this.function = function;
 	}
 
 	@Override
-	public String toString() {
-		return name + "(" + innerStatement + ")";
+	public final String toString() {
+		return getFunction().getName() + "(" + getInnerStatement() + ")";
 	}
 
 	@Override
-	protected double calculateInternal(VariableList list) {
-		double innerResult = innerStatement.calculate(list);
-		innerResult = resolveVariable.accept(innerResult, smcl);
-		check.accept(innerResult);
-		return resolveEnd.accept(result.accept(innerResult), smcl);
+	protected final double calculateInternal(VariableList list) {
+		double innerResult = getInnerStatement().calculate(list);
+		innerResult = getFunction().getResolveVariable().accept(innerResult, smcl);
+		getFunction().getDomainCheck().accept(innerResult);
+		return getFunction().getResolveEnd().accept(getFunction().getCalcFunction().accept(innerResult), smcl);
+	}
+
+	public UnaryFunctionBuilder getFunction() {
+		return function;
+	}
+
+	public UnaryFunctionGenStatement setFunction(UnaryFunctionBuilder function) {
+		this.function = function;
+		return this;
 	}
 
 }

@@ -12,7 +12,7 @@ public class MathStatementDemo {
 		smcl.globalvars.registerVariables("x");
 		smcl.settings.degreeAngle = true;
 		timer = System.nanoTime();
-		Statement s = smcl.format("tan(x)");
+		Statement s = smcl.format("sqrt(tan(x))");
 		timeOutput();
 		System.out.println(s);
 		timeOutput();
