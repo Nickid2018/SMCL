@@ -8,6 +8,7 @@ public class CachedStatement extends Statement {
 	private boolean dirty = true;
 
 	public CachedStatement(Statement statement) {
+		super(statement.smcl, statement.variables);
 		this.statement = statement;
 	}
 
@@ -36,5 +37,10 @@ public class CachedStatement extends Statement {
 	@Override
 	public double calculateInternal(VariableList list) {
 		return statement.calculateInternal(list);
+	}
+
+	@Override
+	protected Statement derivativeInternal() {
+		return statement.derivativeInternal();
 	}
 }

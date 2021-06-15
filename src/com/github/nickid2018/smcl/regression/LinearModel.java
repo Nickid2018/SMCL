@@ -20,10 +20,10 @@ public class LinearModel extends RegressionModel {
 
 	@Override
 	public Statement getTransformed(SMCL smcl, double b, double a) {
-		MathStatement ms = smcl.obtain(MathStatement.class);
+		MathStatement ms = new MathStatement(smcl, smcl.globalvars.toDefinedVariables());
 		Statement na = NumberPool.get(smcl, a);
 		Statement nb = NumberPool.get(smcl, b);
-		MultiplyStatement mls = smcl.obtain(MultiplyStatement.class);
+		MultiplyStatement mls = new MultiplyStatement(smcl, smcl.globalvars.toDefinedVariables());
 		mls.addMultipliers(nb, smcl.globalvars.getVariable(Regression.independentVariable));
 		ms.addStatements(na, mls);
 		return ms;

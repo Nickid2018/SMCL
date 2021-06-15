@@ -2,10 +2,15 @@ package com.github.nickid2018.smcl.statements.arith;
 
 import java.util.*;
 import com.github.nickid2018.smcl.*;
+import com.github.nickid2018.smcl.optimize.*;
 import com.github.nickid2018.smcl.functions.*;
 import com.github.nickid2018.smcl.statements.*;
 
 public class DivideStatement extends Statement {
+
+	public DivideStatement(SMCL smcl, DefinedVariables variables) {
+		super(smcl, variables);
+	}
 
 	private Statement dividend;
 	private List<Statement> divisors = new ArrayList<>();
@@ -47,5 +52,50 @@ public class DivideStatement extends Statement {
 			addDivisor(statements[i]);
 		}
 		return this;
+	}
+
+	@Override
+	// (f/g)' = (f'g-fg')/(g^2)
+	// g = d1*d2*d3...
+	// Optimize:
+	// 1) f = C: (C/g)' = -C/(g^2)
+	// 2) g = C: (f/C)' = f'/C
+	// 3) f = C1, g = C2: (C1/C2)' = 0
+	protected Statement derivativeInternal() {
+		Statement funcf = dividend;
+		Statement funcg = divisors.size() > 1
+				? new MultiplyStatement(smcl, variables).addMultipliers(divisors.toArray(new Statement[0]))
+				: divisors.get(0);
+		boolean funcfN = funcf instanceof NumberStatement;
+		boolean funcgN = funcg instanceof NumberStatement;
+		if (funcfN && funcgN)
+			return NumberPool.NUMBER_CONST_0;
+		if (funcfN) {
+			PowerStatement pws = new PowerStatement(smcl, variables).putBaseAndExponents(funcg,
+					NumberPool.getNumber(2));
+			return new DivideStatement(smcl, variables).putDividendAndDivisors(funcf, pws).getNegative();
+		}
+		if (funcgN) {
+			return new DivideStatement(smcl, variables).putDividendAndDivisors(funcf.derivative(), funcg);
+		}
+		Statement derif = funcf.derivative();
+		Statement derig = funcg.derivative();
+		Statement add1;
+		if (derif.equals(NumberPool.NUMBER_CONST_1))
+			add1 = funcg;
+		else if (derif.equals(NumberPool.NUMBER_CONST_N1))
+			add1 = funcg.getNewNegative();
+		else
+			add1 = new MultiplyStatement(smcl, variables).addMultipliers(derif, funcg);
+		Statement add2;
+		if (derig.equals(NumberPool.NUMBER_CONST_1))
+			add2 = funcf;
+		else if (derig.equals(NumberPool.NUMBER_CONST_N1))
+			add2 = funcf.getNewNegative();
+		else
+			add2 = new MultiplyStatement(smcl, variables).addMultipliers(funcf, derig);
+		MathStatement ms = new MathStatement(smcl, variables).addStatements(add1, add2.getNegative());
+		PowerStatement pws = new PowerStatement(smcl, variables).putBaseAndExponents(funcg, NumberPool.getNumber(2));
+		return new DivideStatement(smcl, variables).putDividendAndDivisors(ms, pws);
 	}
 }

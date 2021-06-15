@@ -25,7 +25,7 @@ public class DefinedVariables {
 		vars.forEach(this::register);
 		return this;
 	}
-	
+
 	public DefinedVariables registerAll(DefinedVariables vars) {
 		return registerAll(vars.variables);
 	}
@@ -40,5 +40,9 @@ public class DefinedVariables {
 
 	public Variable getVariable(String var) {
 		return sharedVariables.get(var);
+	}
+
+	public int size() {
+		return variables.size();
 	}
 }

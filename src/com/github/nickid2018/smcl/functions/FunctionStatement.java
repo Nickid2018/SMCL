@@ -4,4 +4,8 @@ import com.github.nickid2018.smcl.*;
 
 public abstract class FunctionStatement extends Statement {
 
+	public FunctionStatement(SMCL smcl, DefinedVariables variables) {
+		super(smcl, variables);
+	}
+
 }

@@ -11,26 +11,73 @@ public class Interval extends NumberSet {
 	public boolean leftClose;
 	public boolean rightClose;
 
-	public void setLeftInfinite() {
+	public static Interval fromNonInfString(String str) {
+		Interval val = new Interval();
+		// Check pattern
+		if (!str.matches("[\\[\\(][-+\\d\\.]+,[-+\\d\\.]+[\\)\\]]"))
+			throw new IllegalArgumentException("Illegal pattern for interval: " + str);
+		// Left edge
+		val.leftClose = str.charAt(0) == '[';
+		// Right edge
+		val.rightClose = str.charAt(str.length() - 1) == ']';
+		String[] numbers = str.substring(1, str.length() - 1).split(",");
+		val.leftRange = Double.parseDouble(numbers[0]);
+		val.rightRange = Double.parseDouble(numbers[1]);
+		if (!val.isValid())
+			throw new IllegalArgumentException("Invaild interval: " + str);
+		return val;
+	}
+
+	public static Interval lessThanInclude(double right) {
+		return new Interval().setLeftInfinite().setRightRange(right, true);
+	}
+
+	public static Interval lessThanExclude(double right) {
+		return new Interval().setLeftInfinite().setRightRange(right, false);
+	}
+
+	public static Interval moreThanInclude(double left) {
+		return new Interval().setRightInfinite().setLeftRange(left, true);
+	}
+
+	public static Interval moreThanExclude(double left) {
+		return new Interval().setRightInfinite().setLeftRange(left, false);
+	}
+
+	public static Interval universeSet() {
+		return new Interval().setLeftInfinite().setRightInfinite();
+	}
+
+	public Interval setLeftInfinite() {
 		leftInfinite = true;
-		leftRange = Double.MIN_VALUE;
+		leftClose = false;
+		leftRange = Double.NEGATIVE_INFINITY;
+		return this;
 	}
 
-	public void setRightInfinite() {
+	public Interval setRightInfinite() {
 		rightInfinite = true;
-		rightRange = Double.MAX_VALUE;
+		rightClose = false;
+		rightRange = Double.POSITIVE_INFINITY;
+		return this;
 	}
 
-	public void setLeftRange(double value, boolean close) {
+	public Interval setLeftRange(double value, boolean close) {
+		if (Double.isNaN(value))
+			throw new IllegalArgumentException("Not a number!");
 		leftInfinite = false;
 		leftRange = value;
 		leftClose = close;
+		return this;
 	}
 
-	public void setRightRange(double value, boolean close) {
+	public Interval setRightRange(double value, boolean close) {
+		if (Double.isNaN(value))
+			throw new IllegalArgumentException("Not a number!");
 		rightInfinite = false;
 		rightRange = value;
 		rightClose = close;
+		return this;
 	}
 
 	@Override
@@ -69,7 +116,6 @@ public class Interval extends NumberSet {
 			return false;
 		if (other instanceof Interval) {
 			Interval i = (Interval) other;
-			;
 			return (leftRange - i.rightRange) * (rightRange - i.leftRange) < 0
 					|| (leftRange == i.leftRange && leftClose && i.leftClose)
 					|| (rightRange == i.rightRange && rightClose && i.rightClose);
@@ -84,8 +130,31 @@ public class Interval extends NumberSet {
 		if (other instanceof Interval) {
 			if (!isCross(other))
 				return EmptySet.EMPTY_SET;
-
+			if (other instanceof SingleSet)
+				return other;
+			Interval oth = (Interval) other;
+			Interval ret = new Interval();
+			if (leftRange == oth.leftRange) {
+				ret.leftRange = leftRange;
+				ret.leftClose = leftClose && oth.leftClose;
+			} else {
+				boolean left = leftRange > oth.leftRange;
+				ret.leftRange = left ? leftRange : oth.leftRange;
+				ret.leftClose = left ? leftClose : oth.leftClose;
+			}
+			ret.leftInfinite = leftInfinite && oth.leftInfinite;
+			if (rightRange == oth.rightRange) {
+				ret.rightRange = rightRange;
+				ret.rightClose = rightClose && oth.rightClose;
+			} else {
+				boolean left = rightRange < oth.rightRange;
+				ret.rightRange = left ? rightRange : oth.rightRange;
+				ret.rightClose = left ? rightClose : oth.rightClose;
+			}
+			ret.rightInfinite = rightInfinite && oth.rightInfinite;
+			return ret;
 		}
-		return null;
+		// Unsupport ComplexSet
+		return EmptySet.EMPTY_SET;
 	}
 }

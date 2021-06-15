@@ -34,4 +34,8 @@ public class GlobalVariables {
 	public Set<String> getAllRegistered() {
 		return variablemap.keySet();
 	}
+
+	public DefinedVariables toDefinedVariables() {
+		return new DefinedVariables().registerAll(getAllRegistered());
+	}
 }

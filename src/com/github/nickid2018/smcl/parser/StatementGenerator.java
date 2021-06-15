@@ -12,18 +12,18 @@ public class StatementGenerator {
 		List<StatementToken> rpn = doRPN(input, smcl);
 		validate(rpn, input, smcl);
 		SMCLRegister register = smcl.register;
-		DefinedVariables alls = new DefinedVariables();
+		DefinedVariables alls = smcl.globalvars.toDefinedVariables();
 		alls.registerAll(variables);
-		alls.registerAll(smcl.globalvars.getAllRegistered());
 		for (StatementToken token : rpn) {
 			switch (token.type) {
 			case UNARY_OPERATOR:
-				stack.push(register.getRegisteredOperator(token.detail).parseStatement(smcl, stack.pop()));
+				stack.push(register.getRegisteredOperator(token.detail).parseStatement(smcl, alls, stack.pop()));
 				continue;
 			case OPERATOR:
 				Statement operand_o1 = stack.pop();
 				Statement operand_o2 = stack.pop();
-				stack.push(register.getRegisteredOperator(token.detail).parseStatement(smcl, operand_o2, operand_o1));
+				stack.push(register.getRegisteredOperator(token.detail).parseStatement(smcl, alls, operand_o2,
+						operand_o1));
 				continue;
 			case VARIABLE:
 				Variable var = alls.getVariable(token.detail);

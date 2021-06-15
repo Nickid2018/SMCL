@@ -1,7 +1,7 @@
 package com.github.nickid2018.smcl.statements;
 
-import com.github.nickid2018.smcl.Statement;
-import com.github.nickid2018.smcl.VariableList;
+import com.github.nickid2018.smcl.*;
+import com.github.nickid2018.smcl.optimize.*;
 
 public class Variable extends Statement {
 
@@ -9,6 +9,7 @@ public class Variable extends Statement {
 	private Variable negativeVar;
 
 	public Variable(String s) {
+		super(null, DefinedVariables.EMPTY_VARIABLES);
 		name = s;
 	}
 
@@ -27,7 +28,7 @@ public class Variable extends Statement {
 
 	@Override
 	public String toString() {
-		return name;
+		return (isNegative ? "-" : "") + name;
 	}
 
 	@Override
@@ -38,5 +39,15 @@ public class Variable extends Statement {
 			negativeVar.negativeVar = this;
 		}
 		return negativeVar;
+	}
+
+	@Override
+	public Statement getNewNegative() {
+		return getNegative();
+	}
+
+	@Override
+	protected Statement derivativeInternal() {
+		return NumberPool.NUMBER_CONST_1;
 	}
 }

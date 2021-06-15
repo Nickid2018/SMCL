@@ -2,6 +2,7 @@ package com.github.nickid2018.smcl.functions;
 
 import java.util.function.*;
 import com.github.nickid2018.smcl.*;
+import com.github.nickid2018.smcl.set.*;
 import com.github.nickid2018.smcl.util.*;
 
 public abstract class FunctionBuilder<T extends FunctionStatement> {
@@ -20,6 +21,20 @@ public abstract class FunctionBuilder<T extends FunctionStatement> {
 	public static final DoubleConsumer checkDomainInclude(DoublePredicate include, DoubleFunction<String> errorString) {
 		return arg -> {
 			if (!include.test(arg))
+				throw new ArithmeticException(errorString.apply(arg));
+		};
+	}
+
+	public static final DoubleConsumer checkDomainExclude(NumberSet set, DoubleFunction<String> errorString) {
+		return arg -> {
+			if (set.isBelongTo(arg))
+				throw new ArithmeticException(errorString.apply(arg));
+		};
+	}
+
+	public static final DoubleConsumer checkDomainInclude(NumberSet set, DoubleFunction<String> errorString) {
+		return arg -> {
+			if (!set.isBelongTo(arg))
 				throw new ArithmeticException(errorString.apply(arg));
 		};
 	}

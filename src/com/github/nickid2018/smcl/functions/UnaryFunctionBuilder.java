@@ -10,6 +10,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder<UnaryFunctionGenStatem
 	private Double2DoubleFunction calcFunction = DEFAULT_RESULT;
 	private DoubleSMCLFunction resolveVariable = DEFAULT_RESOLVE;
 	private DoubleSMCLFunction resolveEnd = DEFAULT_RESOLVE;
+	private Function<Statement, Statement> derivativeResolver;
 
 	public UnaryFunctionBuilder(String name) {
 		super(name);
@@ -21,8 +22,9 @@ public class UnaryFunctionBuilder extends FunctionBuilder<UnaryFunctionGenStatem
 
 	@Override
 	public UnaryFunctionGenStatement create(SMCL smcl, Statement... statements) {
-		return (UnaryFunctionGenStatement) smcl.obtain(UnaryFunctionGenStatement.class).setFunction(this)
-				.setInnerStatement(statements[0]);
+		UnaryFunctionGenStatement statement = new UnaryFunctionGenStatement(statements[0]).setFunction(this);
+		statement.setSMCL(smcl);
+		return statement;
 	}
 
 	public UnaryFunctionBuilder withResolve(DoubleSMCLFunction resolve) {
@@ -65,6 +67,11 @@ public class UnaryFunctionBuilder extends FunctionBuilder<UnaryFunctionGenStatem
 		return this;
 	}
 
+	public UnaryFunctionBuilder withDerivativeResolver(Function<Statement, Statement> derivativeResolver) {
+		this.derivativeResolver = derivativeResolver;
+		return this;
+	}
+
 	public UnaryFunctionBuilder copyWithoutFunction(String name) {
 		return createBuilder(name).withDomain(domainCheck).withResolve(resolveVariable).withResolveEnd(resolveEnd);
 	}
@@ -83,5 +90,9 @@ public class UnaryFunctionBuilder extends FunctionBuilder<UnaryFunctionGenStatem
 
 	public DoubleSMCLFunction getResolveEnd() {
 		return resolveEnd;
+	}
+
+	public Function<Statement, Statement> getDerivativeResolver() {
+		return derivativeResolver;
 	}
 }

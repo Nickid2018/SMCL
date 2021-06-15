@@ -8,5 +8,5 @@ public abstract class OperatorParser<T extends Statement> {
 
 	public abstract boolean isLeftAssoc();
 
-	public abstract Statement parseStatement(SMCL smcl, Statement... statements);
+	public abstract Statement parseStatement(SMCL smcl, DefinedVariables variables, Statement... statements);
 }

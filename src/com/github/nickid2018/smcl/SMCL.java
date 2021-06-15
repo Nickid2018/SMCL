@@ -1,7 +1,6 @@
 package com.github.nickid2018.smcl;
 
 import com.github.nickid2018.smcl.parser.*;
-import com.github.nickid2018.smcl.optimize.*;
 import com.github.nickid2018.smcl.functions.*;
 import com.github.nickid2018.smcl.statements.arith.*;
 
@@ -26,55 +25,56 @@ public class SMCL {
 	}
 
 	public final void init() {
-		register.registerOperator("+", new BinaryOperatorParser<>(20, true, (smcl, statements) -> {
+		register.registerOperator("+", new BinaryOperatorParser<>(20, true, (smcl, statements, variables) -> {
 			if (statements[0] instanceof MathStatement) {
 				MathStatement get = (MathStatement) statements[0];
 				return get.addStatement(statements[1]);
 			} else {
-				MathStatement statement = smcl.obtain(MathStatement.class);
+				MathStatement statement = new MathStatement(smcl, variables);
 				return statement.addStatements(statements);
 			}
 		}));
-		register.registerUnaryOperator("+", new UnaryOperatorParser<>(60, false, (smcl, statement) -> statement));
-		register.registerOperator("-", new BinaryOperatorParser<>(20, true, (smcl, statements) -> {
+		register.registerUnaryOperator("+",
+				new UnaryOperatorParser<>(60, false, (smcl, statement, variables) -> statement));
+		register.registerOperator("-", new BinaryOperatorParser<>(20, true, (smcl, statements, variables) -> {
 			if (statements[0] instanceof MathStatement) {
 				MathStatement get = (MathStatement) statements[0];
 				Statement other = statements[1];
 				return get.addStatement(other.getNegative());
 			} else {
-				MathStatement statement = smcl.obtain(MathStatement.class);
+				MathStatement statement = new MathStatement(smcl, variables);
 				return statement.addStatements(statements[0], statements[1].getNegative());
 			}
 		}));
 		register.registerUnaryOperator("-",
-				new UnaryOperatorParser<>(60, false, (smcl, statement) -> statement.getNegative()));
-		register.registerOperator("*", new BinaryOperatorParser<>(30, true, (smcl, statements) -> {
+				new UnaryOperatorParser<>(60, false, (smcl, statement, variables) -> statement.getNegative()));
+		register.registerOperator("*", new BinaryOperatorParser<>(30, true, (smcl, statements, variables) -> {
 			if (statements[0] instanceof MultiplyStatement) {
 				MultiplyStatement get = (MultiplyStatement) statements[0];
 				Statement other = statements[1];
 				return get.addMultiplier(other);
 			} else {
-				MultiplyStatement statement = smcl.obtain(MultiplyStatement.class);
+				MultiplyStatement statement = new MultiplyStatement(smcl, variables);
 				return statement.addMultipliers(statements);
 			}
 		}));
-		register.registerOperator("/", new BinaryOperatorParser<>(30, true, (smcl, statements) -> {
+		register.registerOperator("/", new BinaryOperatorParser<>(30, true, (smcl, statements, variables) -> {
 			if (statements[0] instanceof DivideStatement) {
 				DivideStatement get = (DivideStatement) statements[0];
 				Statement other = statements[1];
 				return get.addDivisor(other);
 			} else {
-				DivideStatement statement = smcl.obtain(DivideStatement.class);
+				DivideStatement statement = new DivideStatement(smcl, variables);
 				return statement.putDividendAndDivisors(statements);
 			}
 		}));
-		register.registerOperator("^", new BinaryOperatorParser<>(40, true, (smcl, statements) -> {
+		register.registerOperator("^", new BinaryOperatorParser<>(40, true, (smcl, statements, variables) -> {
 			if (statements[0] instanceof PowerStatement) {
 				PowerStatement get = (PowerStatement) statements[0];
 				Statement other = statements[1];
 				return get.addExponent(other);
 			} else {
-				PowerStatement statement = smcl.obtain(PowerStatement.class);
+				PowerStatement statement = new PowerStatement(smcl, variables);
 				return statement.putBaseAndExponents(statements);
 			}
 		}));
@@ -111,14 +111,6 @@ public class SMCL {
 	public final void initWithLogicOperator() {
 		init();
 
-	}
-
-	private StatementGetter getter = new DefaultStatementGetter();
-
-	public final <T extends Statement> T obtain(Class<T> cls) {
-		T obj = getter.obtain(cls);
-		obj.smcl = this;
-		return obj;
 	}
 
 	public final Statement format(String expr) throws MathParseException {

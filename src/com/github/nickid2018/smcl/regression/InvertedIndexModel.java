@@ -20,9 +20,9 @@ public class InvertedIndexModel extends RegressionModel {
 
 	@Override
 	public Statement getTransformed(SMCL smcl, double b, double a) {
-		MultiplyStatement mls = smcl.obtain(MultiplyStatement.class);
-		PowerStatement pws = smcl.obtain(PowerStatement.class);
-		DivideStatement ds = smcl.obtain(DivideStatement.class);
+		MultiplyStatement mls = new MultiplyStatement(smcl, smcl.globalvars.toDefinedVariables());
+		PowerStatement pws = new PowerStatement(smcl, smcl.globalvars.toDefinedVariables());
+		DivideStatement ds = new DivideStatement(smcl, smcl.globalvars.toDefinedVariables());
 		Statement na = NumberPool.get(smcl, Math.exp(a));
 		ds.putDividendAndDivisors(NumberPool.get(smcl, 1), smcl.globalvars.getVariable(Regression.independentVariable));
 		pws.putBaseAndExponents(NumberPool.get(smcl, Math.exp(b)), ds);

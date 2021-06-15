@@ -20,8 +20,8 @@ public class PowerModel extends RegressionModel {
 
 	@Override
 	public Statement getTransformed(SMCL smcl, double b, double a) {
-		MultiplyStatement mls = smcl.obtain(MultiplyStatement.class);
-		PowerStatement pws = smcl.obtain(PowerStatement.class);
+		MultiplyStatement mls = new MultiplyStatement(smcl, smcl.globalvars.toDefinedVariables());
+		PowerStatement pws = new PowerStatement(smcl, smcl.globalvars.toDefinedVariables());
 		Statement nb = NumberPool.get(smcl, b);
 		Statement na = NumberPool.get(smcl, Math.exp(a));
 		pws.putBaseAndExponents(smcl.globalvars.getVariable(Regression.independentVariable), nb);

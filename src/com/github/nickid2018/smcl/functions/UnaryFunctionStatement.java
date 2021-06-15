@@ -4,9 +4,10 @@ import com.github.nickid2018.smcl.*;
 
 public abstract class UnaryFunctionStatement extends FunctionStatement {
 
-	private Statement innerStatement;
+	protected Statement innerStatement;
 
 	public UnaryFunctionStatement(Statement statement) {
+		super(statement.getSMCL(), statement.getVariables());
 		setInnerStatement(statement);
 	}
 

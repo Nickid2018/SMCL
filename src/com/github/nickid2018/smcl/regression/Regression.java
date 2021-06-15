@@ -16,6 +16,7 @@ public class Regression {
 	}
 
 	public static Statement doRegression(SMCL smcl, Map<Double, Double> values, RegressionModel model) {
+		smcl.globalvars.registerVariable(independentVariable);
 		if (storagers.get() == null)
 			storagers.set(new NumberStorager());
 		NumberStorager storager = storagers.get();
