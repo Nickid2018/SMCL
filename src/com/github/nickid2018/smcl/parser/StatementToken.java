@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,28 +17,28 @@ package com.github.nickid2018.smcl.parser;
 
 public class StatementToken {
 
-	public String detail = "";
-	public StatementTokenType type;
-	public int pos;
-	public int length;
+    public String detail = "";
+    public StatementTokenType type;
+    public int pos;
+    public int length;
 
-	public void append(char c) {
-		this.detail = this.detail + c;
-	}
+    public void append(char c) {
+        this.detail = this.detail + c;
+    }
 
-	public void append(String s) {
-		this.detail = this.detail + s;
-	}
+    public void append(String s) {
+        this.detail = this.detail + s;
+    }
 
-	public char charAt(int pos) {
-		return this.detail.charAt(pos);
-	}
+    public char charAt(int pos) {
+        return this.detail.charAt(pos);
+    }
 
-	public int length() {
-		return this.detail.length();
-	}
+    public int length() {
+        return this.detail.length();
+    }
 
-	public String toString() {
-		return this.detail;
-	}
+    public String toString() {
+        return this.detail;
+    }
 }

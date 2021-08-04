@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,67 +17,67 @@ package com.github.nickid2018.smcl;
 
 public abstract class Statement implements Cloneable {
 
-	protected SMCL smcl;
-	protected boolean isNegative;
-	protected DefinedVariables variables;
+    protected SMCL smcl;
+    protected boolean isNegative;
+    protected final DefinedVariables variables;
 
-	public Statement(SMCL smcl) {
-		this.smcl = smcl;
-		this.variables = smcl.globalvars.toDefinedVariables();
-	}
+    public Statement(SMCL smcl) {
+        this.smcl = smcl;
+        this.variables = smcl.globalvars.toDefinedVariables();
+    }
 
-	public Statement(SMCL smcl, DefinedVariables variables) {
-		this.smcl = smcl;
-		this.variables = variables;
-	}
+    public Statement(SMCL smcl, DefinedVariables variables) {
+        this.smcl = smcl;
+        this.variables = variables;
+    }
 
-	// Statement Base Functions
+    // Statement Base Functions
 
-	public boolean isNegative() {
-		return isNegative;
-	}
+    public boolean isNegative() {
+        return isNegative;
+    }
 
-	public Statement getNegative() {
-		isNegative = !isNegative;
-		return this;
-	}
+    public Statement getNegative() {
+        isNegative = !isNegative;
+        return this;
+    }
 
-	public Statement getNewNegative() {
-		try {
-			Statement s2 = (Statement) clone();
-			return s2.getNegative();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
+    public Statement getNewNegative() {
+        try {
+            Statement s2 = (Statement) clone();
+            return s2.getNegative();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
 
-	public DefinedVariables getVariables() {
-		return variables;
-	}
+    public DefinedVariables getVariables() {
+        return variables;
+    }
 
-	public SMCL getSMCL() {
-		return smcl;
-	}
+    public SMCL getSMCL() {
+        return smcl;
+    }
 
-	@Override
-	public abstract String toString();
+    @Override
+    public abstract String toString();
 
-	protected abstract double calculateInternal(VariableList list);
+    protected abstract double calculateInternal(VariableList list);
 
-	public double calculate(VariableList list) {
-		return isNegative ? -calculateInternal(list) : calculateInternal(list);
-	}
+    public double calculate(VariableList list) {
+        return isNegative ? -calculateInternal(list) : calculateInternal(list);
+    }
 
-	// Only single variable
-	public Statement derivative() {
-		if (variables.size() > 1)
-			throw new ArithmeticException("Statement " + this + " has more than one independent value");
-		return isNegative ? derivativeInternal().getNegative() : derivativeInternal();
-	}
+    // Only single variable
+    public Statement derivative() {
+        if (variables.size() > 1)
+            throw new ArithmeticException("Statement " + this + " has more than one independent value");
+        return isNegative ? derivativeInternal().getNegative() : derivativeInternal();
+    }
 
-	protected abstract Statement derivativeInternal();
+    protected abstract Statement derivativeInternal();
 
-	public void setSMCL(SMCL smcl) {
-		this.smcl = smcl;
-	}
+    public void setSMCL(SMCL smcl) {
+        this.smcl = smcl;
+    }
 }

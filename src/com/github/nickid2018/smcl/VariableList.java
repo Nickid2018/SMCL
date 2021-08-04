@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,25 +19,25 @@ import java.util.*;
 
 public class VariableList {
 
-	private Map<String, Double> value = new HashMap<>();
+    private final Map<String, Double> value = new HashMap<>();
 
-	public final VariableList addVariableValue(String var, double v) {
-		value.put(var, v);
-		return this;
-	}
+    public final VariableList addVariableValue(String var, double v) {
+        value.put(var, v);
+        return this;
+    }
 
-	public final double getVariableValue(String var) {
-		if (!value.containsKey(var))
-			throw new ArithmeticException("Variable \"" + var + "\" is not declared in list");
-		return value.get(var);
-	}
+    public final double getVariableValue(String var) {
+        if (!value.containsKey(var))
+            throw new ArithmeticException("Variable \"" + var + "\" is not declared in list");
+        return value.get(var);
+    }
 
-	public final boolean containsValue(String var) {
-		return value.containsKey(var);
-	}
+    public final boolean containsValue(String var) {
+        return value.containsKey(var);
+    }
 
-	public final VariableList changeValue(String var, double v) {
-		value.put(var, v);
-		return this;
-	}
+    public final VariableList changeValue(String var, double v) {
+        value.put(var, v);
+        return this;
+    }
 }
