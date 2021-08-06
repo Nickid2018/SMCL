@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,30 +15,42 @@
  */
 package com.github.nickid2018.smcl.statements.arith;
 
-import java.util.*;
-
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.functions.*;
+import com.github.nickid2018.smcl.DefinedVariables;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.VariableList;
+import com.github.nickid2018.smcl.functions.Functions;
+import com.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 import com.github.nickid2018.smcl.optimize.NumberPool;
-import com.github.nickid2018.smcl.statements.*;
+import com.github.nickid2018.smcl.statements.NumberStatement;
+import com.github.nickid2018.smcl.statements.Variable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PowerStatement extends Statement {
 
-    public PowerStatement(SMCL smcl, DefinedVariables variables) {
+    private final List<Statement> exponents = new ArrayList<>();
+    private Statement base;
+    public PowerStatement(SMCLContext smcl, DefinedVariables variables) {
         super(smcl, variables);
     }
 
-    private Statement base;
-    private final List<Statement> exponents = new ArrayList<>();
-
     @Override
     public double calculateInternal(VariableList list) {
-        double ret = base.calculate(list);
-        for (Statement ms : exponents) {
-            double mul = ms.calculate(list);
-            ret = Math.pow(ret, mul);
+        double prevExp = exponents.get(exponents.size() - 1).calculate(list);
+        for (int now = exponents.size() - 2; now > -2; now--) {
+            double currentBase = now == -1 ? base.calculate(list) : exponents.get(now).calculate(list);
+            if (currentBase == 0 && prevExp <= 0)
+                throw new ArithmeticException("0 is multiplied by an exponent not greater than 0");
+            if (currentBase < 0) {
+                int intPrev = (int) prevExp;
+                if (Math.abs(intPrev - prevExp) > 1E-5)
+                    throw new ArithmeticException("A negative number is multiplied by an fraction");
+            }
+            prevExp = Math.pow(currentBase, prevExp);
         }
-        return ret;
+        return prevExp;
     }
 
     @Override
@@ -72,9 +84,9 @@ public class PowerStatement extends Statement {
     }
 
     @Override
-    // (f^g)' = (f^g)��(glnf)'
+    // (f^g)' = (f^g)(glnf)'
     // Optimize:
-    // 1) f = C: (C^g)' = (C^g)��g'��lnC
+    // 1) f = C: (C^g)' = (C^g)g'lnC
     // 2) g = C: (f^C)' = Cf'f^(C-1)
     protected Statement derivativeInternal() {
         if (exponents.size() > 1) {
@@ -90,19 +102,19 @@ public class PowerStatement extends Statement {
             return NumberPool.NUMBER_CONST_0;
         if (baseN) {
             double constNumber = Math.log(base.calculate(null));
-            Statement deri = exponent.derivative();
-            if (deri instanceof NumberStatement)
-                constNumber *= deri.calculate(null);
+            Statement derivative = exponent.derivative();
+            if (derivative instanceof NumberStatement)
+                constNumber *= derivative.calculate(null);
             if (constNumber == 0)
                 return NumberPool.NUMBER_CONST_0;
             if (constNumber == 1 || constNumber == -1) {
                 MultiplyStatement end = new MultiplyStatement(smcl, variables).addMultiplier(this);
-                return constNumber == 1 ? (deri instanceof NumberStatement) ? end : end.addMultiplier(deri)
-                        : (deri instanceof NumberStatement) ? end : end.addMultiplier(deri).getNegative();
+                return constNumber == 1 ? (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative)
+                        : (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative).getNegative();
             } else {
                 MultiplyStatement end = new MultiplyStatement(smcl, variables)
                         .addMultipliers(NumberPool.getNumber(constNumber), this);
-                return (deri instanceof NumberStatement) ? end : end.addMultiplier(deri);
+                return (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative);
             }
         }
         if (exponentN) {
@@ -112,21 +124,21 @@ public class PowerStatement extends Statement {
                 return NumberPool.NUMBER_CONST_0;
             if (exp == 1)
                 return base.derivative();
-            Statement deri = base.derivative();
-            if (deri instanceof NumberStatement)
-                constNumber *= deri.calculate(null);
+            Statement derivative = base.derivative();
+            if (derivative instanceof NumberStatement)
+                constNumber *= derivative.calculate(null);
             if (constNumber == 0)
                 return NumberPool.NUMBER_CONST_0;
             Statement trexp = exp == 2 ? base
                     : new PowerStatement(smcl, variables).putBaseAndExponents(base, NumberPool.getNumber(exp - 1));
             if (constNumber == 1 || constNumber == -1) {
                 MultiplyStatement end = new MultiplyStatement(smcl, variables).addMultiplier(trexp);
-                return constNumber == 1 ? (deri instanceof NumberStatement) ? end : end.addMultiplier(deri)
-                        : (deri instanceof NumberStatement) ? end : end.addMultiplier(deri).getNegative();
+                return constNumber == 1 ? (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative)
+                        : (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative).getNegative();
             } else {
                 MultiplyStatement end = new MultiplyStatement(smcl, variables)
                         .addMultipliers(NumberPool.getNumber(constNumber), trexp);
-                return (deri instanceof NumberStatement) ? end : end.addMultiplier(deri);
+                return (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative);
             }
         }
         Statement multi = new MultiplyStatement(smcl, variables)

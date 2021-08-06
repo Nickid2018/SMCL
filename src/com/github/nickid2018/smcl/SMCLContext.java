@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,28 +15,32 @@
  */
 package com.github.nickid2018.smcl;
 
-import com.github.nickid2018.smcl.parser.*;
-import com.github.nickid2018.smcl.functions.*;
-import com.github.nickid2018.smcl.statements.arith.*;
+import com.github.nickid2018.smcl.functions.Functions;
+import com.github.nickid2018.smcl.parser.BinaryOperatorParser;
+import com.github.nickid2018.smcl.parser.StatementGenerator;
+import com.github.nickid2018.smcl.parser.UnaryMathematicsFunctionParser;
+import com.github.nickid2018.smcl.parser.UnaryOperatorParser;
+import com.github.nickid2018.smcl.statements.arith.DivideStatement;
+import com.github.nickid2018.smcl.statements.arith.MathStatement;
+import com.github.nickid2018.smcl.statements.arith.MultiplyStatement;
+import com.github.nickid2018.smcl.statements.arith.PowerStatement;
 
-public class SMCL {
+public class SMCLContext {
 
     public static final VariableList EMPTY_ARGS = new VariableList();
 
-    private static SMCL instance;
-
-    public static synchronized SMCL getInstance() {
-        return instance == null ? instance = new SMCL(new SMCLSettings()) : instance;
-    }
-
+    private static SMCLContext instance;
     public final SMCLSettings settings;
     public final SMCLRegister register;
     public final GlobalVariables globalvars;
-
-    public SMCL(SMCLSettings setting) {
+    public SMCLContext(SMCLSettings setting) {
         settings = setting;
         register = new SMCLRegister(this);
         globalvars = new GlobalVariables();
+    }
+
+    public static synchronized SMCLContext getInstance() {
+        return instance == null ? instance = new SMCLContext(new SMCLSettings()) : instance;
     }
 
     public final void init() {

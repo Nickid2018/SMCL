@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +17,16 @@ package com.github.nickid2018.smcl;
 
 public abstract class Statement implements Cloneable {
 
-    protected SMCL smcl;
-    protected boolean isNegative;
     protected final DefinedVariables variables;
+    protected SMCLContext smcl;
+    protected boolean isNegative;
 
-    public Statement(SMCL smcl) {
+    public Statement(SMCLContext smcl) {
         this.smcl = smcl;
         this.variables = smcl.globalvars.toDefinedVariables();
     }
 
-    public Statement(SMCL smcl, DefinedVariables variables) {
+    public Statement(SMCLContext smcl, DefinedVariables variables) {
         this.smcl = smcl;
         this.variables = variables;
     }
@@ -55,8 +55,12 @@ public abstract class Statement implements Cloneable {
         return variables;
     }
 
-    public SMCL getSMCL() {
+    public SMCLContext getSMCL() {
         return smcl;
+    }
+
+    public void setSMCL(SMCLContext smcl) {
+        this.smcl = smcl;
     }
 
     @Override
@@ -76,8 +80,4 @@ public abstract class Statement implements Cloneable {
     }
 
     protected abstract Statement derivativeInternal();
-
-    public void setSMCL(SMCL smcl) {
-        this.smcl = smcl;
-    }
 }

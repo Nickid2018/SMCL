@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,20 +15,22 @@
  */
 package com.github.nickid2018.smcl.parser;
 
-import java.util.function.*;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.functions.UnaryFunctionBuilder;
+import com.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.functions.*;
+import java.util.function.BiFunction;
 
 public class UnaryMathematicsFunctionParser<T extends UnaryFunctionStatement> extends FunctionParser<T> {
 
-    private final BiFunction<SMCL, Statement[], ? extends UnaryFunctionStatement> map;
+    private final BiFunction<SMCLContext, Statement[], ? extends Statement> map;
 
     public UnaryMathematicsFunctionParser(UnaryFunctionBuilder unary) {
         map = unary::create;
     }
 
-    public UnaryMathematicsFunctionParser(BiFunction<SMCL, Statement[], ? extends UnaryFunctionStatement> map) {
+    public UnaryMathematicsFunctionParser(BiFunction<SMCLContext, Statement[], ? extends UnaryFunctionStatement> map) {
         this.map = map;
     }
 
@@ -43,7 +45,7 @@ public class UnaryMathematicsFunctionParser<T extends UnaryFunctionStatement> ex
     }
 
     @Override
-    public UnaryFunctionStatement parseStatement(SMCL smcl, Statement... statements) {
+    public Statement parseStatement(SMCLContext smcl, Statement... statements) {
         return map.apply(smcl, statements);
     }
 

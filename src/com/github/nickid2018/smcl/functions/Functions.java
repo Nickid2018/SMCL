@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,9 @@
  */
 package com.github.nickid2018.smcl.functions;
 
-import java.util.function.*;
+import com.github.nickid2018.smcl.set.Interval;
 
-import com.github.nickid2018.smcl.set.*;
+import java.util.function.DoubleConsumer;
 
 import static com.github.nickid2018.smcl.functions.FunctionBuilder.*;
 import static com.github.nickid2018.smcl.functions.FunctionDerivatives.*;
@@ -51,18 +51,16 @@ public class Functions {
     // tangent (tan)
     public static final UnaryFunctionBuilder TAN = UnaryFunctionBuilder.createBuilder("tan").withDomain(DOMAIN_TAN)
             .withResolve(RESOLVE_RADIANS).withFunction(Math::tan).withDerivativeResolver(DERIVATIVE_TAN);
-
+    // cotangent (cot)
+    public static final UnaryFunctionBuilder COT = TAN.copyWithoutFunction("cot").withFunction(arg -> 1 / Math.tan(arg))
+            .withDerivativeResolver(DERIVATIVE_COT);
     // Advanced trigonometric functions
-    // cosecant (csc)
+    // co-secant (csc)
     public static final UnaryFunctionBuilder CSC = SIN.copyWithoutFunction("csc").withFunction(arg -> 1 / Math.sin(arg))
             .withDerivativeResolver(DERIVATIVE_CSC);
     // secant (sec)
     public static final UnaryFunctionBuilder SEC = COS.copyWithoutFunction("sec").withFunction(arg -> 1 / Math.cos(arg))
             .withDerivativeResolver(DERIVATIVE_SEC);
-    // cotangent (cot)
-    public static final UnaryFunctionBuilder COT = TAN.copyWithoutFunction("cot").withFunction(arg -> 1 / Math.tan(arg))
-            .withDerivativeResolver(DERIVATIVE_COT);
-
     // Basic inverse trigonometric functions
     // arc-sine (asin, arcsin)
     public static final UnaryFunctionBuilder ASIN = UnaryFunctionBuilder.createBuilder("asin").withDomain(DOMAIN_ARC)
@@ -108,7 +106,7 @@ public class Functions {
     // absolute value (abs or |x|)
     public static final UnaryFunctionBuilder ABS = UnaryFunctionBuilder.createBuilder("abs").withFunction(Math::abs)
             .withDerivativeResolver(DERIVATIVE_ABS);
-    // signum function (sgn)
+    // sign function (sgn)
     public static final UnaryFunctionBuilder SGN = UnaryFunctionBuilder.createBuilder("sgn").withFunction(Math::signum);
     // round-up function or "ceil" function (ceil)
     public static final UnaryFunctionBuilder CEIL = UnaryFunctionBuilder.createBuilder("ceil").withFunction(Math::ceil);

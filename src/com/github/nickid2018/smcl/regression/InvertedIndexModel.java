@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,12 @@
  */
 package com.github.nickid2018.smcl.regression;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.statements.arith.*;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.optimize.NumberPool;
+import com.github.nickid2018.smcl.statements.arith.DivideStatement;
+import com.github.nickid2018.smcl.statements.arith.MultiplyStatement;
+import com.github.nickid2018.smcl.statements.arith.PowerStatement;
 
 public class InvertedIndexModel extends RegressionModel {
 
@@ -34,7 +37,7 @@ public class InvertedIndexModel extends RegressionModel {
     }
 
     @Override
-    public Statement getTransformed(SMCL smcl, double b, double a) {
+    public Statement getTransformed(SMCLContext smcl, double b, double a) {
         MultiplyStatement mls = new MultiplyStatement(smcl, smcl.globalvars.toDefinedVariables());
         PowerStatement pws = new PowerStatement(smcl, smcl.globalvars.toDefinedVariables());
         DivideStatement ds = new DivideStatement(smcl, smcl.globalvars.toDefinedVariables());

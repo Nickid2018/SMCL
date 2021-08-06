@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,10 @@
  */
 package com.github.nickid2018.smcl.statements;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
+import com.github.nickid2018.smcl.DefinedVariables;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.VariableList;
+import com.github.nickid2018.smcl.optimize.NumberPool;
 
 public class Variable extends Statement {
 
@@ -25,6 +27,8 @@ public class Variable extends Statement {
 
     public Variable(String s) {
         super(null, DefinedVariables.EMPTY_VARIABLES);
+        if (!s.matches("[a-zA-Z]+"))
+            throw new IllegalArgumentException("Illegal variable name:" + s);
         name = s;
     }
 
@@ -34,6 +38,8 @@ public class Variable extends Statement {
 
     public void setName(String name) {
         this.name = name;
+        if (negativeVar != null)
+            negativeVar.name = name;
     }
 
     @Override

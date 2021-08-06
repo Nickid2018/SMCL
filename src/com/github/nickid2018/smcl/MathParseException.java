@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
  */
 package com.github.nickid2018.smcl;
 
-import com.github.nickid2018.smcl.parser.*;
+import com.github.nickid2018.smcl.parser.StatementToken;
 
 public class MathParseException extends Exception {
 
@@ -23,9 +23,8 @@ public class MathParseException extends Exception {
      *
      */
     private static final long serialVersionUID = -7821386249067385803L;
-
-    private String statement;
     private final StatementToken token;
+    private String statement;
 
     public MathParseException(String s, String statement, StatementToken token) {
         super(s);

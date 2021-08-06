@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,18 @@
  */
 package com.github.nickid2018.smcl.example;
 
-import java.util.*;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.regression.InvertedIndexModel;
+import com.github.nickid2018.smcl.regression.Regression;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.regression.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegressionDemo {
 
     public static void main(String[] args) {
-        SMCL smcl = SMCL.getInstance();
+        SMCLContext smcl = SMCLContext.getInstance();
         smcl.globalvars.registerVariable("x");
         Map<Double, Double> map = new HashMap<>();
         map.put(1.0, 64.0);

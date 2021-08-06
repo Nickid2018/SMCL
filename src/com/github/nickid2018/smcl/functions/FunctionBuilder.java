@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,20 +15,38 @@
  */
 package com.github.nickid2018.smcl.functions;
 
-import java.util.function.*;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.set.NumberSet;
+import com.github.nickid2018.smcl.util.Double2DoubleFunction;
+import com.github.nickid2018.smcl.util.DoubleSMCLFunction;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.set.*;
-import com.github.nickid2018.smcl.util.*;
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleFunction;
+import java.util.function.DoublePredicate;
 
-public abstract class FunctionBuilder<T extends FunctionStatement> {
+public abstract class FunctionBuilder {
 
     public static final DoubleConsumer ALL_DOMAIN = arg -> {
-        ;
+        if (!Double.isFinite(arg))
+            throw new ArithmeticException("Infinite numbers and NaNs are not supported");
     };
+    public static final Double2DoubleFunction DEFAULT_RESULT = arg -> arg;
+    public static final DoubleSMCLFunction DEFAULT_RESOLVE = (arg, smcl) -> arg;
+    public static final DoubleSMCLFunction RESOLVE_RADIANS = (arg,
+                                                              smcl) -> smcl.settings.degreeAngle ? Math.toRadians(arg) : arg;
+    public static final DoubleSMCLFunction RESOLVE_DEGREES = (arg,
+                                                              smcl) -> smcl.settings.degreeAngle ? Math.toDegrees(arg) : arg;
+    protected final String name;
+
+    public FunctionBuilder(String name) {
+        this.name = name;
+    }
 
     public static DoubleConsumer checkDomainExclude(DoublePredicate exclude, DoubleFunction<String> errorString) {
         return arg -> {
+            if (!Double.isFinite(arg))
+                throw new ArithmeticException("Infinite numbers and NaNs are not supported");
             if (exclude.test(arg))
                 throw new ArithmeticException(errorString.apply(arg));
         };
@@ -36,44 +54,24 @@ public abstract class FunctionBuilder<T extends FunctionStatement> {
 
     public static DoubleConsumer checkDomainInclude(DoublePredicate include, DoubleFunction<String> errorString) {
         return arg -> {
+            if (!Double.isFinite(arg))
+                throw new ArithmeticException("Infinite numbers and NaNs are not supported");
             if (!include.test(arg))
                 throw new ArithmeticException(errorString.apply(arg));
         };
     }
 
     public static DoubleConsumer checkDomainExclude(NumberSet set, DoubleFunction<String> errorString) {
-        return arg -> {
-            if (set.isBelongTo(arg))
-                throw new ArithmeticException(errorString.apply(arg));
-        };
+        return checkDomainExclude(set::isBelongTo, errorString);
     }
 
     public static DoubleConsumer checkDomainInclude(NumberSet set, DoubleFunction<String> errorString) {
-        return arg -> {
-            if (!set.isBelongTo(arg))
-                throw new ArithmeticException(errorString.apply(arg));
-        };
-    }
-
-    public static final Double2DoubleFunction DEFAULT_RESULT = arg -> arg;
-
-    public static final DoubleSMCLFunction DEFAULT_RESOLVE = (arg, smcl) -> arg;
-
-    public static final DoubleSMCLFunction RESOLVE_RADIANS = (arg,
-                                                              smcl) -> smcl.settings.degreeAngle ? Math.toRadians(arg) : arg;
-
-    public static final DoubleSMCLFunction RESOLVE_DEGREES = (arg,
-                                                              smcl) -> smcl.settings.degreeAngle ? Math.toDegrees(arg) : arg;
-
-    protected final String name;
-
-    public FunctionBuilder(String name) {
-        this.name = name;
+        return checkDomainInclude(set::isBelongTo, errorString);
     }
 
     public String getName() {
         return name;
     }
 
-    public abstract T create(SMCL smcl, Statement... statements);
+    public abstract Statement create(SMCLContext smcl, Statement... statements);
 }

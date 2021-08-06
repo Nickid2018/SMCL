@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,11 @@
  */
 package com.github.nickid2018.smcl.regression;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.statements.arith.*;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.optimize.NumberPool;
+import com.github.nickid2018.smcl.statements.arith.MathStatement;
+import com.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 
 public class LinearModel extends RegressionModel {
 
@@ -34,7 +36,7 @@ public class LinearModel extends RegressionModel {
     }
 
     @Override
-    public Statement getTransformed(SMCL smcl, double b, double a) {
+    public Statement getTransformed(SMCLContext smcl, double b, double a) {
         MathStatement ms = new MathStatement(smcl, smcl.globalvars.toDefinedVariables());
         Statement na = NumberPool.get(smcl, a);
         Statement nb = NumberPool.get(smcl, b);

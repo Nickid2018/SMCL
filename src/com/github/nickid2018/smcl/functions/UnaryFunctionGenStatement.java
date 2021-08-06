@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,10 +15,14 @@
  */
 package com.github.nickid2018.smcl.functions;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.statements.*;
-import com.github.nickid2018.smcl.statements.arith.*;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.VariableList;
+import com.github.nickid2018.smcl.optimize.NumberPool;
+import com.github.nickid2018.smcl.statements.NumberStatement;
+import com.github.nickid2018.smcl.statements.arith.MultiplyStatement;
+
+import java.util.function.Function;
 
 public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
 
@@ -28,7 +32,7 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
         super(ms);
     }
 
-    public UnaryFunctionGenStatement(SMCL smcl, Statement statement, UnaryFunctionBuilder function) {
+    public UnaryFunctionGenStatement(SMCLContext smcl, Statement statement, UnaryFunctionBuilder function) {
         super(statement);
         this.smcl = smcl;
         this.function = function;
@@ -58,7 +62,10 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
 
     @Override
     protected Statement derivativeInternal() {
-        Statement partDesi = function.getDerivativeResolver().apply(innerStatement);
+        Function<Statement, Statement> resolver = function.getDerivativeResolver();
+        if (resolver == null)
+            throw new ArithmeticException("Unsupported or illegal function to derivative: " + getFunction().getName());
+        Statement partDesi = resolver.apply(innerStatement);
         Statement end = innerStatement.derivative();
         if (end instanceof NumberStatement) {
             double get = end.calculate(null);

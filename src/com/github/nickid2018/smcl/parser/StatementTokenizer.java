@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,20 +15,20 @@
  */
 package com.github.nickid2018.smcl.parser;
 
-import com.github.nickid2018.smcl.*;
+import com.github.nickid2018.smcl.MathParseException;
+import com.github.nickid2018.smcl.SMCLContext;
 
 public class StatementTokenizer {
 
     public static final char decimalSeparator = '.';
     public static final char unaryOperatorSuffix = 'u';
 
-    private final SMCL smcl;
-
-    private int pos = 0;
+    private final SMCLContext smcl;
     private final String input;
+    private int pos = 0;
     private StatementToken previousToken;
 
-    public StatementTokenizer(SMCL smcl, String input) {
+    public StatementTokenizer(SMCLContext smcl, String input) {
         this.smcl = smcl;
         this.input = input;
     }
@@ -51,7 +51,7 @@ public class StatementTokenizer {
         if (pos >= input.length())
             return previousToken = null;
         char ch = input.charAt(pos);
-        // Skip writespaces
+        // Skip whitespaces
         while (Character.isWhitespace(ch) && pos < input.length())
             ch = input.charAt(++pos);
         // Position set!
@@ -96,7 +96,7 @@ public class StatementTokenizer {
 
                     // Generate string
                     if (validOperatorSeenUntil != -1) {
-                        // Finded
+                        // Found
                         token.append(input.substring(initialPos, validOperatorSeenUntil));
                         pos = validOperatorSeenUntil;
                     } else {
@@ -125,7 +125,7 @@ public class StatementTokenizer {
                     ++pos;
                 }
             } else {
-                // If we can't parse this as number or any structive statement, we have to read
+                // If we can't parse this as number or any structure statement, we have to read
                 // until a character that may be parsed
                 while ((Character.isLetter(ch) || Character.isDigit(ch) || token.length() == 0)
                         && pos < input.length()) {
@@ -147,7 +147,7 @@ public class StatementTokenizer {
                 // The first statement should be parsed as 'FUNCTION' while the algorithm
                 // returns 'VARIABLE' (Exactly speaking, this is a complex-statement) The second
                 // and third statement should be parsed as 'NUMBER'
-                // To deal with these statement, SMCLSettings has a field called
+                // To deal with this statement, SMCLSettings has a field called
                 // 'strictFunction' can allow/refuse this kind of statement and the setting will
                 // come into existence when the RPN algorithm working
                 token.type = ch == '(' ? StatementTokenType.FUNCTION : StatementTokenType.VARIABLE;

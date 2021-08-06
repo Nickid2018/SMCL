@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,22 +23,22 @@ public class StatementToken {
     public int length;
 
     public void append(char c) {
-        this.detail = this.detail + c;
+        detail += c;
     }
 
     public void append(String s) {
-        this.detail = this.detail + s;
+        detail += s;
     }
 
     public char charAt(int pos) {
-        return this.detail.charAt(pos);
+        return detail.charAt(pos);
     }
 
     public int length() {
-        return this.detail.length();
+        return detail.length();
     }
 
     public String toString() {
-        return this.detail;
+        return detail;
     }
 }

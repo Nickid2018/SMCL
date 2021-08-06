@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -153,11 +153,11 @@ public class ByteTransformer {
         byte low1 = values[offset + 5];
         byte low2 = values[offset + 6];
         byte low3 = values[offset + 7];
-        long shigh0 = (long) (((long) high0) & 0xFF) << 56;
-        long shigh1 = (long) (((long) high1) & 0xFF) << 48;
-        long shigh2 = (long) (((long) high2) & 0xFF) << 40;
-        long shigh3 = (long) (((long) high3) & 0xFF) << 32;
-        long slow0 = (long) (((long) low0) & 0xFF) << 24;
+        long shigh0 = (((long) high0) & 0xFF) << 56;
+        long shigh1 = (((long) high1) & 0xFF) << 48;
+        long shigh2 = (((long) high2) & 0xFF) << 40;
+        long shigh3 = (((long) high3) & 0xFF) << 32;
+        long slow0 = (((long) low0) & 0xFF) << 24;
         long slow1 = (((long) low1) & 0xFF) << 16;
         long slow2 = (((long) low2) & 0xFF) << 8;
         long slow3 = ((long) low3) & 0xFF;

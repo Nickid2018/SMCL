@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,21 +15,25 @@
  */
 package com.github.nickid2018.smcl.statements.arith;
 
-import java.util.*;
+import com.github.nickid2018.smcl.DefinedVariables;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.VariableList;
+import com.github.nickid2018.smcl.functions.UnaryFunctionStatement;
+import com.github.nickid2018.smcl.optimize.NumberPool;
+import com.github.nickid2018.smcl.statements.NumberStatement;
+import com.github.nickid2018.smcl.statements.Variable;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.functions.*;
-import com.github.nickid2018.smcl.statements.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DivideStatement extends Statement {
 
-    public DivideStatement(SMCL smcl, DefinedVariables variables) {
+    private final List<Statement> divisors = new ArrayList<>();
+    private Statement dividend;
+    public DivideStatement(SMCLContext smcl, DefinedVariables variables) {
         super(smcl, variables);
     }
-
-    private Statement dividend;
-    private final List<Statement> divisors = new ArrayList<>();
 
     @Override
     public double calculateInternal(VariableList list) {
@@ -58,6 +62,16 @@ public class DivideStatement extends Statement {
     }
 
     public DivideStatement addDivisor(Statement statement) {
+        if (statement.equals(NumberPool.NUMBER_CONST_0))
+            throw new ArithmeticException("divide by 0");
+        if (statement.equals(NumberPool.NUMBER_CONST_1))
+            return this;
+        if (statement.equals(NumberPool.NUMBER_CONST_N1))
+            return (DivideStatement) getNegative();
+        if (dividend instanceof NumberStatement && statement instanceof NumberStatement) {
+            dividend = NumberPool.get(smcl, dividend.calculate(null) / statement.calculate(null));
+            return this;
+        }
         divisors.add(statement);
         return this;
     }

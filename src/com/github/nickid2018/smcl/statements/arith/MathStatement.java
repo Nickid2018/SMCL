@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,24 @@
  */
 package com.github.nickid2018.smcl.statements.arith;
 
-import java.util.*;
+import com.github.nickid2018.smcl.DefinedVariables;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.VariableList;
+import com.github.nickid2018.smcl.optimize.NumberPool;
+import com.github.nickid2018.smcl.statements.NumberStatement;
+import com.github.nickid2018.smcl.statements.Variable;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.statements.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MathStatement extends Statement {
 
-    public MathStatement(SMCL smcl, DefinedVariables variables) {
+    private final List<Statement> subs = new ArrayList<>();
+
+    public MathStatement(SMCLContext smcl, DefinedVariables variables) {
         super(smcl, variables);
     }
-
-    private final List<Statement> subs = new ArrayList<>();
 
     public double calculateInternal(VariableList list) {
         double t = 0;
@@ -46,11 +51,11 @@ public class MathStatement extends Statement {
                 first = false;
                 if (en.isNegative() && !(en instanceof NumberStatement || en instanceof Variable))
                     sb.append("-");
-                sb.append(en.toString());
+                sb.append(en);
                 continue;
             }
             sb.append(((en instanceof NumberStatement || en instanceof Variable) && en.isNegative()) ? ""
-                    : (en.isNegative() ? "-" : "+")).append(en.toString());
+                    : (en.isNegative() ? "-" : "+")).append(en);
         }
         return sb.toString();
     }
@@ -64,7 +69,14 @@ public class MathStatement extends Statement {
     }
 
     public MathStatement addStatement(Statement statement) {
+        if (statement.equals(NumberPool.NUMBER_CONST_0))
+            return this;
         subs.add(statement);
+        if (isAllNum()) {
+            Statement number = NumberPool.get(smcl, calculate(null));
+            subs.clear();
+            subs.add(number);
+        }
         return this;
     }
 
@@ -78,13 +90,13 @@ public class MathStatement extends Statement {
     protected Statement derivativeInternal() {
         MathStatement end = new MathStatement(smcl, variables);
         for (Statement s : subs) {
-            Statement deri = s.derivative();
-            if (deri.equals(NumberPool.NUMBER_CONST_0))
+            Statement derivative = s.derivative();
+            if (derivative.equals(NumberPool.NUMBER_CONST_0))
                 continue;
-            if (deri instanceof MathStatement)
-                end.addStatements(((MathStatement) deri).subs.toArray(new Statement[0]));
+            if (derivative instanceof MathStatement)
+                end.addStatements(((MathStatement) derivative).subs.toArray(new Statement[0]));
             else
-                end.addStatement(deri);
+                end.addStatement(derivative);
         }
         return end.subs.size() > 0 ? (end.isAllNum() ? NumberPool.getNumber(end.calculate(null)) : end)
                 : NumberPool.NUMBER_CONST_0;

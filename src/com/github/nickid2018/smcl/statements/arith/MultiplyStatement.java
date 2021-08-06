@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,20 +15,25 @@
  */
 package com.github.nickid2018.smcl.statements.arith;
 
-import java.util.*;
+import com.github.nickid2018.smcl.DefinedVariables;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.VariableList;
+import com.github.nickid2018.smcl.functions.UnaryFunctionStatement;
+import com.github.nickid2018.smcl.optimize.NumberPool;
+import com.github.nickid2018.smcl.statements.NumberStatement;
+import com.github.nickid2018.smcl.statements.Variable;
 
-import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.functions.*;
-import com.github.nickid2018.smcl.statements.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MultiplyStatement extends Statement {
 
-    public MultiplyStatement(SMCL smcl, DefinedVariables variables) {
+    private final List<Statement> multipliers = new ArrayList<>();
+
+    public MultiplyStatement(SMCLContext smcl, DefinedVariables variables) {
         super(smcl, variables);
     }
-
-    private final List<Statement> multipliers = new ArrayList<>();
 
     @Override
     public double calculateInternal(VariableList list) {
@@ -66,7 +71,21 @@ public class MultiplyStatement extends Statement {
     }
 
     public MultiplyStatement addMultiplier(Statement statement) {
+        if (statement.equals(NumberPool.NUMBER_CONST_1))
+            return this;
+        if (statement.equals(NumberPool.NUMBER_CONST_0)) {
+            multipliers.clear();
+            multipliers.add(statement);
+            return this;
+        }
+        if (statement.equals(NumberPool.NUMBER_CONST_N1))
+            return (MultiplyStatement) getNegative();
         multipliers.add(statement);
+        if (isAllNum()) {
+            Statement number = NumberPool.get(smcl, calculate(null));
+            multipliers.clear();
+            multipliers.add(number);
+        }
         return this;
     }
 
@@ -96,11 +115,11 @@ public class MultiplyStatement extends Statement {
             MultiplyStatement multi = new MultiplyStatement(smcl, variables);
             for (int j = 0; j < normal.size(); j++) {
                 if (i == j) {
-                    Statement deri = normal.get(j).derivative();
-                    if (deri instanceof MultiplyStatement)
-                        multi.addMultipliers(((MultiplyStatement) deri).multipliers.toArray(new Statement[0]));
+                    Statement derivative = normal.get(j).derivative();
+                    if (derivative instanceof MultiplyStatement)
+                        multi.addMultipliers(((MultiplyStatement) derivative).multipliers.toArray(new Statement[0]));
                     else
-                        multi.addMultiplier(deri);
+                        multi.addMultiplier(derivative);
                 } else {
                     Statement st = normal.get(j);
                     if (st instanceof MultiplyStatement)

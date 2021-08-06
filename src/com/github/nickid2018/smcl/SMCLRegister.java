@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,22 +15,26 @@
  */
 package com.github.nickid2018.smcl;
 
-import java.util.*;
+import com.github.nickid2018.smcl.parser.FunctionParser;
+import com.github.nickid2018.smcl.parser.OperatorParser;
+import com.github.nickid2018.smcl.parser.StatementTokenizer;
+import com.github.nickid2018.smcl.parser.UnaryOperatorParser;
 
-import com.github.nickid2018.smcl.parser.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class SMCLRegister {
 
     private final Map<String, OperatorParser<?>> operators = new HashMap<>();
     private final Map<String, FunctionParser<?>> functions = new HashMap<>();
 
-    private final SMCL smcl;
+    private final SMCLContext smcl;
 
-    SMCLRegister(SMCL smcl) {
+    SMCLRegister(SMCLContext smcl) {
         this.smcl = smcl;
     }
 
-    public SMCL getSMCL() {
+    public SMCLContext getSMCL() {
         return smcl;
     }
 

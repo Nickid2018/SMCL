@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,14 +15,14 @@
  */
 package com.github.nickid2018.smcl.util;
 
-import java.util.*;
+import java.util.Objects;
 
 @FunctionalInterface
 public interface Double2DoubleFunction {
 
-    public double accept(double arg);
+    double accept(double arg);
 
-    public default Double2DoubleFunction addThen(Double2DoubleFunction after) {
+    default Double2DoubleFunction addThen(Double2DoubleFunction after) {
         Objects.requireNonNull(after);
         return arg -> after.accept(accept(arg));
     }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,16 @@
  */
 package com.github.nickid2018.smcl.optimize;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.Arrays;
+import java.util.function.IntConsumer;
 
 public class IntArray {
 
     public static final float DEFAULT_INCREASE_FACTOR = 1f;
     public static final int DEFAULT_INIT_SIZE = 4;
-
+    private final float factor;
     private int[] array;
     private int length;
-
-    private final float factor;
 
     public IntArray() {
         this(DEFAULT_INIT_SIZE, DEFAULT_INCREASE_FACTOR);
@@ -46,7 +44,7 @@ public class IntArray {
         }
     }
 
-    private void testPostion(int pos) {
+    private void testPosition(int pos) {
         if (pos >= length)
             throw new ArrayIndexOutOfBoundsException(pos);
     }
@@ -57,14 +55,14 @@ public class IntArray {
     }
 
     public int setInt(int pos, int value) {
-        testPostion(pos);
+        testPosition(pos);
         int source = array[pos];
         array[pos] = value;
         return source;
     }
 
     public int deleteAndShift(int pos) {
-        testPostion(pos);
+        testPosition(pos);
         int value = array[pos];
         System.arraycopy(array, pos + 1, array, pos, length - pos - 1);
         array[--length] = 0;
@@ -72,8 +70,8 @@ public class IntArray {
     }
 
     public void deleteRangeAndShift(int start, int len) {
-        testPostion(start);
-        testPostion(start + len);
+        testPosition(start);
+        testPosition(start + len);
         System.arraycopy(array, start + len, array, start, length - start - len);
         Arrays.fill(array, length - start - len, length - len, 0);
         length -= len;
@@ -85,19 +83,19 @@ public class IntArray {
      */
     @Deprecated
     public int delete(int pos) {
-        testPostion(pos);
+        testPosition(pos);
         int value = array[pos];
         array[pos] = 0;
         return value;
     }
 
     public int deleteLast() {
-        testPostion(0);
+        testPosition(0);
         return array[--length];
     }
 
     public int get(int pos) {
-        testPostion(pos);
+        testPosition(pos);
         return array[pos];
     }
 
@@ -105,10 +103,9 @@ public class IntArray {
         return length;
     }
 
-    public void forEach(Consumer<Integer> consumer) {
-        for (int i = 0; i < length; i++) {
+    public void forEach(IntConsumer consumer) {
+        for (int i = 0; i < length; i++)
             consumer.accept(i);
-        }
     }
 
     public void sort() {
@@ -128,7 +125,7 @@ public class IntArray {
 
     public void insertInt(int pos, int value) {
         ensurePosition();
-        testPostion(pos);
+        testPosition(pos);
         System.arraycopy(array, pos, array, pos + 1, length - pos);
         array[pos] = value;
         length++;

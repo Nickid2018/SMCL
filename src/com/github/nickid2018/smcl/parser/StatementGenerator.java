@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,16 @@
  */
 package com.github.nickid2018.smcl.parser;
 
-import java.util.*;
-
 import com.github.nickid2018.smcl.*;
-import com.github.nickid2018.smcl.optimize.*;
-import com.github.nickid2018.smcl.statements.*;
+import com.github.nickid2018.smcl.optimize.NumberPool;
+import com.github.nickid2018.smcl.statements.Variable;
+import com.github.nickid2018.smcl.statements.VoidStatement;
+
+import java.util.*;
 
 public class StatementGenerator {
 
-    public static Statement createAST(String input, SMCL smcl, DefinedVariables variables) throws MathParseException {
+    public static Statement createAST(String input, SMCLContext smcl, DefinedVariables variables) throws MathParseException {
         Stack<Statement> stack = new Stack<>();
         List<StatementToken> rpn = doRPN(input, smcl);
         validate(rpn, input, smcl);
@@ -87,7 +88,7 @@ public class StatementGenerator {
         return stack.pop();
     }
 
-    public static List<StatementToken> doRPN(String input, SMCL smcl) throws MathParseException {
+    public static List<StatementToken> doRPN(String input, SMCLContext smcl) throws MathParseException {
         List<StatementToken> outputQueue = new ArrayList<>();
         Stack<StatementToken> stack = new Stack<>();
         StatementTokenizer tokenizer = new StatementTokenizer(smcl, input);
@@ -184,7 +185,7 @@ public class StatementGenerator {
         return outputQueue;
     }
 
-    public static void validate(List<StatementToken> rpnQueue, String input, SMCL smcl) throws MathParseException {
+    public static void validate(List<StatementToken> rpnQueue, String input, SMCLContext smcl) throws MathParseException {
         Stack<Integer> stack = new Stack<>();
         stack.push(0);
         for (StatementToken token : rpnQueue) {

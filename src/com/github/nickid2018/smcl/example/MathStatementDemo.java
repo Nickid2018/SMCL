@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,23 +15,25 @@
  */
 package com.github.nickid2018.smcl.example;
 
-import com.github.nickid2018.smcl.*;
+import com.github.nickid2018.smcl.SMCLContext;
+import com.github.nickid2018.smcl.Statement;
+import com.github.nickid2018.smcl.VariableList;
 
 public class MathStatementDemo {
 
     static long timer;
 
     public static void main(String[] args) throws Exception {
-        SMCL smcl = SMCL.getInstance();
+        SMCLContext smcl = SMCLContext.getInstance();
         smcl.init();
         smcl.globalvars.registerVariables("x");
         smcl.settings.degreeAngle = true;
         timer = System.nanoTime();
-        Statement s = smcl.format("sqrt(tan(x))");
+        Statement s = smcl.format("sqrt(tan(-x)^tan(x))");
         timeOutput();
         System.out.println(s);
         timeOutput();
-        System.out.println(s.calculate(new VariableList().addVariableValue("x", 89.99999999999999)));
+        System.out.println(s.calculate(new VariableList().addVariableValue("x", 114.514)));
         timeOutput();
     }
 
