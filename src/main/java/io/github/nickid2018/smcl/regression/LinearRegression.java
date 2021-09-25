@@ -16,6 +16,7 @@
 package io.github.nickid2018.smcl.regression;
 
 import io.github.nickid2018.smcl.SMCLContext;
+import io.github.nickid2018.smcl.SnapshotAPI;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 import io.github.nickid2018.smcl.optimize.NumberStorage;
@@ -24,6 +25,7 @@ import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 
 import java.util.Map;
 
+@SnapshotAPI
 public class LinearRegression extends Regression {
 
     public static Statement doRegression(SMCLContext smcl, Map<Double, Double> values) {

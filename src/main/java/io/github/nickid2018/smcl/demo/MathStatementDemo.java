@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.nickid2018.smcl.example;
+package io.github.nickid2018.smcl.demo;
 
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.VariableValueList;
 
+/**
+ * A demo for statement.
+ */
 public class MathStatementDemo {
 
     static long timer;
@@ -30,11 +33,11 @@ public class MathStatementDemo {
         smcl.settings.degreeAngle = true;
 //        smcl.settings.invalidArgumentWarn =true;
         timer = System.nanoTime();
-        Statement s = smcl.format("sqrt(sqrt(((-tan(-x)^tan(x))/(x-x))))");
+        Statement s = smcl.parse("sqrt(sqrt(((-tan(-x)^tan(x))/(x-x))))");
         timeOutput();
         System.out.println(s);
         timeOutput();
-        System.out.println(s.calculate(new VariableList().addVariableValue("x", 114.514)));
+        System.out.println(s.calculate(new VariableValueList().addVariableValue("x", 114.514)));
         timeOutput();
     }
 

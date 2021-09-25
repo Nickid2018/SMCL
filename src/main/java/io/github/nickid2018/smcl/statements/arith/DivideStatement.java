@@ -15,10 +15,10 @@
  */
 package io.github.nickid2018.smcl.statements.arith;
 
-import io.github.nickid2018.smcl.DefinedVariables;
+import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
@@ -27,17 +27,28 @@ import io.github.nickid2018.smcl.statements.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Statement for division.
+ */
 public class DivideStatement extends Statement {
 
     private final List<Statement> divisors = new ArrayList<>();
     private Statement dividend;
 
-    public DivideStatement(SMCLContext smcl, DefinedVariables variables) {
+    /**
+     * Create a statement with a context and a variable list
+     * @param smcl a context
+     * @param variables a variable list
+     */
+    public DivideStatement(SMCLContext smcl, VariableList variables) {
         super(smcl, variables);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public double calculateInternal(VariableList list) {
+    public double calculateInternal(VariableValueList list) {
         double ret = dividend.calculate(list);
         for (Statement ms : divisors) {
             double v = ms.calculate(list);
@@ -51,6 +62,9 @@ public class DivideStatement extends Statement {
         return ret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -65,6 +79,11 @@ public class DivideStatement extends Statement {
         return sb + "";
     }
 
+    /**
+     * Add a divisor at end.
+     * @param statement a divisor
+     * @return this
+     */
     public DivideStatement addDivisor(Statement statement) {
         if (statement.equals(NumberPool.NUMBER_CONST_0))
             throw new ArithmeticException("divide by 0");
@@ -80,6 +99,11 @@ public class DivideStatement extends Statement {
         return this;
     }
 
+    /**
+     * Set dividend and divisors.
+     * @param statements dividend and divisors
+     * @return this
+     */
     public DivideStatement putDividendAndDivisors(Statement... statements) {
         dividend = statements[0];
         for (int i = 1; i < statements.length; i++) {
@@ -88,6 +112,9 @@ public class DivideStatement extends Statement {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     // (f/g)' = (f'g-fg')/(g^2)
     // g = d1*d2*d3...

@@ -19,6 +19,9 @@ import io.github.nickid2018.smcl.SMCLContext;
 
 import java.util.Objects;
 
+/**
+ * Utility class for resolvers.
+ */
 @FunctionalInterface
 public interface DoubleSMCLFunction {
 

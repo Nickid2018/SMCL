@@ -16,12 +16,14 @@
 package io.github.nickid2018.smcl.regression;
 
 import io.github.nickid2018.smcl.SMCLContext;
+import io.github.nickid2018.smcl.SnapshotAPI;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.optimize.NumberStorage;
 
 import java.util.Collection;
 import java.util.Map;
 
+@SnapshotAPI
 public class Regression {
 
     public static final String independentVariable = "x";

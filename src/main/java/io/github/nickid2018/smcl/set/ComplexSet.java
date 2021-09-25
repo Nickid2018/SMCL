@@ -18,10 +18,18 @@ package io.github.nickid2018.smcl.set;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A set that contains several subsets in it.
+ */
 public class ComplexSet extends NumberSet {
 
     private final Set<NumberSet> subSets = new HashSet<>();
 
+    /**
+     * Put a set in it.
+     * @param set a set
+     * @return this
+     */
     public ComplexSet putSet(NumberSet set) {
         if (set instanceof ComplexSet)
             subSets.addAll(((ComplexSet) set).subSets);
@@ -32,11 +40,17 @@ public class ComplexSet extends NumberSet {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isValid() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isInfinite() {
         for (NumberSet set : subSets)
@@ -45,6 +59,9 @@ public class ComplexSet extends NumberSet {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isBelongTo(double value) {
         for (NumberSet set : subSets)
@@ -53,6 +70,9 @@ public class ComplexSet extends NumberSet {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public boolean isInclude(NumberSet other) {
@@ -62,6 +82,9 @@ public class ComplexSet extends NumberSet {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCross(NumberSet other) {
         for (NumberSet set : subSets)
@@ -70,6 +93,9 @@ public class ComplexSet extends NumberSet {
         return false;
     }
 
+    /**
+     * Unsupported
+     */
     @Override
     @Deprecated
     public NumberSet getIntersection(NumberSet other) {

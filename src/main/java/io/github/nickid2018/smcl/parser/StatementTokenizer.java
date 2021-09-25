@@ -18,6 +18,9 @@ package io.github.nickid2018.smcl.parser;
 import io.github.nickid2018.smcl.MathParseException;
 import io.github.nickid2018.smcl.SMCLContext;
 
+/**
+ * Parse a string into several tokens.
+ */
 public class StatementTokenizer {
 
     public static final char decimalSeparator = '.';
@@ -28,6 +31,12 @@ public class StatementTokenizer {
     private int pos = 0;
     private StatementToken previousToken;
 
+    /**
+     * Construct a tokenizer with a context and string
+     *
+     * @param smcl  a context
+     * @param input a string contains statement
+     */
     public StatementTokenizer(SMCLContext smcl, String input) {
         this.smcl = smcl;
         this.input = input;
@@ -41,10 +50,21 @@ public class StatementTokenizer {
         return ch == 'x' || ch == 'X' || ch >= '0' && ch <= '9' || ch >= 'a' && ch <= 'f' || ch >= 'A' && ch <= 'F';
     }
 
+    /**
+     * Confirm whether the string is end.
+     *
+     * @return true if the string isn't at end
+     */
     public boolean hasNextToken() {
         return this.pos < this.input.length();
     }
 
+    /**
+     * Get next token.
+     *
+     * @return a token
+     * @throws MathParseException throws if the token is mis-ordered
+     */
     public StatementToken nextToken() throws MathParseException {
         StatementToken token = new StatementToken();
         // The string has run out, stop!
@@ -100,7 +120,7 @@ public class StatementTokenizer {
                         token.append(input.substring(initialPos, validOperatorSeenUntil));
                         pos = validOperatorSeenUntil;
                     } else {
-                        // No find
+                        // Not find
                         token.append(greedyMatch);
                     }
 
@@ -140,16 +160,18 @@ public class StatementTokenizer {
                     --pos;
                 }
 
-                // Sign the statement is a function or a variable
-                // P.S. The 'VARIABLE' does not really mean a variable, it may be a function or
-                // number statement, like these:
-                // sinx ln2 sqrt444
-                // The first statement should be parsed as 'FUNCTION' while the algorithm
-                // returns 'VARIABLE' (Exactly speaking, this is a complex-statement) The second
-                // and third statement should be parsed as 'NUMBER'
-                // To deal with this statement, SMCLSettings has a field called
-                // 'strictFunction' can allow/refuse this kind of statement and the setting will
-                // come into existence when the RPN algorithm working
+                /*
+                  Sign the statement is a function or a variable
+                  TODO The 'VARIABLE' does not really mean a variable, it may be a function or
+                  TODO number statement, like these:
+                  TODO sinx ln2 sqrt444
+                  TODO The first statement should be parsed as 'FUNCTION' while the algorithm
+                  TODO returns 'VARIABLE' (Exactly speaking, this is a complex-statement) The second
+                  TODO and third statement should be parsed as 'NUMBER'
+                  TODO To deal with this statement, SMCLSettings has a field called
+                  TODO 'strictFunction' can allow/refuse this kind of statement and the setting will
+                  TODO come into existence when the RPN algorithm working
+                 */
                 token.type = ch == '(' ? StatementTokenType.FUNCTION : StatementTokenType.VARIABLE;
             }
         }

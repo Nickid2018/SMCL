@@ -15,30 +15,96 @@
  */
 package io.github.nickid2018.smcl;
 
-import java.util.HashMap;
-import java.util.Map;
+import io.github.nickid2018.smcl.statements.Variable;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * A variable list is to store the names of the variables will appear in the statement.
+ */
 public class VariableList {
 
-    private final Map<String, Double> value = new HashMap<>();
+    /**
+     * An empty variable list.
+     */
+    public static final VariableList EMPTY_VARIABLES = new VariableList();
 
-    public final VariableList addVariableValue(String var, double v) {
-        value.put(var, v);
+    private static final Map<String, Variable> sharedVariables = new HashMap<>();
+    private final Set<String> variables;
+
+    /**
+     * Construct a variable list.
+     */
+    public VariableList() {
+        variables = new HashSet<>();
+    }
+
+    /**
+     * Register a variable to the list.
+     * @param var the name of the variable
+     * @return this
+     */
+    public VariableList register(String var) {
+        variables.add(var);
+        if (!sharedVariables.containsKey(var))
+            sharedVariables.put(var, new Variable(var));
         return this;
     }
 
-    public final double getVariableValue(String var) {
-        if (!value.containsKey(var))
-            throw new ArithmeticException("Variable \"" + var + "\" is not declared in list");
-        return value.get(var);
-    }
-
-    public final boolean containsValue(String var) {
-        return value.containsKey(var);
-    }
-
-    public final VariableList changeValue(String var, double v) {
-        value.put(var, v);
+    /**
+     * Register several variables to the list.
+     * @param vars a set contains the names of the variables
+     * @return this
+     */
+    public VariableList registerAll(Set<String> vars) {
+        vars.forEach(this::register);
         return this;
+    }
+
+    /**
+     * Register several variables in the list.
+     * @param vars a variable list
+     * @return this
+     */
+    public VariableList registerAll(VariableList vars) {
+        return registerAll(vars.variables);
+    }
+
+    /**
+     * Unregister a variable.
+     * @param var the name of the variable
+     * @return this
+     */
+    public void unregister(String var) {
+        variables.remove(var);
+    }
+
+    /**
+     * Returns whether the variable has been registered.
+     * @param var the name of the variable
+     * @return true if the variable has been registered
+     */
+    public boolean haveVariables(String var) {
+        return variables.contains(var);
+    }
+
+    /**
+     * Get the variable object for the name.
+     * @param var the name of the variable
+     * @return a variable object
+     */
+    public Variable getVariable(String var) {
+        return sharedVariables.get(var);
+    }
+
+    /**
+     * Get the count of the list.
+     * @return a count number
+     */
+    public int size() {
+        return variables.size();
     }
 }

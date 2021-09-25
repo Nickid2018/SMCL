@@ -15,43 +15,67 @@
  */
 package io.github.nickid2018.smcl.statements;
 
-import io.github.nickid2018.smcl.DefinedVariables;
-import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.Statement;
+import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 
+/**
+ * A statement stands for a variable.
+ */
 public class Variable extends Statement {
 
     private String name;
     private Variable negativeVar;
 
+    /**
+     * Construct a variable with a name.
+     * @param s a name
+     */
     public Variable(String s) {
-        super(null, DefinedVariables.EMPTY_VARIABLES);
+        super(null, VariableList.EMPTY_VARIABLES);
         if (!s.matches("[a-zA-Z]+"))
             throw new IllegalArgumentException("Illegal variable name:" + s);
         name = s;
     }
 
+    /**
+     * Get the name of the variable.
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of the variable.
+     * @param name a name
+     */
     public void setName(String name) {
         this.name = name;
         if (negativeVar != null)
             negativeVar.name = name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public double calculateInternal(VariableList list) {
+    public double calculateInternal(VariableValueList list) {
         return list.getVariableValue(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return (isNegative ? "-" : "") + name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Statement getNegative() {
         if (negativeVar == null) {
@@ -62,11 +86,17 @@ public class Variable extends Statement {
         return negativeVar;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Statement getNewNegative() {
         return getNegative();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Statement derivativeInternal() {
         return NumberPool.NUMBER_CONST_1;

@@ -17,19 +17,35 @@ package io.github.nickid2018.smcl.functions;
 
 import io.github.nickid2018.smcl.Statement;
 
+/**
+ * Statement for unary functions.
+ */
 public abstract class UnaryFunctionStatement extends FunctionStatement {
 
     protected Statement innerStatement;
 
+    /**
+     * Construct with an argument.
+     * @param statement a statement
+     */
     public UnaryFunctionStatement(Statement statement) {
         super(statement.getSMCL(), statement.getVariables());
         setInnerStatement(statement);
     }
 
+    /**
+     * Get the inner statement.
+     * @return a statement
+     */
     public Statement getInnerStatement() {
         return innerStatement;
     }
 
+    /**
+     * Set the inner statement.
+     * @param innerStatement a statement
+     * @return this
+     */
     public UnaryFunctionStatement setInnerStatement(Statement innerStatement) {
         this.innerStatement = innerStatement;
         return this;

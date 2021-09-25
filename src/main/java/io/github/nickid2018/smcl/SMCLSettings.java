@@ -15,17 +15,23 @@
  */
 package io.github.nickid2018.smcl;
 
+/**
+ * The settings of the SMCL System
+ */
 public class SMCLSettings {
 
     // Optimizing settings
+    /**
+     * Disable number pool in parsing statement if true
+     */
     public final boolean disableNumberPool = false;
-    // Parsing settings
-    public boolean globalVariablesEnabled = true;
-    public boolean strictFunction = false;
     // Calculating settings
+    /**
+     * Using degree function to compute trigonometric functions if true
+     */
     public boolean degreeAngle = false;
+    /**
+     * Ignore errors in computing and print the information if true
+     */
     public boolean invalidArgumentWarn = false;
-    public boolean strictVariableCheck = false;
-    public boolean mergeNumbers = true;
-    public boolean pushStackWhenParse = false;
 }

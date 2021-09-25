@@ -15,33 +15,57 @@
  */
 package io.github.nickid2018.smcl;
 
+/**
+ * A statement can use it to compute and derivative
+ */
 public abstract class Statement implements Cloneable {
 
-    protected final DefinedVariables variables;
+    protected final VariableList variables;
     protected SMCLContext smcl;
     protected boolean isNegative;
 
+    /**
+     * Construct a statement with the context.
+     * @param smcl a context
+     */
     public Statement(SMCLContext smcl) {
         this.smcl = smcl;
         this.variables = smcl.globalvars.toDefinedVariables();
     }
 
-    public Statement(SMCLContext smcl, DefinedVariables variables) {
+    /**
+     * Construct a statement with the context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     */
+    public Statement(SMCLContext smcl, VariableList variables) {
         this.smcl = smcl;
         this.variables = variables;
     }
 
     // Statement Base Functions
 
+    /**
+     * Returns true if the statement is negative.
+     * @return true if the statement is negative
+     */
     public boolean isNegative() {
         return isNegative;
     }
 
+    /**
+     * Get the statement that is negative from this.
+     * @return statement that is negative from this
+     */
     public Statement getNegative() {
         isNegative = !isNegative;
         return this;
     }
 
+    /**
+     * Get the statement that is negative and unrelated from this.
+     * @return statement that is negative and unrelated from this
+     */
     public Statement getNewNegative() {
         try {
             Statement s2 = (Statement) clone();
@@ -51,33 +75,67 @@ public abstract class Statement implements Cloneable {
         }
     }
 
-    public DefinedVariables getVariables() {
+    /**
+     * Get the variable list for the statement.
+     * @return a variable list
+     */
+    public VariableList getVariables() {
         return variables;
     }
 
+    /**
+     * Get the context of the statement.
+     * @return a context
+     */
     public SMCLContext getSMCL() {
         return smcl;
     }
 
+    /**
+     * Set the context of the statement.
+     * @param smcl a context
+     */
     public void setSMCL(SMCLContext smcl) {
         this.smcl = smcl;
     }
 
+    /**
+     * Get the statement in string.
+     * @return a string contains the statement
+     */
     @Override
     public abstract String toString();
 
-    protected abstract double calculateInternal(VariableList list);
+    /**
+     * Internal calculation for subclass to override.
+     * @param list a variable list
+     * @return the result without sign
+     */
+    protected abstract double calculateInternal(VariableValueList list);
 
-    public double calculate(VariableList list) {
+    /**
+     * Calculate the statement with a variable list.
+     * @param list a variable list
+     * @return the result
+     */
+    public double calculate(VariableValueList list) {
         return isNegative ? -calculateInternal(list) : calculateInternal(list);
     }
 
     // Only single variable
+    /**
+     * Derivative the statement.
+     * @return the result
+     * @throws ArithmeticException throws of the statement can't be derivatived
+     */
     public Statement derivative() {
         if (variables.size() > 1)
             throw new ArithmeticException("Statement " + this + " has more than one independent value");
         return isNegative ? derivativeInternal().getNegative() : derivativeInternal();
     }
-
+    /**
+     * Internal derivatization for subclass to override.
+     * @return the result without sign
+     */
     protected abstract Statement derivativeInternal();
 }

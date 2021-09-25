@@ -15,28 +15,46 @@
  */
 package io.github.nickid2018.smcl.statements;
 
-import io.github.nickid2018.smcl.DefinedVariables;
-import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.Statement;
+import io.github.nickid2018.smcl.VariableValueList;
 
+/**
+ * A void statement, which will not calculate or derivative.
+ */
 public class VoidStatement extends Statement {
 
+    /**
+     * Use for signing the function arguments.
+     */
     public static final VoidStatement PARAMS_START_STATEMENT = new VoidStatement();
 
+    /**
+     * Close construction.
+     */
     private VoidStatement() {
-        super(null, DefinedVariables.EMPTY_VARIABLES);
+        super(null, VariableList.EMPTY_VARIABLES);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "void";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public double calculateInternal(VariableList list) {
+    public double calculateInternal(VariableValueList list) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Statement derivativeInternal() {
         return null;

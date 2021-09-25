@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.nickid2018.smcl.example;
+package io.github.nickid2018.smcl.demo;
 
+import io.github.nickid2018.smcl.SnapshotAPI;
+
+@SnapshotAPI
 public class CachedStatementDemo {
 
     public static void main(String[] args) {

@@ -17,34 +17,53 @@ package io.github.nickid2018.smcl.functions;
 
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 
 import java.util.function.Function;
 
+/**
+ * Statement for unary functions.
+ */
 public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
 
     private UnaryFunctionBuilder function;
 
+    /**
+     * Construct a statement with an argument.
+     * @param ms a statement
+     */
     public UnaryFunctionGenStatement(Statement ms) {
         super(ms);
     }
 
+    /**
+     * Construct a statement with a context, an argument and a function builder.
+     * @param smcl a context
+     * @param statement a statement
+     * @param function a function builder
+     */
     public UnaryFunctionGenStatement(SMCLContext smcl, Statement statement, UnaryFunctionBuilder function) {
         super(statement);
         this.smcl = smcl;
         this.function = function;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final String toString() {
         return (isNegative ? "-" : "") + getFunction().getName() + "(" + innerStatement + ")";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected final double calculateInternal(VariableList list) {
+    protected final double calculateInternal(VariableValueList list) {
         double innerResult = innerStatement.calculate(list);
         innerResult = function.getResolveVariable().accept(innerResult, smcl);
         try {
@@ -58,15 +77,27 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
         return function.getResolveEnd().accept(getFunction().getCalcFunction().accept(innerResult), smcl);
     }
 
+    /**
+     * Get the function builder.
+     * @return a function builder
+     */
     public UnaryFunctionBuilder getFunction() {
         return function;
     }
 
+    /**
+     * Set the function builder.
+     * @param function a function builder
+     * @return this
+     */
     public UnaryFunctionGenStatement setFunction(UnaryFunctionBuilder function) {
         this.function = function;
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Statement derivativeInternal() {
         Function<Statement, Statement> resolver = function.getDerivativeResolver();
@@ -81,7 +112,7 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
             if (get == 1)
                 return partDesi;
             if (get == -1)
-                return partDesi.getNewNegative();
+                return partDesi.getNegative();
         }
         return new MultiplyStatement(smcl, variables).addMultipliers(end, partDesi);
     }

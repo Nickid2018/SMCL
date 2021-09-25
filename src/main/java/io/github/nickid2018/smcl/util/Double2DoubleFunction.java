@@ -17,6 +17,9 @@ package io.github.nickid2018.smcl.util;
 
 import java.util.Objects;
 
+/**
+ * Utility class for resolvers.
+ */
 @FunctionalInterface
 public interface Double2DoubleFunction {
 

@@ -16,11 +16,13 @@
 package io.github.nickid2018.smcl.regression;
 
 import io.github.nickid2018.smcl.SMCLContext;
+import io.github.nickid2018.smcl.SnapshotAPI;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 import io.github.nickid2018.smcl.statements.arith.PowerStatement;
 
+@SnapshotAPI
 public class PowerModel extends RegressionModel {
 
     public static final PowerModel MODEL = new PowerModel();

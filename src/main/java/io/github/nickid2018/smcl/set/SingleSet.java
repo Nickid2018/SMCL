@@ -15,8 +15,15 @@
  */
 package io.github.nickid2018.smcl.set;
 
+/**
+ * A set that only has one number.
+ */
 public class SingleSet extends Interval {
 
+    /**
+     * Construct with a number.
+     * @param number a number
+     */
     public SingleSet(double number) {
         if (Double.isNaN(number))
             throw new IllegalArgumentException("Not a number!");
@@ -26,21 +33,33 @@ public class SingleSet extends Interval {
         rightClose = true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isBelongTo(double value) {
         return leftRange == value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCross(NumberSet other) {
         return other.isBelongTo(leftRange);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isInclude(NumberSet other) {
         return other.isBelongTo(leftRange);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NumberSet getIntersection(NumberSet other) {
         return other.isBelongTo(leftRange) ? this : EmptySet.EMPTY_SET;

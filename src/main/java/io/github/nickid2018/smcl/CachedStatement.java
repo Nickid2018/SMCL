@@ -18,7 +18,7 @@ package io.github.nickid2018.smcl;
 public class CachedStatement extends Statement {
 
     private final Statement statement;
-    private final VariableList list = new VariableList();
+    private final VariableValueList list = new VariableValueList();
     private double result;
     private boolean dirty = true;
 
@@ -50,7 +50,7 @@ public class CachedStatement extends Statement {
     }
 
     @Override
-    public double calculateInternal(VariableList list) {
+    public double calculateInternal(VariableValueList list) {
         return statement.calculateInternal(list);
     }
 

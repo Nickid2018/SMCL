@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.nickid2018.smcl.example;
+package io.github.nickid2018.smcl.demo;
 
 import io.github.nickid2018.smcl.MathParseException;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.VariableValueList;
 
+/**
+ * A demo for derivative.
+ */
 public class DerivativeDemo {
 
     static long timer;
@@ -31,7 +34,7 @@ public class DerivativeDemo {
             smcl.globalvars.registerVariables("x");
             smcl.settings.degreeAngle = true;
             timer = System.nanoTime();
-            Statement s = smcl.format("(x^x)^9");
+            Statement s = smcl.parse("(x^x)^9");
             timeOutput();
             System.out.println(s);
             timeOutput();
@@ -39,7 +42,7 @@ public class DerivativeDemo {
             timeOutput();
             System.out.println(d);
             timeOutput();
-            VariableList list = new VariableList().addVariableValue("x", 1.1);
+            VariableValueList list = new VariableValueList().addVariableValue("x", 1.1);
             System.out.println(s.calculate(list));
             timeOutput();
             System.out.println(d.calculate(list));

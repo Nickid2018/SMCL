@@ -15,6 +15,9 @@
  */
 package io.github.nickid2018.smcl.parser;
 
+/**
+ * The type of the token.
+ */
 public enum StatementTokenType {
 
     /**

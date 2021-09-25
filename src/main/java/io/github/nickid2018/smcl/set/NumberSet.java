@@ -15,17 +15,48 @@
  */
 package io.github.nickid2018.smcl.set;
 
+/**
+ * A number set is an object that can store numbers in it.
+ */
 public abstract class NumberSet {
 
+    /**
+     * Returns whether the number set is valid.
+     * @return true if the number set is valid
+     */
     public abstract boolean isValid();
 
+    /**
+     * Returns whether the number set is infinite.
+     * @return true if the number set is infinite
+     */
     public abstract boolean isInfinite();
 
+    /**
+     * Returns whether the number is in the set.
+     * @param value a number
+     * @return true if the number is in the set
+     */
     public abstract boolean isBelongTo(double value);
 
+    /**
+     * Returns whether another number set is included in the set.
+     * @param other a number set
+     * @return true if another number set is included in the set
+     */
     public abstract boolean isInclude(NumberSet other);
 
+    /**
+     * Returns whether another number set is crossing with the set.
+     * @param other a number set
+     * @return true if another number set is crossing with the set
+     */
     public abstract boolean isCross(NumberSet other);
 
+    /**
+     * Get the intersection of the two sets.
+     * @param other a number set
+     * @return the intersection; if the two set isn't crossing with, return empty set
+     */
     public abstract NumberSet getIntersection(NumberSet other);
 }

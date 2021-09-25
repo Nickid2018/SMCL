@@ -15,6 +15,9 @@
  */
 package io.github.nickid2018.smcl.optimize;
 
+import io.github.nickid2018.smcl.SnapshotAPI;
+
+@SnapshotAPI
 public class NumberStorage {
 
     private final IntArray array;

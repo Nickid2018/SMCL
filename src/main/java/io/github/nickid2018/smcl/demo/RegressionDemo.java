@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.nickid2018.smcl.example;
+package io.github.nickid2018.smcl.demo;
 
 import io.github.nickid2018.smcl.SMCLContext;
+import io.github.nickid2018.smcl.SnapshotAPI;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.regression.InvertedIndexModel;
 import io.github.nickid2018.smcl.regression.Regression;
@@ -23,6 +24,7 @@ import io.github.nickid2018.smcl.regression.Regression;
 import java.util.HashMap;
 import java.util.Map;
 
+@SnapshotAPI
 public class RegressionDemo {
 
     public static void main(String[] args) {

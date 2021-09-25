@@ -25,24 +25,52 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoubleFunction;
 import java.util.function.DoublePredicate;
 
+/**
+ * A builder for functions to build.
+ */
 public abstract class FunctionBuilder {
 
+    /**
+     * Domain "R"
+     */
     public static final DoubleConsumer ALL_DOMAIN = arg -> {
         if (!Double.isFinite(arg))
             throw new ArithmeticException("Infinite numbers and NaNs are not supported");
     };
+
+    /**
+     * Default function
+     */
     public static final Double2DoubleFunction DEFAULT_RESULT = arg -> arg;
+    /**
+     * Default result resolver
+     */
     public static final DoubleSMCLFunction DEFAULT_RESOLVE = (arg, smcl) -> arg;
-    public static final DoubleSMCLFunction RESOLVE_RADIANS = (arg,
-                                                              smcl) -> smcl.settings.degreeAngle ? Math.toRadians(arg) : arg;
-    public static final DoubleSMCLFunction RESOLVE_DEGREES = (arg,
-                                                              smcl) -> smcl.settings.degreeAngle ? Math.toDegrees(arg) : arg;
+    /**
+     * Resolution for radian angles
+     */
+    public static final DoubleSMCLFunction RESOLVE_RADIANS = (arg, smcl) -> smcl.settings.degreeAngle ? Math.toRadians(arg) : arg;
+    /**
+     * Resolution for degree angles
+     */
+    public static final DoubleSMCLFunction RESOLVE_DEGREES = (arg, smcl) -> smcl.settings.degreeAngle ? Math.toDegrees(arg) : arg;
+
     protected final String name;
 
+    /**
+     * Construct a builder with a name.
+     * @param name the name of the function
+     */
     public FunctionBuilder(String name) {
         this.name = name;
     }
 
+    /**
+     * Returns a checker to check if the value is excluded the domain.
+     * @param exclude a predicate to check the value
+     * @param errorString a string supplier for error string
+     * @return a checker
+     */
     public static DoubleConsumer checkDomainExclude(DoublePredicate exclude, DoubleFunction<String> errorString) {
         return arg -> {
             if (!Double.isFinite(arg))
@@ -52,6 +80,12 @@ public abstract class FunctionBuilder {
         };
     }
 
+    /**
+     * Returns a checker to check if the value is included the domain.
+     * @param include a predicate to check the value
+     * @param errorString a string supplier for error string
+     * @return a checker
+     */
     public static DoubleConsumer checkDomainInclude(DoublePredicate include, DoubleFunction<String> errorString) {
         return arg -> {
             if (!Double.isFinite(arg))
@@ -61,17 +95,39 @@ public abstract class FunctionBuilder {
         };
     }
 
+    /**
+     * Returns a checker to check if the value is excluded the set of the domain.
+     * @param set a set to check the value
+     * @param errorString a string supplier for error string
+     * @return a checker
+     */
     public static DoubleConsumer checkDomainExclude(NumberSet set, DoubleFunction<String> errorString) {
         return checkDomainExclude(set::isBelongTo, errorString);
     }
 
+    /**
+     * Returns a checker to check if the value is included the set of the domain.
+     * @param set a set to check the value
+     * @param errorString a string supplier for error string
+     * @return a checker
+     */
     public static DoubleConsumer checkDomainInclude(NumberSet set, DoubleFunction<String> errorString) {
         return checkDomainInclude(set::isBelongTo, errorString);
     }
 
+    /**
+     * Get the name of the function.
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Create a new function statement.
+     * @param smcl a context
+     * @param statements an array contains arguments
+     * @return a statement
+     */
     public abstract Statement create(SMCLContext smcl, Statement... statements);
 }

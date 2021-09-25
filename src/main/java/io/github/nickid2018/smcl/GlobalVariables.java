@@ -21,39 +21,75 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The class is to store variables for global usage.
+ */
 public class GlobalVariables {
 
     private final Map<String, Variable> variablemap = new HashMap<>();
 
+    /**
+     * Register a variable.
+     * @param var the name of the variable
+     * @return this
+     */
     public GlobalVariables registerVariable(String var) {
         variablemap.put(var, new Variable(var));
         return this;
     }
 
+    /**
+     * Register variables.
+     * @param vars the list of the names of the variables
+     * @return this
+     */
     public GlobalVariables registerVariables(String... vars) {
         for (String var : vars)
             variablemap.put(var, new Variable(var));
         return this;
     }
 
+    /**
+     * Unregister a variable.
+     * @param var the name of the variable
+     * @return this
+     */
     public GlobalVariables unregisterVariable(String var) {
         variablemap.remove(var);
         return this;
     }
 
+    /**
+     * Returns whether the variable has been registered.
+     * @param var the name of the variable
+     * @return true if the variable has been registered
+     */
     public boolean haveVariable(String var) {
         return variablemap.containsKey(var);
     }
 
+    /**
+     * Get the variable object for the name.
+     * @param var the name of the variable
+     * @return a variable object
+     */
     public Variable getVariable(String var) {
         return variablemap.get(var);
     }
 
+    /**
+     * Get a set contains all variables registered in the object.
+     * @return a set
+     */
     public Set<String> getAllRegistered() {
         return variablemap.keySet();
     }
 
-    public DefinedVariables toDefinedVariables() {
-        return new DefinedVariables().registerAll(getAllRegistered());
+    /**
+     * Convert this into a variable list.
+     * @return a variable list
+     */
+    public VariableList toDefinedVariables() {
+        return new VariableList().registerAll(getAllRegistered());
     }
 }

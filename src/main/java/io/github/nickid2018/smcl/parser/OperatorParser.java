@@ -15,15 +15,33 @@
  */
 package io.github.nickid2018.smcl.parser;
 
-import io.github.nickid2018.smcl.DefinedVariables;
+import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 
-public abstract class OperatorParser<T extends Statement> {
+/**
+ * Basic class of the operator parser.
+ */
+public abstract class OperatorParser {
 
+    /**
+     * The priority of the operator, this will be used to control the parsing order.
+     * @return the priority
+     */
     public abstract int getPriority();
 
+    /**
+     * Returns whether the operator uses the left associate operation.
+     * @return true if the operator is left associate
+     */
     public abstract boolean isLeftAssoc();
 
-    public abstract Statement parseStatement(SMCLContext smcl, DefinedVariables variables, Statement... statements);
+    /**
+     * Parse the argument into a statement.
+     * @param smcl a context
+     * @param variables a variable list
+     * @param statements the arguments of the operator
+     * @return a statement
+     */
+    public abstract Statement parseStatement(SMCLContext smcl, VariableList variables, Statement... statements);
 }

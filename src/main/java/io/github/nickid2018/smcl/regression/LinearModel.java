@@ -16,11 +16,13 @@
 package io.github.nickid2018.smcl.regression;
 
 import io.github.nickid2018.smcl.SMCLContext;
+import io.github.nickid2018.smcl.SnapshotAPI;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 import io.github.nickid2018.smcl.statements.arith.MathStatement;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 
+@SnapshotAPI
 public class LinearModel extends RegressionModel {
 
     public static final LinearModel MODEL = new LinearModel();

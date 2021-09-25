@@ -23,12 +23,20 @@ import java.util.*;
 
 public class StatementGenerator {
 
-    public static Statement createAST(String input, SMCLContext smcl, DefinedVariables variables) throws MathParseException {
+    /**
+     * Create a statement AST for the input string.
+     * @param input a string contains a statement
+     * @param smcl the context
+     * @param variables a variable list
+     * @return a statement
+     * @throws MathParseException throws if the string isn't a valid statement
+     */
+    public static Statement createAST(String input, SMCLContext smcl, VariableList variables) throws MathParseException {
         Stack<Statement> stack = new Stack<>();
         List<StatementToken> rpn = doRPN(input, smcl);
         validate(rpn, input, smcl);
         SMCLRegister register = smcl.register;
-        DefinedVariables alls = smcl.globalvars.toDefinedVariables();
+        VariableList alls = smcl.globalvars.toDefinedVariables();
         alls.registerAll(variables);
         for (StatementToken token : rpn) {
             switch (token.type) {
@@ -49,18 +57,15 @@ public class StatementGenerator {
                     continue;
                 case FUNCTION:
                     String name = token.detail.toLowerCase(Locale.ROOT);
-                    FunctionParser<?> function = register.getRegisteredFunction(name);
+                    FunctionParser function = register.getRegisteredFunction(name);
                     if (function == null)
                         error("Unknown Function " + token.detail, input, token);
-                    ArrayList<Statement> subOperands = new ArrayList<>(
-                            !function.numParamsVaries() ? function.getNumParams() : 0);
-                    while (!stack.isEmpty() && stack.peek() != VoidStatement.PARAMS_START_STATEMENT) {
+                    ArrayList<Statement> subOperands = new ArrayList<>();
+                    while (!stack.isEmpty() && stack.peek() != VoidStatement.PARAMS_START_STATEMENT)
                         subOperands.add(stack.pop());
-                    }
                     Collections.reverse(subOperands);
-                    if (stack.peek() == VoidStatement.PARAMS_START_STATEMENT) {
+                    if (stack.peek() == VoidStatement.PARAMS_START_STATEMENT)
                         stack.pop();
-                    }
                     stack.push(function.parseStatement(smcl, subOperands.toArray(new Statement[0])));
                     continue;
                 case OPEN_PAREN:
@@ -87,13 +92,20 @@ public class StatementGenerator {
         return stack.pop();
     }
 
+    /**
+     * Parse a string into an RPN Queue.
+     * @param input a string contains a statement
+     * @param smcl the context
+     * @return a list of the RPN tokens
+     * @throws MathParseException throws if the RPN fails
+     */
     public static List<StatementToken> doRPN(String input, SMCLContext smcl) throws MathParseException {
         List<StatementToken> outputQueue = new ArrayList<>();
         Stack<StatementToken> stack = new Stack<>();
         StatementTokenizer tokenizer = new StatementTokenizer(smcl, input);
         StatementToken lastFunction = null;
         StatementToken previousToken = null;
-        OperatorParser<?> operator;
+        OperatorParser operator;
         SMCLRegister register = smcl.register;
         while (tokenizer.hasNextToken()) {
             StatementToken token = tokenizer.nextToken();
@@ -122,6 +134,7 @@ public class StatementGenerator {
                     if (lastFunction == null)
                         error("Unexpected comma", input, token);
                     error("Parse error for function " + lastFunction, input, token);
+                    break;
                 case OPERATOR:
                     if (previousToken != null && (previousToken.type == StatementTokenType.COMMA
                             || previousToken.type == StatementTokenType.OPEN_PAREN))
@@ -184,6 +197,13 @@ public class StatementGenerator {
         return outputQueue;
     }
 
+    /**
+     * Validate the math statement.
+     * @param rpnQueue RPN Queue of the statement
+     * @param input the string of the statement
+     * @param smcl the context
+     * @throws MathParseException throws if the validation fails
+     */
     public static void validate(List<StatementToken> rpnQueue, String input, SMCLContext smcl) throws MathParseException {
         Stack<Integer> stack = new Stack<>();
         stack.push(0);
@@ -200,7 +220,7 @@ public class StatementGenerator {
                     continue;
                 }
                 case FUNCTION: {
-                    FunctionParser<?> f = smcl.register.getRegisteredFunction(token.detail.toLowerCase(Locale.ROOT));
+                    FunctionParser f = smcl.register.getRegisteredFunction(token.detail.toLowerCase(Locale.ROOT));
                     int numParams = stack.pop();
                     if (f != null && !f.numParamsVaries() && numParams != f.getNumParams()) {
                         error("Function " + token + " expected " + f.getNumParams() + " parameters, but got " + numParams,
@@ -228,12 +248,18 @@ public class StatementGenerator {
             error("Empty expression", input, null);
     }
 
+    /*
+     * Throws math parse exception.
+     */
     private static void error(String cause, String expr, StatementToken token) throws MathParseException {
         throw new MathParseException(cause, expr, token);
     }
 
+    /*
+     * Deal with the operator
+     */
     private static void dealOperator(List<StatementToken> outputQueue, Stack<StatementToken> stack,
-                                     OperatorParser<?> operator, SMCLRegister register) {
+                                     OperatorParser operator, SMCLRegister register) {
         StatementToken nextToken = stack.isEmpty() ? null : stack.peek();
         while (nextToken != null
                 && (nextToken.type == StatementTokenType.OPERATOR

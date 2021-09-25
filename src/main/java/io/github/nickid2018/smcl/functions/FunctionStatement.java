@@ -15,13 +15,13 @@
  */
 package io.github.nickid2018.smcl.functions;
 
-import io.github.nickid2018.smcl.DefinedVariables;
+import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 
 public abstract class FunctionStatement extends Statement {
 
-    public FunctionStatement(SMCLContext smcl, DefinedVariables variables) {
+    public FunctionStatement(SMCLContext smcl, VariableList variables) {
         super(smcl, variables);
     }
 

@@ -15,6 +15,14 @@
  */
 package io.github.nickid2018.smcl.parser;
 
+/**
+ * A utility interface for calling.
+ * @param <T>
+ * @param <U>
+ * @param <V>
+ * @param <R>
+ */
+@FunctionalInterface
 public interface TriFunction<T, U, V, R> {
 
     R accept(T t, U u, V v);

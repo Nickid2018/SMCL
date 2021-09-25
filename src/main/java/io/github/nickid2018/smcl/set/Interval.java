@@ -26,6 +26,11 @@ public class Interval extends NumberSet {
     public boolean leftClose;
     public boolean rightClose;
 
+    /**
+     * Create an interval with a string.
+     * @param str a string contains an interval
+     * @return an interval
+     */
     public static Interval fromNonInfString(String str) {
         Interval val = new Interval();
         // Check pattern
@@ -43,26 +48,54 @@ public class Interval extends NumberSet {
         return val;
     }
 
+    /**
+     * Create an interval has a close edge at right.
+     * @param right the right range
+     * @return an interval
+     */
     public static Interval lessThanInclude(double right) {
         return new Interval().setLeftInfinite().setRightRange(right, true);
     }
 
+    /**
+     * Create an interval has an open edge at right.
+     * @param right the right range
+     * @return an interval
+     */
     public static Interval lessThanExclude(double right) {
         return new Interval().setLeftInfinite().setRightRange(right, false);
     }
 
+    /**
+     * Create an interval has a close edge at left.
+     * @param left the left range
+     * @return an interval
+     */
     public static Interval moreThanInclude(double left) {
         return new Interval().setRightInfinite().setLeftRange(left, true);
     }
 
+    /**
+     * Create an interval has an open edge at left.
+     * @param left the left range
+     * @return an interval
+     */
     public static Interval moreThanExclude(double left) {
         return new Interval().setRightInfinite().setLeftRange(left, false);
     }
 
+    /**
+     * Returns a universal set - R
+     * @return R
+     */
     public static Interval universeSet() {
         return new Interval().setLeftInfinite().setRightInfinite();
     }
 
+    /**
+     * Set the left range to -INF.
+     * @return this
+     */
     public Interval setLeftInfinite() {
         leftInfinite = true;
         leftClose = false;
@@ -70,6 +103,10 @@ public class Interval extends NumberSet {
         return this;
     }
 
+    /**
+     * Set the right range to +INF.
+     * @return this
+     */
     public Interval setRightInfinite() {
         rightInfinite = true;
         rightClose = false;
@@ -77,6 +114,12 @@ public class Interval extends NumberSet {
         return this;
     }
 
+    /**
+     * Set the left range of the interval.
+     * @param value the left range
+     * @param close true if includes the edge
+     * @return this
+     */
     public Interval setLeftRange(double value, boolean close) {
         if (Double.isNaN(value))
             throw new IllegalArgumentException("Not a number!");
@@ -86,6 +129,12 @@ public class Interval extends NumberSet {
         return this;
     }
 
+    /**
+     * Set the right range of the interval.
+     * @param value the right range
+     * @param close true if includes the edge
+     * @return this
+     */
     public Interval setRightRange(double value, boolean close) {
         if (Double.isNaN(value))
             throw new IllegalArgumentException("Not a number!");
@@ -95,23 +144,35 @@ public class Interval extends NumberSet {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isValid() {
         return (leftRange < rightRange)
                 || (!(leftInfinite || rightInfinite) && (leftClose && rightClose) && leftRange == rightRange);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isInfinite() {
         return isValid() && leftRange != rightRange;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isBelongTo(double value) {
         return (leftClose && leftRange == value && !leftInfinite)
                 || (rightClose && rightRange == value && !rightInfinite) || (leftRange < value && rightRange > value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isInclude(NumberSet other) {
         if (other instanceof EmptySet)
@@ -125,6 +186,9 @@ public class Interval extends NumberSet {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCross(NumberSet other) {
         if (other instanceof EmptySet)
@@ -138,6 +202,9 @@ public class Interval extends NumberSet {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NumberSet getIntersection(NumberSet other) {
         if (other instanceof EmptySet)

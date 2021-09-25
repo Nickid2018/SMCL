@@ -19,11 +19,28 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.functions.FunctionStatement;
 
-public abstract class FunctionParser<T extends FunctionStatement> {
+/**
+ * Basic class for parser of functions.
+ */
+public abstract class FunctionParser {
 
+    /**
+     * Returns whether it has two or more arguments.
+     * @return true if the arguments count >1
+     */
     public abstract boolean numParamsVaries();
 
+    /**
+     * Returns the count of arguments of the function.
+     * @return the count of arguments
+     */
     public abstract int getNumParams();
 
+    /**
+     * Parse the arguments into statement.
+     * @param smcl a context
+     * @param statements the arguments
+     * @return a statement
+     */
     public abstract Statement parseStatement(SMCLContext smcl, Statement... statements);
 }

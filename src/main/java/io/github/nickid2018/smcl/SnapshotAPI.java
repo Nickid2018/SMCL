@@ -13,35 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.nickid2018.smcl.parser;
 
-/**
- * A class to store token of statement.
- */
-public class StatementToken {
+package io.github.nickid2018.smcl;
 
-    public String detail = "";
-    public StatementTokenType type;
-    public int pos;
-    public int length;
-
-    public void append(char c) {
-        detail += c;
-    }
-
-    public void append(String s) {
-        detail += s;
-    }
-
-    public char charAt(int pos) {
-        return detail.charAt(pos);
-    }
-
-    public int length() {
-        return detail.length();
-    }
-
-    public String toString() {
-        return detail;
-    }
+public @interface SnapshotAPI {
 }

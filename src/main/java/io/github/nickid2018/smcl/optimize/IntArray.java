@@ -15,9 +15,12 @@
  */
 package io.github.nickid2018.smcl.optimize;
 
+import io.github.nickid2018.smcl.SnapshotAPI;
+
 import java.util.Arrays;
 import java.util.function.IntConsumer;
 
+@SnapshotAPI
 public class IntArray {
 
     public static final float DEFAULT_INCREASE_FACTOR = 1f;

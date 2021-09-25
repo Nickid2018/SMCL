@@ -15,10 +15,10 @@
  */
 package io.github.nickid2018.smcl.statements.arith;
 
-import io.github.nickid2018.smcl.DefinedVariables;
+import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.Functions;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 import io.github.nickid2018.smcl.optimize.NumberPool;
@@ -28,17 +28,28 @@ import io.github.nickid2018.smcl.statements.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A statement stands for powering.
+ */
 public class PowerStatement extends Statement {
 
     private final List<Statement> exponents = new ArrayList<>();
     private Statement base;
 
-    public PowerStatement(SMCLContext smcl, DefinedVariables variables) {
+    /**
+     * Construct a power statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     */
+    public PowerStatement(SMCLContext smcl, VariableList variables) {
         super(smcl, variables);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public double calculateInternal(VariableList list) {
+    public double calculateInternal(VariableValueList list) {
         double prevExp = exponents.get(exponents.size() - 1).calculate(list);
         for (int now = exponents.size() - 2; now > -2; now--) {
             double currentBase = now == -1 ? base.calculate(list) : exponents.get(now).calculate(list);
@@ -60,6 +71,9 @@ public class PowerStatement extends Statement {
         return prevExp;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -77,11 +91,21 @@ public class PowerStatement extends Statement {
         return sb + "";
     }
 
+    /**
+     * Add an exponent at end.
+     * @param statement a divisor
+     * @return this
+     */
     public PowerStatement addExponent(Statement statement) {
         exponents.add(statement);
         return this;
     }
 
+    /**
+     * Set base and exponents.
+     * @param statements base and exponents
+     * @return this
+     */
     public PowerStatement putBaseAndExponents(Statement... statements) {
         base = statements[0];
         for (int i = 1; i < statements.length; i++) {
@@ -90,6 +114,9 @@ public class PowerStatement extends Statement {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     // (f^g)' = (f^g)(glnf)'
     // Optimize:

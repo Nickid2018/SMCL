@@ -24,6 +24,9 @@ import io.github.nickid2018.smcl.statements.arith.PowerStatement;
 
 import java.util.function.Function;
 
+/**
+ * The class is to store derivatives of functions.
+ */
 public class FunctionDerivatives {
 
     public static final Function<Statement, Statement> DERIVATIVE_SIN = statement -> Functions.COS

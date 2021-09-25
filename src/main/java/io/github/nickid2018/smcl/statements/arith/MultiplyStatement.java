@@ -15,10 +15,10 @@
  */
 package io.github.nickid2018.smcl.statements.arith;
 
-import io.github.nickid2018.smcl.DefinedVariables;
+import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
@@ -27,16 +27,27 @@ import io.github.nickid2018.smcl.statements.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A statement stands for multiplication.
+ */
 public class MultiplyStatement extends Statement {
 
     private final List<Statement> multipliers = new ArrayList<>();
 
-    public MultiplyStatement(SMCLContext smcl, DefinedVariables variables) {
+    /**
+     * Construct a multiply statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     */
+    public MultiplyStatement(SMCLContext smcl, VariableList variables) {
         super(smcl, variables);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public double calculateInternal(VariableList list) {
+    public double calculateInternal(VariableValueList list) {
         double all = 1;
         for (Statement ms : multipliers) {
             all *= ms.calculate(list);
@@ -44,6 +55,9 @@ public class MultiplyStatement extends Statement {
         return all;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -63,6 +77,10 @@ public class MultiplyStatement extends Statement {
         return sb.toString();
     }
 
+    /**
+     * Returns whether the statement only has numbers.
+     * @return true if the statement only has numbers
+     */
     public boolean isAllNum() {
         for (Statement statement : multipliers)
             if (!(statement instanceof NumberStatement))
@@ -70,7 +88,14 @@ public class MultiplyStatement extends Statement {
         return true;
     }
 
+    /**
+     * Add a statement into the multiply statement.
+     * @param statement another statement
+     * @return this
+     */
     public MultiplyStatement addMultiplier(Statement statement) {
+        if(statement.equals(this))
+            throw new ArithmeticException("Add itself");
         if (statement.equals(NumberPool.NUMBER_CONST_1))
             return this;
         if (statement.equals(NumberPool.NUMBER_CONST_0)) {
@@ -89,12 +114,20 @@ public class MultiplyStatement extends Statement {
         return this;
     }
 
+    /**
+     * Add several statements in the multiply statement.
+     * @param statements a set of statements
+     * @return this
+     */
     public MultiplyStatement addMultipliers(Statement... statements) {
         for (Statement statement : statements)
             addMultiplier(statement);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     // (f1f2..fn)' = f1'f2f3...fn+f1f2'f3...fn+f1f2f3'...fn+...+f1f2f3...fn'
     // Optimize

@@ -15,10 +15,10 @@
  */
 package io.github.nickid2018.smcl.statements.arith;
 
-import io.github.nickid2018.smcl.DefinedVariables;
+import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.VariableList;
+import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
@@ -26,15 +26,26 @@ import io.github.nickid2018.smcl.statements.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A statement stands for calculating plus or minus.
+ */
 public class MathStatement extends Statement {
 
     private final List<Statement> subs = new ArrayList<>();
 
-    public MathStatement(SMCLContext smcl, DefinedVariables variables) {
+    /**
+     * Construct a math statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     */
+    public MathStatement(SMCLContext smcl, VariableList variables) {
         super(smcl, variables);
     }
 
-    public double calculateInternal(VariableList list) {
+    /**
+     * {@inheritDoc}
+     */
+    public double calculateInternal(VariableValueList list) {
         double t = 0;
         for (Statement en : subs) {
             t += en.calculate(list);
@@ -42,6 +53,9 @@ public class MathStatement extends Statement {
         return t;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -60,6 +74,10 @@ public class MathStatement extends Statement {
         return sb.toString();
     }
 
+    /**
+     * Returns whether the statement only has numbers.
+     * @return true if the statement only has numbers
+     */
     public boolean isAllNum() {
         for (Statement en : subs) {
             if (!(en instanceof NumberStatement))
@@ -68,7 +86,14 @@ public class MathStatement extends Statement {
         return true;
     }
 
+    /**
+     * Add a statement into the math statement.
+     * @param statement another statement
+     * @return this
+     */
     public MathStatement addStatement(Statement statement) {
+        if(statement.equals(this))
+            throw new ArithmeticException("Add itself");
         if (statement.equals(NumberPool.NUMBER_CONST_0))
             return this;
         subs.add(statement);
@@ -80,12 +105,20 @@ public class MathStatement extends Statement {
         return this;
     }
 
+    /**
+     * Add several statements in the math statement.
+     * @param statements a set of statements
+     * @return this
+     */
     public MathStatement addStatements(Statement... statements) {
         for (Statement statement : statements)
             addStatement(statement);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Statement derivativeInternal() {
         MathStatement end = new MathStatement(smcl, variables);

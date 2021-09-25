@@ -15,34 +15,52 @@
  */
 package io.github.nickid2018.smcl.parser;
 
-import io.github.nickid2018.smcl.DefinedVariables;
+import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 
-public class UnaryOperatorParser<T extends Statement> extends OperatorParser<T> {
+/**
+ * Parser for unary operator.
+ */
+public class UnaryOperatorParser extends OperatorParser {
 
     private final int priority;
     private final boolean leftAssoc;
-    private final TriFunction<SMCLContext, Statement, DefinedVariables, T> map;
+    private final TriFunction<SMCLContext, Statement, VariableList, Statement> map;
 
-    public UnaryOperatorParser(int priority, boolean leftAssoc, TriFunction<SMCLContext, Statement, DefinedVariables, T> map) {
+    /**
+     * Construct a binary operator parser.
+     * @param priority the priority of the parser
+     * @param leftAssoc left associated
+     * @param map function to map the statement
+     */
+    public UnaryOperatorParser(int priority, boolean leftAssoc, TriFunction<SMCLContext, Statement, VariableList, Statement> map) {
         this.priority = priority;
         this.leftAssoc = leftAssoc;
         this.map = map;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getPriority() {
         return priority;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isLeftAssoc() {
         return leftAssoc;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Statement parseStatement(SMCLContext smcl, DefinedVariables variables, Statement... pop) {
+    public Statement parseStatement(SMCLContext smcl, VariableList variables, Statement... pop) {
         return map.accept(smcl, pop[0], variables);
     }
 
