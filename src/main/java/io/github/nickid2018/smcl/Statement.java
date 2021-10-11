@@ -63,6 +63,18 @@ public abstract class Statement implements Cloneable {
     }
 
     /**
+     * Get the statement unrelated from this.
+     * @return statement unrelated from this
+     */
+    public Statement getClone() {
+        try {
+            return (Statement) clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+
+    /**
      * Get the statement that is negative and unrelated from this.
      * @return statement that is negative and unrelated from this
      */

@@ -124,9 +124,9 @@ public class PowerStatement extends Statement {
     // 2) g = C: (f^C)' = Cf'f^(C-1)
     protected Statement derivativeInternal() {
         if (exponents.size() > 1) {
-            Statement now = base;
+            Statement now = base.getClone();
             for (Statement statement : exponents)
-                now = new PowerStatement(smcl, variables).putBaseAndExponents(now, statement);
+                now = new PowerStatement(smcl, variables).putBaseAndExponents(now, statement.getClone());
             return now.derivative();
         }
         Statement exponent = exponents.get(0);
@@ -163,8 +163,8 @@ public class PowerStatement extends Statement {
                 constNumber *= derivative.calculate(null);
             if (constNumber == 0)
                 return NumberPool.NUMBER_CONST_0;
-            Statement trexp = exp == 2 ? base
-                    : new PowerStatement(smcl, variables).putBaseAndExponents(base, NumberPool.getNumber(exp - 1));
+            Statement trexp = exp == 2 ? base.getClone()
+                    : new PowerStatement(smcl, variables).putBaseAndExponents(base.getClone(), NumberPool.getNumber(exp - 1));
             if (constNumber == 1 || constNumber == -1) {
                 MultiplyStatement end = new MultiplyStatement(smcl, variables).addMultiplier(trexp);
                 return constNumber == 1 ? (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative)
@@ -176,7 +176,7 @@ public class PowerStatement extends Statement {
             }
         }
         Statement multi = new MultiplyStatement(smcl, variables)
-                .addMultipliers(exponent, Functions.LN.create(smcl, base)).derivative();
+                .addMultipliers(exponent.getClone(), Functions.LN.create(smcl, base.getClone())).derivative();
         if (multi instanceof NumberStatement) {
             double constNumber = multi.calculate(null);
             if (constNumber == 0)

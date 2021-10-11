@@ -139,7 +139,7 @@ public class MultiplyStatement extends Statement {
             if (statement instanceof NumberStatement)
                 constNumber *= statement.calculate(null);
             else
-                normal.add(statement);
+                normal.add(statement.getClone());
         }
         if (constNumber == 0)
             return NumberPool.NUMBER_CONST_0;
