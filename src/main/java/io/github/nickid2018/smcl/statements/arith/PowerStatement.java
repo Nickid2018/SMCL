@@ -54,14 +54,14 @@ public class PowerStatement extends Statement {
         for (int now = exponents.size() - 2; now > -2; now--) {
             double currentBase = now == -1 ? base.calculate(list) : exponents.get(now).calculate(list);
             if (currentBase == 0 && prevExp <= 0)
-                if (smcl.settings.invalidArgumentWarn)
+                if (context.settings.invalidArgumentWarn)
                     System.err.println("Warning: 0 is multiplied by an exponent not greater than 0 at " + this);
                 else
                     throw new ArithmeticException("0 is multiplied by an exponent not greater than 0");
             if (currentBase < 0) {
                 int intPrev = (int) prevExp;
                 if (Math.abs(intPrev - prevExp) > 1E-5)
-                    if (smcl.settings.invalidArgumentWarn)
+                    if (context.settings.invalidArgumentWarn)
                         System.err.println("Warning: A negative number is multiplied by a fraction at " + this);
                     else
                         throw new ArithmeticException("A negative number is multiplied by a fraction");
@@ -126,7 +126,7 @@ public class PowerStatement extends Statement {
         if (exponents.size() > 1) {
             Statement now = base.getClone();
             for (Statement statement : exponents)
-                now = new PowerStatement(smcl, variables).putBaseAndExponents(now, statement.getClone());
+                now = new PowerStatement(context, variables).putBaseAndExponents(now, statement.getClone());
             return now.derivative();
         }
         Statement exponent = exponents.get(0);
@@ -142,11 +142,11 @@ public class PowerStatement extends Statement {
             if (constNumber == 0)
                 return NumberPool.NUMBER_CONST_0;
             if (constNumber == 1 || constNumber == -1) {
-                MultiplyStatement end = new MultiplyStatement(smcl, variables).addMultiplier(this);
+                MultiplyStatement end = new MultiplyStatement(context, variables).addMultiplier(this);
                 return constNumber == 1 ? (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative)
                         : (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative).getNegative();
             } else {
-                MultiplyStatement end = new MultiplyStatement(smcl, variables)
+                MultiplyStatement end = new MultiplyStatement(context, variables)
                         .addMultipliers(NumberPool.getNumber(constNumber), this);
                 return (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative);
             }
@@ -164,19 +164,19 @@ public class PowerStatement extends Statement {
             if (constNumber == 0)
                 return NumberPool.NUMBER_CONST_0;
             Statement trexp = exp == 2 ? base.getClone()
-                    : new PowerStatement(smcl, variables).putBaseAndExponents(base.getClone(), NumberPool.getNumber(exp - 1));
+                    : new PowerStatement(context, variables).putBaseAndExponents(base.getClone(), NumberPool.getNumber(exp - 1));
             if (constNumber == 1 || constNumber == -1) {
-                MultiplyStatement end = new MultiplyStatement(smcl, variables).addMultiplier(trexp);
+                MultiplyStatement end = new MultiplyStatement(context, variables).addMultiplier(trexp);
                 return constNumber == 1 ? (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative)
                         : (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative).getNegative();
             } else {
-                MultiplyStatement end = new MultiplyStatement(smcl, variables)
+                MultiplyStatement end = new MultiplyStatement(context, variables)
                         .addMultipliers(NumberPool.getNumber(constNumber), trexp);
                 return (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative);
             }
         }
-        Statement multi = new MultiplyStatement(smcl, variables)
-                .addMultipliers(exponent.getClone(), Functions.LN.create(smcl, base.getClone())).derivative();
+        Statement multi = new MultiplyStatement(context, variables)
+                .addMultipliers(exponent.getClone(), Functions.LN.create(context, base.getClone())).derivative();
         if (multi instanceof NumberStatement) {
             double constNumber = multi.calculate(null);
             if (constNumber == 0)
@@ -185,8 +185,8 @@ public class PowerStatement extends Statement {
                 return this;
             if (constNumber == -1)
                 return getNewNegative();
-            return new MultiplyStatement(smcl, variables).addMultipliers(multi, this);
+            return new MultiplyStatement(context, variables).addMultipliers(multi, getClone());
         } else
-            return new MultiplyStatement(smcl, variables).addMultipliers(this, multi);
+            return new MultiplyStatement(context, variables).addMultipliers(getClone(), multi);
     }
 }

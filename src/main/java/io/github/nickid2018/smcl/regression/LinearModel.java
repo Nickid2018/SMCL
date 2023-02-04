@@ -40,8 +40,8 @@ public class LinearModel extends RegressionModel {
     @Override
     public Statement getTransformed(SMCLContext smcl, double b, double a) {
         MathStatement ms = new MathStatement(smcl, smcl.globalvars.toDefinedVariables());
-        Statement na = NumberPool.get(smcl, a);
-        Statement nb = NumberPool.get(smcl, b);
+        Statement na = NumberPool.getNumber(a);
+        Statement nb = NumberPool.getNumber(b);
         MultiplyStatement mls = new MultiplyStatement(smcl, smcl.globalvars.toDefinedVariables());
         mls.addMultipliers(nb, smcl.globalvars.getVariable(Regression.independentVariable));
         ms.addStatements(na, mls);

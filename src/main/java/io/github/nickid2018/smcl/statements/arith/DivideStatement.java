@@ -26,6 +26,7 @@ import io.github.nickid2018.smcl.statements.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Statement for division.
@@ -53,7 +54,7 @@ public class DivideStatement extends Statement {
         for (Statement ms : divisors) {
             double v = ms.calculate(list);
             if (v == 0)
-                if (smcl.settings.invalidArgumentWarn)
+                if (context.settings.invalidArgumentWarn)
                     System.err.println("Warning: divide by 0 at " + this);
                 else
                     throw new ArithmeticException("divide by 0");
@@ -89,10 +90,14 @@ public class DivideStatement extends Statement {
             throw new ArithmeticException("divide by 0");
         if (statement.equals(NumberPool.NUMBER_CONST_1))
             return this;
-        if (statement.equals(NumberPool.NUMBER_CONST_N1))
+        if (statement instanceof DivideStatement) {
+            merge(((DivideStatement) statement).getReverse());
+            return this;
+        }
+        if (statement.equals(NumberPool.NUMBER_CONST_M1))
             return (DivideStatement) getNegative();
         if (dividend instanceof NumberStatement && statement instanceof NumberStatement) {
-            dividend = NumberPool.get(smcl, dividend.calculate(null) / statement.calculate(null));
+            dividend = NumberPool.getNumber(dividend.calculate(null) / statement.calculate(null));
             return this;
         }
         divisors.add(statement);
@@ -106,9 +111,8 @@ public class DivideStatement extends Statement {
      */
     public DivideStatement putDividendAndDivisors(Statement... statements) {
         dividend = statements[0];
-        for (int i = 1; i < statements.length; i++) {
+        for (int i = 1; i < statements.length; i++)
             addDivisor(statements[i]);
-        }
         return this;
     }
 
@@ -126,7 +130,7 @@ public class DivideStatement extends Statement {
         Statement funcf = dividend;
         Statement funcg;
         if(divisors.size() > 1) {
-            funcg = new MultiplyStatement(smcl, variables);
+            funcg = new MultiplyStatement(context, variables);
             for(Statement statement : divisors)
                 ((MultiplyStatement) funcg).addMultiplier(statement.getClone());
         } else
@@ -136,30 +140,48 @@ public class DivideStatement extends Statement {
         if (funcfN && funcgN)
             return NumberPool.NUMBER_CONST_0;
         if (funcfN) {
-            PowerStatement pws = new PowerStatement(smcl, variables).putBaseAndExponents(funcg,
+            PowerStatement pws = new PowerStatement(context, variables).putBaseAndExponents(funcg,
                     NumberPool.getNumber(2));
-            return new DivideStatement(smcl, variables).putDividendAndDivisors(funcf.getClone(), pws).getNegative();
+            return new DivideStatement(context, variables).putDividendAndDivisors(funcf.getClone(), pws).getNegative();
         }
         if (funcgN)
-            return new DivideStatement(smcl, variables).putDividendAndDivisors(funcf.derivative(), funcg);
+            return new DivideStatement(context, variables).putDividendAndDivisors(funcf.derivative(), funcg);
         Statement derif = funcf.derivative();
         Statement derig = funcg.derivative();
         Statement add1;
         if (derif.equals(NumberPool.NUMBER_CONST_1))
-            add1 = funcg;
-        else if (derif.equals(NumberPool.NUMBER_CONST_N1))
+            add1 = funcg.getClone();
+        else if (derif.equals(NumberPool.NUMBER_CONST_M1))
             add1 = funcg.getNewNegative();
         else
-            add1 = new MultiplyStatement(smcl, variables).addMultipliers(derif, funcg);
+            add1 = new MultiplyStatement(context, variables).addMultipliers(derif, funcg);
         Statement add2;
         if (derig.equals(NumberPool.NUMBER_CONST_1))
             add2 = funcf.getClone();
-        else if (derig.equals(NumberPool.NUMBER_CONST_N1))
+        else if (derig.equals(NumberPool.NUMBER_CONST_M1))
             add2 = funcf.getNewNegative();
         else
-            add2 = new MultiplyStatement(smcl, variables).addMultipliers(funcf.getClone(), derig);
-        MathStatement ms = new MathStatement(smcl, variables).addStatements(add1, add2.getNegative());
-        PowerStatement pws = new PowerStatement(smcl, variables).putBaseAndExponents(funcg, NumberPool.getNumber(2));
-        return new DivideStatement(smcl, variables).putDividendAndDivisors(ms, pws);
+            add2 = new MultiplyStatement(context, variables).addMultipliers(funcf.getClone(), derig);
+        MathStatement ms = new MathStatement(context, variables).addStatements(add1, add2.getNegative());
+        PowerStatement pws = new PowerStatement(context, variables).putBaseAndExponents(funcg, NumberPool.getNumber(2));
+        return new DivideStatement(context, variables).putDividendAndDivisors(ms, pws);
+    }
+
+    public DivideStatement getReverse() {
+        return new DivideStatement(context, variables).putDividendAndDivisors(
+                new MultiplyStatement(context, variables).addMultipliers(divisors.toArray(new Statement[0])),
+                dividend
+        );
+    }
+
+    @Override
+    public boolean merge(Statement statement) {
+        if (!(statement instanceof DivideStatement))
+            return false;
+        MultiplyStatement newDividend = new MultiplyStatement(context, variables);
+        newDividend.addMultipliers(dividend, ((DivideStatement) statement).dividend);
+        dividend = newDividend;
+        divisors.addAll(((DivideStatement) statement).divisors.stream().map(Statement::getClone).collect(Collectors.toList()));
+        return true;
     }
 }

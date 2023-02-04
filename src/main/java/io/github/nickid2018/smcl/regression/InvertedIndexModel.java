@@ -43,9 +43,9 @@ public class InvertedIndexModel extends RegressionModel {
         MultiplyStatement mls = new MultiplyStatement(smcl, smcl.globalvars.toDefinedVariables());
         PowerStatement pws = new PowerStatement(smcl, smcl.globalvars.toDefinedVariables());
         DivideStatement ds = new DivideStatement(smcl, smcl.globalvars.toDefinedVariables());
-        Statement na = NumberPool.get(smcl, Math.exp(a));
-        ds.putDividendAndDivisors(NumberPool.get(smcl, 1), smcl.globalvars.getVariable(Regression.independentVariable));
-        pws.putBaseAndExponents(NumberPool.get(smcl, Math.exp(b)), ds);
+        Statement na = NumberPool.getNumber(Math.exp(a));
+        ds.putDividendAndDivisors(NumberPool.getNumber(1), smcl.globalvars.getVariable(Regression.independentVariable));
+        pws.putBaseAndExponents(NumberPool.getNumber(Math.exp(b)), ds);
         mls.addMultipliers(na, pws);
         return mls;
     }

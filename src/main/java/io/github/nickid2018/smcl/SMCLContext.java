@@ -16,10 +16,8 @@
 package io.github.nickid2018.smcl;
 
 import io.github.nickid2018.smcl.functions.Functions;
-import io.github.nickid2018.smcl.parser.BinaryOperatorParser;
-import io.github.nickid2018.smcl.parser.StatementGenerator;
-import io.github.nickid2018.smcl.parser.UnaryMathematicsFunctionParser;
-import io.github.nickid2018.smcl.parser.UnaryOperatorParser;
+import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.parser.*;
 import io.github.nickid2018.smcl.statements.arith.DivideStatement;
 import io.github.nickid2018.smcl.statements.arith.MathStatement;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
@@ -55,7 +53,7 @@ public class SMCLContext {
     public SMCLContext(SMCLSettings setting) {
         settings = setting;
         register = new SMCLRegister(this);
-        globalvars = new GlobalVariables();
+        globalvars = new GlobalVariables(this);
     }
 
     /**
@@ -67,51 +65,26 @@ public class SMCLContext {
     }
 
     /**
-     * Initialize the SMCL System, register the basic operators and functions.
+     * Initialize the SMCL System, register the basic constant, operators and functions.
      */
     public final void init() {
-        register.registerOperator("+", new BinaryOperatorParser(20, true, (smcl, statements, variables) -> {
-            if (statements[0] instanceof MathStatement) {
-                MathStatement get = (MathStatement) statements[0];
-                return get.addStatement(statements[1]);
-            } else {
-                MathStatement statement = new MathStatement(smcl, variables);
-                return statement.addStatements(statements);
-            }
-        }));
+        register.registerConstant("pi", NumberPool.getNumber(Math.PI));
+        register.registerConstant("e", NumberPool.getNumber(Math.E));
+        register.registerOperator("+", new BinaryOperatorParser(20, true,
+                (smcl, statements, variables) -> new MathStatement(smcl, variables).addStatements(statements)));
         register.registerUnaryOperator("+",
                 new UnaryOperatorParser(60, false, (smcl, statement, variables) -> statement));
-        register.registerOperator("-", new BinaryOperatorParser(20, true, (smcl, statements, variables) -> {
-            if (statements[0] instanceof MathStatement) {
-                MathStatement get = (MathStatement) statements[0];
-                Statement other = statements[1];
-                return get.addStatement(other.getNegative());
-            } else {
-                MathStatement statement = new MathStatement(smcl, variables);
-                return statement.addStatements(statements[0], statements[1].getNegative());
-            }
-        }));
+        register.registerOperator("-", new BinaryOperatorParser(20, true, (smcl, statements, variables) ->
+                new MathStatement(smcl, variables).addStatements(statements[0], statements[1].getNegative())));
         register.registerUnaryOperator("-",
                 new UnaryOperatorParser(60, false, (smcl, statement, variables) -> statement.getNegative()));
-        register.registerOperator("*", new BinaryOperatorParser(30, true, (smcl, statements, variables) -> {
-            if (statements[0] instanceof MultiplyStatement) {
-                MultiplyStatement get = (MultiplyStatement) statements[0];
-                Statement other = statements[1];
-                return get.addMultiplier(other);
-            } else {
-                MultiplyStatement statement = new MultiplyStatement(smcl, variables);
-                return statement.addMultipliers(statements);
-            }
-        }));
+        register.registerOperator("*", new BinaryOperatorParser(30, true,
+                (smcl, statements, variables) -> new MultiplyStatement(smcl, variables).addMultipliers(statements)));
         register.registerOperator("/", new BinaryOperatorParser(30, true, (smcl, statements, variables) -> {
-            if (statements[0] instanceof DivideStatement) {
-                DivideStatement get = (DivideStatement) statements[0];
-                Statement other = statements[1];
-                return get.addDivisor(other);
-            } else {
-                DivideStatement statement = new DivideStatement(smcl, variables);
-                return statement.putDividendAndDivisors(statements);
-            }
+            if (statements[0] instanceof DivideStatement)
+                return ((DivideStatement) statements[0]).addDivisor(statements[1]);
+            else
+                return new DivideStatement(smcl, variables).putDividendAndDivisors(statements);
         }));
         register.registerOperator("^", new BinaryOperatorParser(40, true, (smcl, statements, variables) -> {
             if (statements[0] instanceof PowerStatement) {
@@ -123,34 +96,37 @@ public class SMCLContext {
                 return statement.putBaseAndExponents(statements);
             }
         }));
-        register.registerFunction("sin", new UnaryMathematicsFunctionParser(Functions.SIN));
-        register.registerFunction("cos", new UnaryMathematicsFunctionParser(Functions.COS));
-        register.registerFunction("tan", new UnaryMathematicsFunctionParser(Functions.TAN));
-        register.registerFunction("csc", new UnaryMathematicsFunctionParser(Functions.CSC));
-        register.registerFunction("sec", new UnaryMathematicsFunctionParser(Functions.SEC));
-        register.registerFunction("cot", new UnaryMathematicsFunctionParser(Functions.COT));
-        register.registerFunction("asin", new UnaryMathematicsFunctionParser(Functions.ASIN));
-        register.registerFunction("acos", new UnaryMathematicsFunctionParser(Functions.ACOS));
-        register.registerFunction("atan", new UnaryMathematicsFunctionParser(Functions.ATAN));
-        register.registerFunction("arcsin", new UnaryMathematicsFunctionParser(Functions.ASIN));
-        register.registerFunction("arccos", new UnaryMathematicsFunctionParser(Functions.ACOS));
-        register.registerFunction("arctan", new UnaryMathematicsFunctionParser(Functions.ATAN));
-        register.registerFunction("sinh", new UnaryMathematicsFunctionParser(Functions.SINH));
-        register.registerFunction("cosh", new UnaryMathematicsFunctionParser(Functions.COSH));
-        register.registerFunction("tanh", new UnaryMathematicsFunctionParser(Functions.TANH));
-        register.registerFunction("sh", new UnaryMathematicsFunctionParser(Functions.SINH));
-        register.registerFunction("ch", new UnaryMathematicsFunctionParser(Functions.COSH));
-        register.registerFunction("th", new UnaryMathematicsFunctionParser(Functions.TANH));
-        register.registerFunction("ln", new UnaryMathematicsFunctionParser(Functions.LN));
-        register.registerFunction("lg", new UnaryMathematicsFunctionParser(Functions.LG));
-        register.registerFunction("sqrt", new UnaryMathematicsFunctionParser(Functions.SQRT));
-        register.registerFunction("cbrt", new UnaryMathematicsFunctionParser(Functions.CBRT));
-        register.registerFunction("exp", new UnaryMathematicsFunctionParser(Functions.EXP));
-        register.registerFunction("abs", new UnaryMathematicsFunctionParser(Functions.ABS));
-        register.registerFunction("sgn", new UnaryMathematicsFunctionParser(Functions.SGN));
-        register.registerFunction("ceil", new UnaryMathematicsFunctionParser(Functions.CEIL));
-        register.registerFunction("floor", new UnaryMathematicsFunctionParser(Functions.FLOOR));
-        register.registerFunction("round", new UnaryMathematicsFunctionParser(Functions.ROUND));
+        register.registerFunction("sin", new UnaryFunctionParser(Functions.SIN));
+        register.registerFunction("cos", new UnaryFunctionParser(Functions.COS));
+        register.registerFunction("tan", new UnaryFunctionParser(Functions.TAN));
+        register.registerFunction("csc", new UnaryFunctionParser(Functions.CSC));
+        register.registerFunction("sec", new UnaryFunctionParser(Functions.SEC));
+        register.registerFunction("cot", new UnaryFunctionParser(Functions.COT));
+        register.registerFunction("asin", new UnaryFunctionParser(Functions.ASIN));
+        register.registerFunction("acos", new UnaryFunctionParser(Functions.ACOS));
+        register.registerFunction("atan", new UnaryFunctionParser(Functions.ATAN));
+        register.registerFunction("arcsin", new UnaryFunctionParser(Functions.ASIN));
+        register.registerFunction("arccos", new UnaryFunctionParser(Functions.ACOS));
+        register.registerFunction("arctan", new UnaryFunctionParser(Functions.ATAN));
+        register.registerFunction("sinh", new UnaryFunctionParser(Functions.SINH));
+        register.registerFunction("cosh", new UnaryFunctionParser(Functions.COSH));
+        register.registerFunction("tanh", new UnaryFunctionParser(Functions.TANH));
+        register.registerFunction("sh", new UnaryFunctionParser(Functions.SINH));
+        register.registerFunction("ch", new UnaryFunctionParser(Functions.COSH));
+        register.registerFunction("th", new UnaryFunctionParser(Functions.TANH));
+        register.registerFunction("ln", new UnaryFunctionParser(Functions.LN));
+        register.registerFunction("lg", new UnaryFunctionParser(Functions.LG));
+        register.registerFunction("sqrt", new UnaryFunctionParser(Functions.SQRT));
+        register.registerFunction("cbrt", new UnaryFunctionParser(Functions.CBRT));
+        register.registerFunction("exp", new UnaryFunctionParser(Functions.EXP));
+        register.registerFunction("abs", new UnaryFunctionParser(Functions.ABS));
+        register.registerFunction("sgn", new UnaryFunctionParser(Functions.SGN));
+        register.registerFunction("ceil", new UnaryFunctionParser(Functions.CEIL));
+        register.registerFunction("floor", new UnaryFunctionParser(Functions.FLOOR));
+        register.registerFunction("round", new UnaryFunctionParser(Functions.ROUND));
+        register.registerFunction("fact", new UnaryFunctionParser(Functions.FACTORIAL));
+        register.registerFunction("mod", new BinaryFunctionParser(Functions.MOD));
+        register.registerFunction("log", new BinaryFunctionParser(Functions.LOG));
     }
 
     /**
@@ -165,9 +141,9 @@ public class SMCLContext {
      * Parse a string into a statement.
      * @param expr a string contains a statement
      * @return a statement can use it to compute
-     * @throws MathParseException throws if the statement is invalid
+     * @throws StatementParseException throws if the statement is invalid
      */
-    public final Statement parse(String expr) throws MathParseException {
+    public final Statement parse(String expr) throws StatementParseException {
         return parse(expr, VariableList.EMPTY_VARIABLES);
     }
 
@@ -176,9 +152,9 @@ public class SMCLContext {
      * @param expr a string contains a statement
      * @param variables a variable list
      * @return a statement can use it to compute
-     * @throws MathParseException throws if the statement is invalid
+     * @throws StatementParseException throws if the statement is invalid
      */
-    public final Statement parse(String expr, VariableList variables) throws MathParseException {
+    public final Statement parse(String expr, VariableList variables) throws StatementParseException {
         return StatementGenerator.createAST(expr, this, variables);
     }
 }

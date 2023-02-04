@@ -21,7 +21,7 @@ package io.github.nickid2018.smcl;
 public abstract class Statement implements Cloneable {
 
     protected final VariableList variables;
-    protected SMCLContext smcl;
+    protected SMCLContext context;
     protected boolean isNegative;
 
     /**
@@ -29,7 +29,7 @@ public abstract class Statement implements Cloneable {
      * @param smcl a context
      */
     public Statement(SMCLContext smcl) {
-        this.smcl = smcl;
+        this.context = smcl;
         this.variables = smcl.globalvars.toDefinedVariables();
     }
 
@@ -39,7 +39,7 @@ public abstract class Statement implements Cloneable {
      * @param variables a variable list
      */
     public Statement(SMCLContext smcl, VariableList variables) {
-        this.smcl = smcl;
+        this.context = smcl;
         this.variables = variables;
     }
 
@@ -80,8 +80,8 @@ public abstract class Statement implements Cloneable {
      */
     public Statement getNewNegative() {
         try {
-            Statement s2 = (Statement) clone();
-            return s2.getNegative();
+            Statement clone = (Statement) clone();
+            return clone.getNegative();
         } catch (CloneNotSupportedException e) {
             return null;
         }
@@ -100,7 +100,7 @@ public abstract class Statement implements Cloneable {
      * @return a context
      */
     public SMCLContext getSMCL() {
-        return smcl;
+        return context;
     }
 
     /**
@@ -108,7 +108,7 @@ public abstract class Statement implements Cloneable {
      * @param smcl a context
      */
     public void setSMCL(SMCLContext smcl) {
-        this.smcl = smcl;
+        this.context = smcl;
     }
 
     /**
@@ -150,4 +150,13 @@ public abstract class Statement implements Cloneable {
      * @return the result without sign
      */
     protected abstract Statement derivativeInternal();
+
+    /**
+     * Merge from other statement.
+     * @param statement statement to merge
+     * @return true if merging successful
+     */
+    public boolean merge(Statement statement) {
+        return false;
+    }
 }

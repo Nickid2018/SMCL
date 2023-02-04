@@ -47,7 +47,7 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
      */
     public UnaryFunctionGenStatement(SMCLContext smcl, Statement statement, UnaryFunctionBuilder function) {
         super(statement);
-        this.smcl = smcl;
+        this.context = smcl;
         this.function = function;
     }
 
@@ -65,16 +65,16 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
     @Override
     protected final double calculateInternal(VariableValueList list) {
         double innerResult = innerStatement.calculate(list);
-        innerResult = function.getResolveVariable().accept(innerResult, smcl);
+        innerResult = function.getResolveVariable().accept(innerResult, context);
         try {
             function.getDomainCheck().accept(innerResult);
         } catch (ArithmeticException e) {
-            if(smcl.settings.invalidArgumentWarn)
+            if(context.settings.invalidArgumentWarn)
                 System.err.println("Warning: " + e.getLocalizedMessage() + " at " + this);
             else
                 throw e;
         }
-        return function.getResolveEnd().accept(getFunction().getCalcFunction().accept(innerResult), smcl);
+        return function.getResolveEnd().accept(getFunction().getCalcFunction().accept(innerResult), context);
     }
 
     /**
@@ -114,7 +114,7 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
             if (get == -1)
                 return partDesi.getNegative();
         }
-        return new MultiplyStatement(smcl, variables).addMultipliers(end, partDesi);
+        return new MultiplyStatement(context, variables).addMultipliers(end, partDesi);
     }
 
 }

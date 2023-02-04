@@ -26,7 +26,12 @@ import java.util.Set;
  */
 public class GlobalVariables {
 
+    private final SMCLContext smcl;
     private final Map<String, Variable> variablemap = new HashMap<>();
+
+    public GlobalVariables(SMCLContext smcl) {
+        this.smcl = smcl;
+    }
 
     /**
      * Register a variable.
@@ -90,6 +95,6 @@ public class GlobalVariables {
      * @return a variable list
      */
     public VariableList toDefinedVariables() {
-        return new VariableList().registerAll(getAllRegistered());
+        return new VariableList(smcl).registerAll(getAllRegistered());
     }
 }

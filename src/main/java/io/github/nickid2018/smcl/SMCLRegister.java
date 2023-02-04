@@ -19,8 +19,10 @@ import io.github.nickid2018.smcl.parser.FunctionParser;
 import io.github.nickid2018.smcl.parser.OperatorParser;
 import io.github.nickid2018.smcl.parser.StatementTokenizer;
 import io.github.nickid2018.smcl.parser.UnaryOperatorParser;
+import io.github.nickid2018.smcl.statements.NumberStatement;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -37,6 +39,9 @@ public final class SMCLRegister {
 
     // --- Context
     private final SMCLContext smcl;
+
+    // --- Constants
+    private final Map<String, NumberStatement> constants = new HashMap<>();
 
     // --- Close constructor
     SMCLRegister(SMCLContext smcl) {
@@ -129,5 +134,40 @@ public final class SMCLRegister {
      */
     public boolean containsFunction(String function) {
         return functions.containsKey(function);
+    }
+
+    /**
+     * Register constant.
+     * @param name name of constant
+     * @param number number statement of constant
+     */
+    public void registerConstant(String name, NumberStatement number) {
+        constants.put(name.toLowerCase(Locale.ROOT), number);
+    }
+
+    /**
+     * Remove constant.
+     * @param name constant to remove
+     */
+    public void removeConstant(String name) {
+        constants.remove(name.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Get a constant.
+     * @param name  name of constant
+     * @return the constant
+     */
+    public NumberStatement getConstant(String name) {
+        return constants.get(name.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Return true if the constant has been registered.
+     * @param name name of the constant
+     * @return true if the constant has been registered, otherwise false
+     */
+    public boolean containsConstant(String name) {
+        return constants.containsKey(name.toLowerCase(Locale.ROOT));
     }
 }

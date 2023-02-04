@@ -41,8 +41,8 @@ public class IndexModel extends RegressionModel {
     public Statement getTransformed(SMCLContext smcl, double b, double a) {
         MultiplyStatement mls = new MultiplyStatement(smcl, smcl.globalvars.toDefinedVariables());
         PowerStatement pws = new PowerStatement(smcl, smcl.globalvars.toDefinedVariables());
-        Statement na = NumberPool.get(smcl, Math.exp(a));
-        pws.putBaseAndExponents(NumberPool.get(smcl, Math.exp(b)),
+        Statement na = NumberPool.getNumber(Math.exp(a));
+        pws.putBaseAndExponents(NumberPool.getNumber(Math.exp(b)),
                 smcl.globalvars.getVariable(Regression.independentVariable));
         mls.addMultipliers(na, pws);
         return mls;

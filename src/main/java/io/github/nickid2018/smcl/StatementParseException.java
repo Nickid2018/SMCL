@@ -20,7 +20,7 @@ import io.github.nickid2018.smcl.parser.StatementToken;
 /**
  * The exception throws when parser can't parse the string into a correct statement.
  */
-public class MathParseException extends Exception {
+public class StatementParseException extends Exception {
 
     /**
      *
@@ -35,7 +35,7 @@ public class MathParseException extends Exception {
      * @param statement the statement of the exception
      * @param token the token when the exception occurred
      */
-    public MathParseException(String desc, String statement, StatementToken token) {
+    public StatementParseException(String desc, String statement, StatementToken token) {
         super(desc);
         this.statement = statement;
         this.token = token;

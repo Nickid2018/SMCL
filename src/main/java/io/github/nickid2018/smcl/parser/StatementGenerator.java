@@ -29,31 +29,38 @@ public class StatementGenerator {
      * @param smcl the context
      * @param variables a variable list
      * @return a statement
-     * @throws MathParseException throws if the string isn't a valid statement
+     * @throws StatementParseException throws if the string isn't a valid statement
      */
-    public static Statement createAST(String input, SMCLContext smcl, VariableList variables) throws MathParseException {
-        Stack<Statement> stack = new Stack<>();
-        List<StatementToken> rpn = doRPN(input, smcl);
-        validate(rpn, input, smcl);
+    public static Statement createAST(String input, SMCLContext smcl, VariableList variables) throws StatementParseException {
+        Stack<Statement> operationStack = new Stack<>();
+        List<StatementToken> rpnTokens = doRPN(input, smcl);
+        validate(rpnTokens, input, smcl);
         SMCLRegister register = smcl.register;
-        VariableList alls = smcl.globalvars.toDefinedVariables();
-        alls.registerAll(variables);
-        for (StatementToken token : rpn) {
+        VariableList variableList = smcl.globalvars.toDefinedVariables();
+        variableList.registerAll(variables);
+        for (StatementToken token : rpnTokens) {
             switch (token.type) {
                 case UNARY_OPERATOR:
-                    stack.push(register.getRegisteredOperator(token.detail).parseStatement(smcl, alls, stack.pop()));
+                    operationStack.push(register.getRegisteredOperator(token.detail)
+                            .parseStatement(smcl, variableList, operationStack.pop()));
                     continue;
                 case OPERATOR:
-                    Statement operand_o1 = stack.pop();
-                    Statement operand_o2 = stack.pop();
-                    stack.push(register.getRegisteredOperator(token.detail).parseStatement(smcl, alls, operand_o2,
+                    Statement operand_o1 = operationStack.pop();
+                    Statement operand_o2 = operationStack.pop();
+                    operationStack.push(register.getRegisteredOperator(token.detail)
+                            .parseStatement(smcl, variableList, operand_o2,
                             operand_o1));
                     continue;
                 case VARIABLE:
-                    Variable var = alls.getVariable(token.detail);
-                    if (var == null)
-                        error("Variable \"" + token.detail + "\" isn't declared", input, token);
-                    stack.push(var);
+                    String varName = token.detail;
+                    if (register.containsConstant(varName))
+                        operationStack.push(register.getConstant(varName));
+                    else {
+                        Variable var = variableList.getVariable(varName);
+                        if (var == null)
+                            error("Variable \"" + varName + "\" isn't declared", input, token);
+                        operationStack.push(var);
+                    }
                     continue;
                 case FUNCTION:
                     String name = token.detail.toLowerCase(Locale.ROOT);
@@ -61,26 +68,26 @@ public class StatementGenerator {
                     if (function == null)
                         error("Unknown Function " + token.detail, input, token);
                     ArrayList<Statement> subOperands = new ArrayList<>();
-                    while (!stack.isEmpty() && stack.peek() != VoidStatement.PARAMS_START_STATEMENT)
-                        subOperands.add(stack.pop());
+                    while (!operationStack.isEmpty() && operationStack.peek() != VoidStatement.PARAMS_START_STATEMENT)
+                        subOperands.add(operationStack.pop());
                     Collections.reverse(subOperands);
-                    if (stack.peek() == VoidStatement.PARAMS_START_STATEMENT)
-                        stack.pop();
-                    stack.push(function.parseStatement(smcl, subOperands.toArray(new Statement[0])));
+                    if (operationStack.peek() == VoidStatement.PARAMS_START_STATEMENT)
+                        operationStack.pop();
+                    operationStack.push(function.parseStatement(smcl, subOperands.toArray(new Statement[0])));
                     continue;
                 case OPEN_PAREN:
-                    stack.push(VoidStatement.PARAMS_START_STATEMENT);
+                    operationStack.push(VoidStatement.PARAMS_START_STATEMENT);
                     continue;
                 case NUMBER:
                     try {
-                        stack.push(NumberPool.get(smcl, Double.parseDouble(token.detail)));
+                        operationStack.push(NumberPool.getNumber(Double.parseDouble(token.detail)));
                     } catch (NumberFormatException e) {
                         error("Can't parse the string \"" + token.detail + "\" into a number", input, token);
                     }
                     continue;
                 case HEX_NUMBER:
                     try {
-                        stack.push(NumberPool.get(smcl, Long.parseLong(token.detail.substring(2), 16)));
+                        operationStack.push(NumberPool.getNumber(Long.parseLong(token.detail.substring(2), 16)));
                     } catch (NumberFormatException e) {
                         error("Can't parse the string \"" + token.detail + "\" into a hex number", input, token);
                     }
@@ -89,7 +96,7 @@ public class StatementGenerator {
                     error("What's up? That's impossible!", input, token);
             }
         }
-        return stack.pop();
+        return operationStack.pop();
     }
 
     /**
@@ -97,9 +104,9 @@ public class StatementGenerator {
      * @param input a string contains a statement
      * @param smcl the context
      * @return a list of the RPN tokens
-     * @throws MathParseException throws if the RPN fails
+     * @throws StatementParseException throws if the RPN fails
      */
-    public static List<StatementToken> doRPN(String input, SMCLContext smcl) throws MathParseException {
+    public static List<StatementToken> doRPN(String input, SMCLContext smcl) throws StatementParseException {
         List<StatementToken> outputQueue = new ArrayList<>();
         Stack<StatementToken> stack = new Stack<>();
         StatementTokenizer tokenizer = new StatementTokenizer(smcl, input);
@@ -202,9 +209,9 @@ public class StatementGenerator {
      * @param rpnQueue RPN Queue of the statement
      * @param input the string of the statement
      * @param smcl the context
-     * @throws MathParseException throws if the validation fails
+     * @throws StatementParseException throws if the validation fails
      */
-    public static void validate(List<StatementToken> rpnQueue, String input, SMCLContext smcl) throws MathParseException {
+    public static void validate(List<StatementToken> rpnQueue, String input, SMCLContext smcl) throws StatementParseException {
         Stack<Integer> stack = new Stack<>();
         stack.push(0);
         for (StatementToken token : rpnQueue) {
@@ -222,8 +229,11 @@ public class StatementGenerator {
                 case FUNCTION: {
                     FunctionParser f = smcl.register.getRegisteredFunction(token.detail.toLowerCase(Locale.ROOT));
                     int numParams = stack.pop();
-                    if (f != null && !f.numParamsVaries() && numParams != f.getNumParams()) {
-                        error("Function " + token + " expected " + f.getNumParams() + " parameters, but got " + numParams,
+                    if (f == null)
+                        error("Function " + token + " isn't defined.", input, token);
+                    if (numParams != f.getNumParams() && f.getNumParams() != -1 /* -1 means unknown arguments */) {
+                        error("Function " + token + (f.numParamsVaries() ? " (Multi-argument)" : "")
+                                        + " expected " + f.getNumParams() + " parameters, but got " + numParams,
                                 input, token);
                     }
                     if (stack.size() <= 0) {
@@ -251,8 +261,8 @@ public class StatementGenerator {
     /*
      * Throws math parse exception.
      */
-    private static void error(String cause, String expr, StatementToken token) throws MathParseException {
-        throw new MathParseException(cause, expr, token);
+    private static void error(String cause, String expr, StatementToken token) throws StatementParseException {
+        throw new StatementParseException(cause, expr, token);
     }
 
     /*

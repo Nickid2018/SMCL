@@ -15,41 +15,37 @@
  */
 package io.github.nickid2018.smcl.demo;
 
-import io.github.nickid2018.smcl.MathParseException;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
 
 /**
- * A demo for derivative.
+ * A demo for statement.
  */
-public class DerivativeDemo {
+public class MathStatementDemo {
 
     static long timer;
 
-    public static void main(String[] args) {
-        try {
-            SMCLContext smcl = SMCLContext.getInstance();
-            smcl.init();
-            smcl.globalvars.registerVariables("x");
-            smcl.settings.degreeAngle = true;
-            timer = System.nanoTime();
-            Statement s = smcl.parse("(x^x)^9");
-            timeOutput();
-            System.out.println(s);
-            timeOutput();
-            Statement d = s.derivative();
-            timeOutput();
-            System.out.println(d);
-            timeOutput();
-            VariableValueList list = new VariableValueList().addVariableValue("x", 1.1);
-            System.out.println(s.calculate(list));
-            timeOutput();
-            System.out.println(d.calculate(list));
-            timeOutput();
-        } catch (MathParseException e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws Exception {
+        SMCLContext smcl = SMCLContext.getInstance();
+        smcl.init();
+        smcl.globalvars.registerVariables("x");
+//        smcl.settings.degreeAngle = true;
+//        smcl.settings.invalidArgumentWarn =true;
+        timer = System.nanoTime();
+        Statement s = smcl.parse("x^ln(x)^x");
+        timeOutput();
+        System.out.println(s);
+        timeOutput();
+        VariableValueList list = new VariableValueList();
+        list.addVariableValue("x", 0.53);
+        System.out.println(s.calculate(list));
+        timeOutput();
+        Statement s2;
+        System.out.println(s2 = s.derivative());
+        timeOutput();
+        System.out.println(s2.calculate(list));
+        timeOutput();
     }
 
     static void timeOutput() {

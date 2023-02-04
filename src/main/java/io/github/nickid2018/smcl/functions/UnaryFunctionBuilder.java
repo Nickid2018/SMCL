@@ -46,7 +46,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
     /**
      * Create a builder with a name.
      * @param name the name of the function
-     * @return
+     * @return a builder
      */
     public static UnaryFunctionBuilder createBuilder(String name) {
         return new UnaryFunctionBuilder(name);

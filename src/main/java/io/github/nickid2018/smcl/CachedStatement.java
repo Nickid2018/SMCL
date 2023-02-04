@@ -23,7 +23,7 @@ public class CachedStatement extends Statement {
     private boolean dirty = true;
 
     public CachedStatement(Statement statement) {
-        super(statement.smcl, statement.variables);
+        super(statement.context, statement.variables);
         this.statement = statement;
     }
 

@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.nickid2018.smcl.parser;
 
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
+import io.github.nickid2018.smcl.functions.BinaryFunctionBuilder;
 import io.github.nickid2018.smcl.functions.UnaryFunctionBuilder;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 
@@ -25,7 +27,7 @@ import java.util.function.BiFunction;
 /**
  * Parser for unary function.
  */
-public class UnaryMathematicsFunctionParser extends FunctionParser {
+public class BinaryFunctionParser extends FunctionParser {
 
     private final BiFunction<SMCLContext, Statement[], ? extends Statement> map;
 
@@ -33,7 +35,7 @@ public class UnaryMathematicsFunctionParser extends FunctionParser {
      * Construct a parser.
      * @param unary the function builder
      */
-    public UnaryMathematicsFunctionParser(UnaryFunctionBuilder unary) {
+    public BinaryFunctionParser(BinaryFunctionBuilder unary) {
         map = unary::create;
     }
 
@@ -41,7 +43,7 @@ public class UnaryMathematicsFunctionParser extends FunctionParser {
      * Construct a parser.
      * @param map function to map the statement
      */
-    public UnaryMathematicsFunctionParser(BiFunction<SMCLContext, Statement[], UnaryFunctionStatement> map) {
+    public BinaryFunctionParser(BiFunction<SMCLContext, Statement[], UnaryFunctionStatement> map) {
         this.map = map;
     }
 
@@ -50,7 +52,7 @@ public class UnaryMathematicsFunctionParser extends FunctionParser {
      */
     @Override
     public boolean numParamsVaries() {
-        return false;
+        return true;
     }
 
     /**
@@ -58,7 +60,7 @@ public class UnaryMathematicsFunctionParser extends FunctionParser {
      */
     @Override
     public int getNumParams() {
-        return 1;
+        return 2;
     }
 
     /**

@@ -15,8 +15,6 @@
  */
 package io.github.nickid2018.smcl.optimize;
 
-import io.github.nickid2018.smcl.SMCLContext;
-import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 
 import java.util.HashMap;
@@ -29,7 +27,7 @@ public class NumberPool {
 
     public static final NumberStatement NUMBER_CONST_1 = new NumberStatement(1);
     public static final NumberStatement NUMBER_CONST_0 = new NumberStatement(0);
-    public static final NumberStatement NUMBER_CONST_N1 = new NumberStatement(-1);
+    public static final NumberStatement NUMBER_CONST_M1 = new NumberStatement(-1);
 
     private static final Map<Double, NumberStatement> numbers = new HashMap<>();
 
@@ -37,7 +35,7 @@ public class NumberPool {
         numbers.put(1.0, NUMBER_CONST_1);
         numbers.put(0.0, NUMBER_CONST_0);
         numbers.put(-0.0, NUMBER_CONST_0);
-        numbers.put(-1.0, NUMBER_CONST_N1);
+        numbers.put(-1.0, NUMBER_CONST_M1);
     }
 
     /**
@@ -51,16 +49,6 @@ public class NumberPool {
         NumberStatement ns = new NumberStatement(value);
         numbers.put(value, ns);
         return ns;
-    }
-
-    /**
-     * Get a number statement.
-     * @param smcl a context
-     * @param value a number
-     * @return a number statement
-     */
-    public static Statement get(SMCLContext smcl, double value) {
-        return smcl.settings.disableNumberPool && !isSpecial(value) ? new NumberStatement(value) : getNumber(value);
     }
 
     /**

@@ -49,6 +49,12 @@ public class Functions {
      */
     public static final DoubleConsumer DOMAIN_ARC = checkDomainInclude(Interval.fromNonInfString("[-1,1]"),
             arg -> "invalid argument for asin/acos: " + arg + " doesn't belong [-1,1]");
+    /**
+     * Domain of N
+     */
+    public static final DoubleConsumer DOMAIN_NATURAL = checkDomainInclude(
+            arg -> arg >= 0 && Math.abs(Math.round(arg) - arg) < 1E-5,
+            arg -> "invalid argument - The number isn't a natural number");
 
     // Basic trigonometric functions
     /** sine (sin) */
@@ -125,4 +131,14 @@ public class Functions {
     /** rounding function (round) */
     public static final UnaryFunctionBuilder ROUND = UnaryFunctionBuilder.createBuilder("round")
             .withFunction(Math::round);
+
+    public static final UnaryFunctionBuilder FACTORIAL = UnaryFunctionBuilder.createBuilder("fact")
+            .withDomain(DOMAIN_NATURAL).withFunction(BaseFunctions::factorial);
+
+    // Binary functions
+    /** mod function (mod) */
+    public static final BinaryFunctionBuilder MOD = BinaryFunctionBuilder.createBuilder("mod").withCalcFunction((a, b) -> a % b);
+
+    public static final BinaryFunctionBuilder LOG = BinaryFunctionBuilder.createBuilder("log").withCalcFunction(BaseFunctions::log)
+            .withDomainCheck1(DOMAIN_LOG).withDomainCheck2(DOMAIN_LOG).withDerivativeResolver(DERIVATIVE_LOG);
 }

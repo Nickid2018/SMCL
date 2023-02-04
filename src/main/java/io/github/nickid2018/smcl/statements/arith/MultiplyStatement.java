@@ -26,6 +26,7 @@ import io.github.nickid2018.smcl.statements.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A statement stands for multiplication.
@@ -95,7 +96,11 @@ public class MultiplyStatement extends Statement {
      */
     public MultiplyStatement addMultiplier(Statement statement) {
         if(statement.equals(this))
-            throw new ArithmeticException("Add itself");
+            throw new ArithmeticException("Multiply itself");
+        if (multipliers.size() > 0 && multipliers.get(0).equals(NumberPool.NUMBER_CONST_0))
+            return this;
+        if (merge(statement))
+            return this;
         if (statement.equals(NumberPool.NUMBER_CONST_1))
             return this;
         if (statement.equals(NumberPool.NUMBER_CONST_0)) {
@@ -103,11 +108,11 @@ public class MultiplyStatement extends Statement {
             multipliers.add(statement);
             return this;
         }
-        if (statement.equals(NumberPool.NUMBER_CONST_N1))
+        if (statement.equals(NumberPool.NUMBER_CONST_M1))
             return (MultiplyStatement) getNegative();
         multipliers.add(statement);
         if (isAllNum()) {
-            Statement number = NumberPool.get(smcl, calculate(null));
+            Statement number = NumberPool.getNumber(calculate(null));
             multipliers.clear();
             multipliers.add(number);
         }
@@ -143,9 +148,9 @@ public class MultiplyStatement extends Statement {
         }
         if (constNumber == 0)
             return NumberPool.NUMBER_CONST_0;
-        MathStatement ms = new MathStatement(smcl, variables);
+        MathStatement ms = new MathStatement(context, variables);
         for (int i = 0; i < normal.size(); i++) {
-            MultiplyStatement multi = new MultiplyStatement(smcl, variables);
+            MultiplyStatement multi = new MultiplyStatement(context, variables);
             for (int j = 0; j < normal.size(); j++) {
                 if (i == j) {
                     Statement derivative = normal.get(j).derivative();
@@ -172,6 +177,14 @@ public class MultiplyStatement extends Statement {
             return ms;
         if (constNumber == -1)
             return ms.getNegative();
-        return new MultiplyStatement(smcl, variables).addMultipliers(NumberPool.getNumber(constNumber), ms);
+        return new MultiplyStatement(context, variables).addMultipliers(NumberPool.getNumber(constNumber), ms);
+    }
+
+    @Override
+    public boolean merge(Statement statement) {
+        if (!(statement instanceof MultiplyStatement))
+            return false;
+        multipliers.addAll(((MultiplyStatement) statement).multipliers.stream().map(Statement::getClone).collect(Collectors.toList()));
+        return true;
     }
 }

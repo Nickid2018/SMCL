@@ -15,7 +15,7 @@
  */
 package io.github.nickid2018.smcl.parser;
 
-import io.github.nickid2018.smcl.MathParseException;
+import io.github.nickid2018.smcl.StatementParseException;
 import io.github.nickid2018.smcl.SMCLContext;
 
 /**
@@ -63,9 +63,9 @@ public class StatementTokenizer {
      * Get next token.
      *
      * @return a token
-     * @throws MathParseException throws if the token is mis-ordered
+     * @throws StatementParseException throws if the token is mis-ordered
      */
-    public StatementToken nextToken() throws MathParseException {
+    public StatementToken nextToken() throws StatementParseException {
         StatementToken token = new StatementToken();
         // The string has run out, stop!
         if (pos >= input.length())
@@ -188,7 +188,7 @@ public class StatementTokenizer {
                 && previousToken.type != StatementTokenType.HEX_NUMBER) {
             return previousToken = token;
         } else {
-            throw new MathParseException(
+            throw new StatementParseException(
                     "The token \"" + token.detail + "\" can't be after the token \"" + previousToken.detail + "\"",
                     input, token);
         }

@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.nickid2018.smcl;
+
+package io.github.nickid2018.smcl.util;
 
 /**
- * The settings of the SMCL System
+ * Utility class for resolvers.
  */
-public class SMCLSettings {
+@FunctionalInterface
+public interface BiDouble2DoubleFunction {
 
-    // Calculating settings
-    /**
-     * Using degree function to compute trigonometric functions if true
-     */
-    public boolean degreeAngle = false;
-    /**
-     * Ignore errors in computing and print the information if true
-     */
-    public boolean invalidArgumentWarn = false;
+    double accept(double arg1, double arg2);
 }

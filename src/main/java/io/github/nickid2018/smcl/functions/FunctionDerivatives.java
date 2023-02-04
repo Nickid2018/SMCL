@@ -17,11 +17,13 @@ package io.github.nickid2018.smcl.functions;
 
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.arith.DivideStatement;
 import io.github.nickid2018.smcl.statements.arith.MathStatement;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 import io.github.nickid2018.smcl.statements.arith.PowerStatement;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -121,4 +123,18 @@ public class FunctionDerivatives {
     // Warning: Assigned x=0, the derivative doesn't exist!
     public static final Function<Statement, Statement> DERIVATIVE_ABS = statement -> Functions.SGN
             .create(statement.getSMCL(), statement.getClone());
+
+    public static final BiFunction<Statement, Statement, Statement> DERIVATIVE_LOG = (statement1, statement2) -> {
+        if(statement2 instanceof NumberStatement) {
+            DivideStatement ds = new DivideStatement(statement1.getSMCL(), statement1.getVariables());
+            ds.putDividendAndDivisors(NumberPool.NUMBER_CONST_1, statement1.getClone(),
+                    NumberPool.getNumber(Math.log(((NumberStatement)statement2).getNumber())));
+            return ds;
+        }
+        // log(f, g) = lnf/lng => (f'/f*lng-g'/g*lnf)/ln2g
+        DivideStatement ds = new DivideStatement(statement1.getSMCL(), statement1.getVariables());
+        ds.putDividendAndDivisors(Functions.LN.create(statement1.getSMCL(), statement1.getClone()),
+                Functions.LN.create(statement2.getSMCL(), statement2.getClone()));
+        return ds.derivative();
+    };
 }

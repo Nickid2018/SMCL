@@ -38,8 +38,8 @@ public class LinearRegression extends Regression {
         storage.clear();
         MathStatement ms = new MathStatement(smcl, smcl.globalvars.toDefinedVariables());
         MultiplyStatement mls = new MultiplyStatement(smcl, smcl.globalvars.toDefinedVariables());
-        mls.addMultipliers(NumberPool.get(smcl, b), smcl.globalvars.getVariable(independentVariable));
-        ms.addStatements(NumberPool.get(smcl, a), mls);
+        mls.addMultipliers(NumberPool.getNumber(b), smcl.globalvars.getVariable(independentVariable));
+        ms.addStatements(NumberPool.getNumber(a), mls);
         return ms;
     }
 

@@ -19,19 +19,21 @@ import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
+import io.github.nickid2018.smcl.functions.FunctionStatement;
 import io.github.nickid2018.smcl.optimize.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A statement stands for calculating plus or minus.
  */
 public class MathStatement extends Statement {
 
-    private final List<Statement> subs = new ArrayList<>();
+    private final List<Statement> subStatements = new ArrayList<>();
 
     /**
      * Construct a math statement with a context and a variable list.
@@ -47,7 +49,7 @@ public class MathStatement extends Statement {
      */
     public double calculateInternal(VariableValueList list) {
         double t = 0;
-        for (Statement en : subs) {
+        for (Statement en : subStatements) {
             t += en.calculate(list);
         }
         return t;
@@ -60,18 +62,25 @@ public class MathStatement extends Statement {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for (Statement en : subs) {
+        for (Statement subStatement : subStatements) {
             if (first) {
                 first = false;
-                if (en.isNegative() && !(en instanceof NumberStatement || en instanceof Variable))
+                if (subStatement.isNegative() && !isNoSign(subStatement))
                     sb.append("-");
-                sb.append(en);
+                sb.append(subStatement);
                 continue;
             }
-            sb.append(((en instanceof NumberStatement || en instanceof Variable) && en.isNegative()) ? ""
-                    : (en.isNegative() ? "-" : "+")).append(en);
+            sb.append((isNoSign(subStatement) && subStatement.isNegative()) ? ""
+                    : (subStatement.isNegative() ? "-" : "+")).append(subStatement);
         }
-        return sb.toString();
+        return isNegative ? "-(" + sb.toString() + ")" : sb.toString();
+    }
+
+    private static boolean isNoSign(Statement statement) {
+        return statement instanceof NumberStatement ||
+                statement instanceof Variable ||
+                statement instanceof FunctionStatement ||
+                statement instanceof MathStatement;
     }
 
     /**
@@ -79,7 +88,7 @@ public class MathStatement extends Statement {
      * @return true if the statement only has numbers
      */
     public boolean isAllNum() {
-        for (Statement en : subs) {
+        for (Statement en : subStatements) {
             if (!(en instanceof NumberStatement))
                 return false;
         }
@@ -92,15 +101,17 @@ public class MathStatement extends Statement {
      * @return this
      */
     public MathStatement addStatement(Statement statement) {
-        if(statement.equals(this))
+        if (statement.equals(this))
             throw new ArithmeticException("Add itself");
         if (statement.equals(NumberPool.NUMBER_CONST_0))
             return this;
-        subs.add(statement);
+        if (merge(statement))
+            return this;
+        subStatements.add(statement);
         if (isAllNum()) {
-            Statement number = NumberPool.get(smcl, calculate(null));
-            subs.clear();
-            subs.add(number);
+            Statement number = NumberPool.getNumber(calculate(null));
+            subStatements.clear();
+            subStatements.add(number);
         }
         return this;
     }
@@ -121,17 +132,27 @@ public class MathStatement extends Statement {
      */
     @Override
     protected Statement derivativeInternal() {
-        MathStatement end = new MathStatement(smcl, variables);
-        for (Statement s : subs) {
+        MathStatement end = new MathStatement(context, variables);
+        for (Statement s : subStatements) {
             Statement derivative = s.derivative();
             if (derivative.equals(NumberPool.NUMBER_CONST_0))
                 continue;
             if (derivative instanceof MathStatement)
-                end.addStatements(((MathStatement) derivative).subs.toArray(new Statement[0]));
+                end.addStatements(((MathStatement) derivative).subStatements.toArray(new Statement[0]));
             else
                 end.addStatement(derivative);
         }
-        return end.subs.size() > 0 ? (end.isAllNum() ? NumberPool.getNumber(end.calculate(null)) : end)
+        return end.subStatements.size() > 0 ? (end.isAllNum() ? NumberPool.getNumber(end.calculate(null)) : end)
                 : NumberPool.NUMBER_CONST_0;
+    }
+
+    @Override
+    public boolean merge(Statement statement) {
+        if (!(statement instanceof MathStatement))
+            return false;
+        MathStatement other = (MathStatement) statement;
+        subStatements.addAll(other.subStatements.stream()
+                .map(st -> other.isNegative ? st.getNegative() : st.getClone()).collect(Collectors.toList()));
+        return true;
     }
 }

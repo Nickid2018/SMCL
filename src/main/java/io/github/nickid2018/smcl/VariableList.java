@@ -30,16 +30,17 @@ public class VariableList {
     /**
      * An empty variable list.
      */
-    public static final VariableList EMPTY_VARIABLES = new VariableList();
+    public static final VariableList EMPTY_VARIABLES = new VariableList(SMCLContext.getInstance());
 
-    private static final Map<String, Variable> sharedVariables = new HashMap<>();
-    private final Set<String> variables;
+    private final SMCLContext smcl;
+    private final Map<String, Variable> variables;
 
     /**
      * Construct a variable list.
      */
-    public VariableList() {
-        variables = new HashSet<>();
+    public VariableList(SMCLContext smcl) {
+        variables = new HashMap<>();
+        this.smcl = smcl;
     }
 
     /**
@@ -48,9 +49,9 @@ public class VariableList {
      * @return this
      */
     public VariableList register(String var) {
-        variables.add(var);
-        if (!sharedVariables.containsKey(var))
-            sharedVariables.put(var, new Variable(var));
+        Variable v = new Variable(var);
+        v.setSMCL(smcl);
+        variables.put(var, v);
         return this;
     }
 
@@ -70,7 +71,7 @@ public class VariableList {
      * @return this
      */
     public VariableList registerAll(VariableList vars) {
-        return registerAll(vars.variables);
+        return registerAll(vars.variables.keySet());
     }
 
     /**
@@ -88,7 +89,7 @@ public class VariableList {
      * @return true if the variable has been registered
      */
     public boolean haveVariables(String var) {
-        return variables.contains(var);
+        return variables.containsKey(var);
     }
 
     /**
@@ -97,7 +98,7 @@ public class VariableList {
      * @return a variable object
      */
     public Variable getVariable(String var) {
-        return sharedVariables.get(var);
+        return variables.get(var);
     }
 
     /**
