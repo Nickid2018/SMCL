@@ -22,33 +22,18 @@ import io.github.nickid2018.smcl.Statement;
  */
 public abstract class UnaryFunctionStatement extends FunctionStatement {
 
-    protected Statement innerStatement;
+    protected final Statement innerStatement;
 
     /**
      * Construct with an argument.
      * @param statement a statement
      */
-    public UnaryFunctionStatement(Statement statement) {
-        super(statement.getSMCL(), statement.getVariables());
-        setInnerStatement(statement);
+    public UnaryFunctionStatement(Statement statement, boolean isNegative) {
+        super(statement.getSMCL(), statement.getVariables(), isNegative);
+        this.innerStatement = statement;
     }
 
-    /**
-     * Get the inner statement.
-     * @return a statement
-     */
     public Statement getInnerStatement() {
         return innerStatement;
     }
-
-    /**
-     * Set the inner statement.
-     * @param innerStatement a statement
-     * @return this
-     */
-    public UnaryFunctionStatement setInnerStatement(Statement innerStatement) {
-        this.innerStatement = innerStatement;
-        return this;
-    }
-
 }

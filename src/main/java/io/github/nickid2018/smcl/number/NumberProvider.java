@@ -16,5 +16,7 @@
 
 package io.github.nickid2018.smcl.number;
 
-public class NumberProvider {
+public interface NumberProvider<T extends NumberObject> {
+
+    T fromStdNumber(double value);
 }

@@ -21,8 +21,8 @@ package io.github.nickid2018.smcl;
 public abstract class Statement implements Cloneable {
 
     protected final VariableList variables;
+    protected final boolean isNegative;
     protected SMCLContext context;
-    protected boolean isNegative;
 
     /**
      * Construct a statement with the context.
@@ -31,6 +31,7 @@ public abstract class Statement implements Cloneable {
     public Statement(SMCLContext smcl) {
         this.context = smcl;
         this.variables = smcl.globalvars.toDefinedVariables();
+        this.isNegative = false;
     }
 
     /**
@@ -41,6 +42,19 @@ public abstract class Statement implements Cloneable {
     public Statement(SMCLContext smcl, VariableList variables) {
         this.context = smcl;
         this.variables = variables;
+        this.isNegative = false;
+    }
+
+    /**
+     * Construct a statement with the context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     * @param isNegative whether the statement is negative
+     */
+    public Statement(SMCLContext smcl, VariableList variables, boolean isNegative) {
+        this.context = smcl;
+        this.variables = variables;
+        this.isNegative = isNegative;
     }
 
     // Statement Base Functions
@@ -57,35 +71,9 @@ public abstract class Statement implements Cloneable {
      * Get the statement that is negative from this.
      * @return statement that is negative from this
      */
-    public Statement getNegative() {
-        isNegative = !isNegative;
-        return this;
-    }
+    public abstract Statement negate();
 
-    /**
-     * Get the statement unrelated from this.
-     * @return statement unrelated from this
-     */
-    public Statement getClone() {
-        try {
-            return (Statement) clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Get the statement that is negative and unrelated from this.
-     * @return statement that is negative and unrelated from this
-     */
-    public Statement getNewNegative() {
-        try {
-            Statement clone = (Statement) clone();
-            return clone.getNegative();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
-    }
+    public abstract Statement deepCopy();
 
     /**
      * Get the variable list for the statement.
@@ -131,6 +119,7 @@ public abstract class Statement implements Cloneable {
      * @return the result
      */
     public double calculate(VariableValueList list) {
+        list = list == null ? new VariableValueList() : list;
         return isNegative ? -calculateInternal(list) : calculateInternal(list);
     }
 
@@ -143,7 +132,7 @@ public abstract class Statement implements Cloneable {
     public Statement derivative() {
         if (variables.size() > 1)
             throw new ArithmeticException("Statement " + this + " has more than one independent value");
-        return isNegative ? derivativeInternal().getNegative() : derivativeInternal();
+        return isNegative ? derivativeInternal().negate() : derivativeInternal();
     }
     /**
      * Internal derivatization for subclass to override.
@@ -151,12 +140,4 @@ public abstract class Statement implements Cloneable {
      */
     protected abstract Statement derivativeInternal();
 
-    /**
-     * Merge from other statement.
-     * @param statement statement to merge
-     * @return true if merging successful
-     */
-    public boolean merge(Statement statement) {
-        return false;
-    }
 }

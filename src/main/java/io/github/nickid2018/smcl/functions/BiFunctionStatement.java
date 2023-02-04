@@ -20,17 +20,18 @@ import io.github.nickid2018.smcl.Statement;
 
 public abstract class BiFunctionStatement extends FunctionStatement {
 
-    protected Statement innerStatement1;
-    protected Statement innerStatement2;
+    protected final Statement innerStatement1;
+    protected final Statement innerStatement2;
 
     /**
      * Construct with arguments.
      * @param statement1 the first statement
      * @param statement2 the second statement
      */
-    public BiFunctionStatement(Statement statement1, Statement statement2) {
-        super(statement1.getSMCL(), statement1.getVariables());
-        setInnerStatements(statement1, statement2);
+    public BiFunctionStatement(Statement statement1, Statement statement2, boolean isNegative) {
+        super(statement1.getSMCL(), statement1.getVariables(), isNegative);
+        this.innerStatement1 = statement1;
+        this.innerStatement2 = statement2;
     }
 
     /**
@@ -47,17 +48,5 @@ public abstract class BiFunctionStatement extends FunctionStatement {
      */
     public Statement getInnerStatement2() {
         return innerStatement2;
-    }
-
-    /**
-     * Set the inner statement.
-     * @param innerStatement1 the first statement
-     * @param innerStatement2 the second statement
-     * @return this
-     */
-    public BiFunctionStatement setInnerStatements(Statement innerStatement1, Statement innerStatement2) {
-        this.innerStatement1 = innerStatement1;
-        this.innerStatement2 = innerStatement2;
-        return this;
     }
 }

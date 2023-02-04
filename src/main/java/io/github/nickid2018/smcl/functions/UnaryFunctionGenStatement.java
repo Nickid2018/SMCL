@@ -18,7 +18,7 @@ package io.github.nickid2018.smcl.functions;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 
@@ -29,39 +29,42 @@ import java.util.function.Function;
  */
 public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
 
-    private UnaryFunctionBuilder function;
+    private final UnaryFunctionBuilder function;
 
     /**
-     * Construct a statement with an argument.
-     * @param ms a statement
+     * Construct a statement with a context, an argument and a function builder.
+     * @param statement a statement
+     * @param function a function builder
      */
-    public UnaryFunctionGenStatement(Statement ms) {
-        super(ms);
+    public UnaryFunctionGenStatement(Statement statement, UnaryFunctionBuilder function) {
+        this(statement, function, false);
     }
 
     /**
      * Construct a statement with a context, an argument and a function builder.
-     * @param smcl a context
      * @param statement a statement
      * @param function a function builder
      */
-    public UnaryFunctionGenStatement(SMCLContext smcl, Statement statement, UnaryFunctionBuilder function) {
-        super(statement);
-        this.context = smcl;
+    public UnaryFunctionGenStatement(Statement statement, UnaryFunctionBuilder function, boolean isNegative) {
+        super(statement, isNegative);
         this.function = function;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public Statement negate() {
+        return new UnaryFunctionGenStatement(innerStatement.deepCopy(), function, !isNegative);
+    }
+
+    @Override
+    public Statement deepCopy() {
+        return new UnaryFunctionGenStatement(innerStatement.deepCopy(), function, isNegative);
+    }
+
     @Override
     public final String toString() {
         return (isNegative ? "-" : "") + getFunction().getName() + "(" + innerStatement + ")";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final double calculateInternal(VariableValueList list) {
         double innerResult = innerStatement.calculate(list);
@@ -77,27 +80,10 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
         return function.getResolveEnd().accept(getFunction().getCalcFunction().accept(innerResult), context);
     }
 
-    /**
-     * Get the function builder.
-     * @return a function builder
-     */
     public UnaryFunctionBuilder getFunction() {
         return function;
     }
 
-    /**
-     * Set the function builder.
-     * @param function a function builder
-     * @return this
-     */
-    public UnaryFunctionGenStatement setFunction(UnaryFunctionBuilder function) {
-        this.function = function;
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Statement derivativeInternal() {
         Function<Statement, Statement> resolver = function.getDerivativeResolver();
@@ -112,9 +98,8 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
             if (get == 1)
                 return partDesi;
             if (get == -1)
-                return partDesi.getNegative();
+                return partDesi.negate();
         }
-        return new MultiplyStatement(context, variables).addMultipliers(end, partDesi);
+        return new MultiplyStatement(context, variables, end, partDesi);
     }
-
 }

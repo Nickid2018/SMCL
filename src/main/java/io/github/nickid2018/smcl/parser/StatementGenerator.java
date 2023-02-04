@@ -15,7 +15,7 @@
  */
 package io.github.nickid2018.smcl.parser;
 import io.github.nickid2018.smcl.*;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.Variable;
 import io.github.nickid2018.smcl.statements.VoidStatement;
 

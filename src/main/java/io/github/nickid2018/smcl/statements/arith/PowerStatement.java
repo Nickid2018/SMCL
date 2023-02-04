@@ -15,39 +15,80 @@
  */
 package io.github.nickid2018.smcl.statements.arith;
 
-import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
+import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.Functions;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A statement stands for powering.
  */
 public class PowerStatement extends Statement {
 
-    private final List<Statement> exponents = new ArrayList<>();
-    private Statement base;
+    private final List<Statement> exponents;
+    private final Statement base;
 
     /**
      * Construct a power statement with a context and a variable list.
-     * @param smcl a context
+     *
+     * @param smcl      a context
      * @param variables a variable list
+     * @param exponents exponents
      */
-    public PowerStatement(SMCLContext smcl, VariableList variables) {
-        super(smcl, variables);
+    public PowerStatement(SMCLContext smcl, VariableList variables, Statement base, Statement... exponents) {
+        this(smcl, variables, false, base, Arrays.asList(exponents));
+    }
+
+    public PowerStatement(SMCLContext smcl, VariableList variables, boolean isNegative, Statement base, Statement... exponents) {
+        this(smcl, variables, isNegative, base, Arrays.asList(exponents));
     }
 
     /**
-     * {@inheritDoc}
+     * Construct a power statement with a context and a variable list.
+     *
+     * @param smcl      a context
+     * @param variables a variable list
+     * @param exponents exponents
      */
+    public PowerStatement(SMCLContext smcl, VariableList variables, Statement base, List<Statement> exponents) {
+        this(smcl, variables, false, base, exponents);
+    }
+
+    /**
+     * Construct a power statement with a context and a variable list.
+     *
+     * @param smcl       a context
+     * @param variables  a variable list
+     * @param isNegative whether the statement is negative
+     */
+    public PowerStatement(SMCLContext smcl, VariableList variables, boolean isNegative, Statement base, List<Statement> exponents) {
+        super(smcl, variables, isNegative);
+        this.base = base;
+        this.exponents = Collections.unmodifiableList(exponents);
+    }
+
+    @Override
+    public Statement negate() {
+        return new PowerStatement(context, variables, !isNegative, base,
+                exponents.stream().map(Statement::deepCopy).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Statement deepCopy() {
+        return new PowerStatement(context, variables, isNegative, base,
+                exponents.stream().map(Statement::deepCopy).collect(Collectors.toList()));
+    }
+
     @Override
     public double calculateInternal(VariableValueList list) {
         double prevExp = exponents.get(exponents.size() - 1).calculate(list);
@@ -71,9 +112,6 @@ public class PowerStatement extends Statement {
         return prevExp;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -91,32 +129,14 @@ public class PowerStatement extends Statement {
         return sb + "";
     }
 
-    /**
-     * Add an exponent at end.
-     * @param statement a divisor
-     * @return this
-     */
-    public PowerStatement addExponent(Statement statement) {
-        exponents.add(statement);
-        return this;
+    public Statement getBase() {
+        return base;
     }
 
-    /**
-     * Set base and exponents.
-     * @param statements base and exponents
-     * @return this
-     */
-    public PowerStatement putBaseAndExponents(Statement... statements) {
-        base = statements[0];
-        for (int i = 1; i < statements.length; i++) {
-            addExponent(statements[i]);
-        }
-        return this;
+    public List<Statement> getExponents() {
+        return exponents;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     // (f^g)' = (f^g)(glnf)'
     // Optimize:
@@ -124,9 +144,9 @@ public class PowerStatement extends Statement {
     // 2) g = C: (f^C)' = Cf'f^(C-1)
     protected Statement derivativeInternal() {
         if (exponents.size() > 1) {
-            Statement now = base.getClone();
+            Statement now = base.deepCopy();
             for (Statement statement : exponents)
-                now = new PowerStatement(context, variables).putBaseAndExponents(now, statement.getClone());
+                now = new PowerStatement(context, variables, now, statement.deepCopy());
             return now.derivative();
         }
         Statement exponent = exponents.get(0);
@@ -141,15 +161,16 @@ public class PowerStatement extends Statement {
                 constNumber *= derivative.calculate(null);
             if (constNumber == 0)
                 return NumberPool.NUMBER_CONST_0;
-            if (constNumber == 1 || constNumber == -1) {
-                MultiplyStatement end = new MultiplyStatement(context, variables).addMultiplier(this);
-                return constNumber == 1 ? (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative)
-                        : (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative).getNegative();
-            } else {
-                MultiplyStatement end = new MultiplyStatement(context, variables)
-                        .addMultipliers(NumberPool.getNumber(constNumber), this);
-                return (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative);
-            }
+            if (constNumber == 1 || constNumber == -1)
+                return new MultiplyStatement(context, variables, constNumber == -1,
+                        derivative instanceof NumberStatement ?
+                                Collections.singletonList(deepCopy()) :
+                                Arrays.asList(deepCopy(), derivative));
+            else
+                return new MultiplyStatement(context, variables,
+                        derivative instanceof NumberStatement ?
+                                Arrays.asList(NumberPool.getNumber(constNumber), deepCopy()) :
+                                Arrays.asList(NumberPool.getNumber(constNumber), deepCopy(), derivative));
         }
         if (exponentN) {
             double exp = exponent.calculate(null);
@@ -163,30 +184,32 @@ public class PowerStatement extends Statement {
                 constNumber *= derivative.calculate(null);
             if (constNumber == 0)
                 return NumberPool.NUMBER_CONST_0;
-            Statement trexp = exp == 2 ? base.getClone()
-                    : new PowerStatement(context, variables).putBaseAndExponents(base.getClone(), NumberPool.getNumber(exp - 1));
+            Statement trexp = exp == 2 ? base.deepCopy()
+                    : new PowerStatement(context, variables, base.deepCopy(), NumberPool.getNumber(exp - 1));
             if (constNumber == 1 || constNumber == -1) {
-                MultiplyStatement end = new MultiplyStatement(context, variables).addMultiplier(trexp);
-                return constNumber == 1 ? (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative)
-                        : (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative).getNegative();
+                return new MultiplyStatement(context, variables, constNumber == -1,
+                        derivative instanceof NumberStatement ?
+                                Collections.singletonList(trexp) :
+                                Arrays.asList(trexp, derivative));
             } else {
-                MultiplyStatement end = new MultiplyStatement(context, variables)
-                        .addMultipliers(NumberPool.getNumber(constNumber), trexp);
-                return (derivative instanceof NumberStatement) ? end : end.addMultiplier(derivative);
+                return new MultiplyStatement(context, variables,
+                        derivative instanceof NumberStatement ?
+                                Arrays.asList(NumberPool.getNumber(constNumber), trexp) :
+                                Arrays.asList(NumberPool.getNumber(constNumber), trexp, derivative));
             }
         }
-        Statement multi = new MultiplyStatement(context, variables)
-                .addMultipliers(exponent.getClone(), Functions.LN.create(context, base.getClone())).derivative();
+        Statement multi = new MultiplyStatement(context, variables,
+                exponent.deepCopy(), Functions.LN.create(base.deepCopy())).derivative();
         if (multi instanceof NumberStatement) {
             double constNumber = multi.calculate(null);
             if (constNumber == 0)
                 return NumberPool.NUMBER_CONST_0;
             if (constNumber == 1)
-                return this;
+                return deepCopy();
             if (constNumber == -1)
-                return getNewNegative();
-            return new MultiplyStatement(context, variables).addMultipliers(multi, getClone());
+                return negate();
+            return new MultiplyStatement(context, variables, multi, deepCopy());
         } else
-            return new MultiplyStatement(context, variables).addMultipliers(getClone(), multi);
+            return new MultiplyStatement(context, variables, deepCopy(), multi);
     }
 }

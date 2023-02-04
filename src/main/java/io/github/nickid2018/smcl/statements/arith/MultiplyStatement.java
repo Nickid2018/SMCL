@@ -20,11 +20,13 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,15 +35,59 @@ import java.util.stream.Collectors;
  */
 public class MultiplyStatement extends Statement {
 
-    private final List<Statement> multipliers = new ArrayList<>();
+    private final List<Statement> multipliers;
 
     /**
      * Construct a multiply statement with a context and a variable list.
      * @param smcl a context
      * @param variables a variable list
+     * @param multipliers multipliers
      */
-    public MultiplyStatement(SMCLContext smcl, VariableList variables) {
-        super(smcl, variables);
+    public MultiplyStatement(SMCLContext smcl, VariableList variables, Statement... multipliers) {
+        this(smcl, variables, false, multipliers);
+    }
+
+    /**
+     * Construct a multiply statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     * @param multipliers multipliers
+     */
+    public MultiplyStatement(SMCLContext smcl, VariableList variables, List<Statement> multipliers) {
+        this(smcl, variables, false, multipliers);
+    }
+
+    /**
+     * Construct a multiply statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     * @param multipliers multipliers
+     * @param isNegative whether the statement is negative
+     */
+    public MultiplyStatement(SMCLContext smcl, VariableList variables, boolean isNegative, Statement... multipliers) {
+        this(smcl, variables, isNegative, Arrays.asList(multipliers));
+    }
+
+    /**
+     * Construct a multiply statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     * @param multipliers multipliers
+     * @param isNegative whether the statement is negative
+     */
+    public MultiplyStatement(SMCLContext smcl, VariableList variables, boolean isNegative, List<Statement> multipliers) {
+        super(smcl, variables, isNegative);
+        this.multipliers = Collections.unmodifiableList(multipliers);
+    }
+
+    @Override
+    public Statement negate() {
+        return new MultiplyStatement(context, variables, !isNegative, multipliers.stream().map(Statement::negate).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Statement deepCopy() {
+        return new MultiplyStatement(context, variables, isNegative, multipliers.stream().map(Statement::deepCopy).collect(Collectors.toList()));
     }
 
     /**
@@ -56,9 +102,6 @@ public class MultiplyStatement extends Statement {
         return all;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -89,50 +132,6 @@ public class MultiplyStatement extends Statement {
         return true;
     }
 
-    /**
-     * Add a statement into the multiply statement.
-     * @param statement another statement
-     * @return this
-     */
-    public MultiplyStatement addMultiplier(Statement statement) {
-        if(statement.equals(this))
-            throw new ArithmeticException("Multiply itself");
-        if (multipliers.size() > 0 && multipliers.get(0).equals(NumberPool.NUMBER_CONST_0))
-            return this;
-        if (merge(statement))
-            return this;
-        if (statement.equals(NumberPool.NUMBER_CONST_1))
-            return this;
-        if (statement.equals(NumberPool.NUMBER_CONST_0)) {
-            multipliers.clear();
-            multipliers.add(statement);
-            return this;
-        }
-        if (statement.equals(NumberPool.NUMBER_CONST_M1))
-            return (MultiplyStatement) getNegative();
-        multipliers.add(statement);
-        if (isAllNum()) {
-            Statement number = NumberPool.getNumber(calculate(null));
-            multipliers.clear();
-            multipliers.add(number);
-        }
-        return this;
-    }
-
-    /**
-     * Add several statements in the multiply statement.
-     * @param statements a set of statements
-     * @return this
-     */
-    public MultiplyStatement addMultipliers(Statement... statements) {
-        for (Statement statement : statements)
-            addMultiplier(statement);
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     // (f1f2..fn)' = f1'f2f3...fn+f1f2'f3...fn+f1f2f3'...fn+...+f1f2f3...fn'
     // Optimize
@@ -144,47 +143,42 @@ public class MultiplyStatement extends Statement {
             if (statement instanceof NumberStatement)
                 constNumber *= statement.calculate(null);
             else
-                normal.add(statement.getClone());
+                normal.add(statement.deepCopy());
         }
         if (constNumber == 0)
             return NumberPool.NUMBER_CONST_0;
-        MathStatement ms = new MathStatement(context, variables);
+        List<Statement> statements = new ArrayList<>();
         for (int i = 0; i < normal.size(); i++) {
-            MultiplyStatement multi = new MultiplyStatement(context, variables);
+            List<Statement> list = new ArrayList<>();
             for (int j = 0; j < normal.size(); j++) {
                 if (i == j) {
                     Statement derivative = normal.get(j).derivative();
                     if (derivative instanceof MultiplyStatement)
-                        multi.addMultipliers(((MultiplyStatement) derivative).multipliers.toArray(new Statement[0]));
+                        ((MultiplyStatement) derivative).multipliers.stream().map(Statement::deepCopy).forEach(list::add);
                     else
-                        multi.addMultiplier(derivative);
+                        list.add(derivative);
                 } else {
                     Statement st = normal.get(j);
                     if (st instanceof MultiplyStatement)
-                        multi.addMultipliers(((MultiplyStatement) st).multipliers.toArray(new Statement[0]));
+                        ((MultiplyStatement) st).multipliers.stream().map(Statement::deepCopy).forEach(list::add);
                     else
-                        multi.addMultiplier(st);
+                       list.add(st);
                 }
             }
+            MultiplyStatement multi = new MultiplyStatement(context, variables, list);
             if (multi.isAllNum())
-                ms.addStatement(NumberPool.getNumber(multi.calculate(null)));
+                statements.add(NumberPool.getNumber(multi.calculate(null)));
             else
-                ms.addStatement(multi);
+                statements.add(multi);
         }
+        MathStatement ms = new MathStatement(context, variables, statements);
         if (ms.isAllNum())
             return NumberPool.getNumber(constNumber * ms.calculate(null));
         if (constNumber == 1)
             return ms;
         if (constNumber == -1)
-            return ms.getNegative();
-        return new MultiplyStatement(context, variables).addMultipliers(NumberPool.getNumber(constNumber), ms);
+            return ms.negate();
+        return new MultiplyStatement(context, variables, NumberPool.getNumber(constNumber), ms);
     }
 
-    @Override
-    public boolean merge(Statement statement) {
-        if (!(statement instanceof MultiplyStatement))
-            return false;
-        multipliers.addAll(((MultiplyStatement) statement).multipliers.stream().map(Statement::getClone).collect(Collectors.toList()));
-        return true;
-    }
 }

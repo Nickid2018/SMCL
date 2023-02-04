@@ -18,14 +18,14 @@ package io.github.nickid2018.smcl.statements;
 import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 
 /**
  * A statement stands for a variable.
  */
 public class Variable extends Statement {
 
-    private String name;
+    private final String name;
     private Variable negativeVar;
 
     /**
@@ -33,7 +33,16 @@ public class Variable extends Statement {
      * @param s a name
      */
     public Variable(String s) {
-        super(null, VariableList.EMPTY_VARIABLES);
+        this(s, false);
+    }
+
+    /**
+     * Construct a variable with a name and a negative flag.
+     * @param s a name
+     * @param isNegative a negative flag
+     */
+    public Variable(String s, boolean isNegative) {
+        super(null, VariableList.EMPTY_VARIABLES, isNegative);
         if (!s.matches("[a-zA-Z]+"))
             throw new IllegalArgumentException("Illegal variable name:" + s);
         name = s;
@@ -47,56 +56,28 @@ public class Variable extends Statement {
         return name;
     }
 
-    /**
-     * Set the name of the variable.
-     * @param name a name
-     */
-    public void setName(String name) {
-        this.name = name;
-        if (negativeVar != null)
-            negativeVar.name = name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double calculateInternal(VariableValueList list) {
         return list.getVariableValue(name);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return (isNegative ? "-" : "") + name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Statement getNegative() {
-        if (negativeVar == null) {
-            negativeVar = new Variable(name);
-            negativeVar.isNegative = true;
-            negativeVar.negativeVar = this;
-        }
+    public Statement negate() {
+        if (negativeVar == null)
+            negativeVar = new Variable(name, !isNegative);
         return negativeVar;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Statement getNewNegative() {
-        return getNegative();
+    public Statement deepCopy() {
+        return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Statement derivativeInternal() {
         return NumberPool.NUMBER_CONST_1;

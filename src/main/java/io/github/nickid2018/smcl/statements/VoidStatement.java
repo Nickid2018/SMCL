@@ -36,27 +36,28 @@ public class VoidStatement extends Statement {
         super(null, VariableList.EMPTY_VARIABLES);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public Statement negate() {
+        return this;
+    }
+
+    @Override
+    public Statement deepCopy() {
+        return this;
+    }
+
     @Override
     public String toString() {
-        return "void";
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double calculateInternal(VariableValueList list) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Statement derivativeInternal() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

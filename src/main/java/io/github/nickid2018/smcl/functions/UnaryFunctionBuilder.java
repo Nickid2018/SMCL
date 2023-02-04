@@ -17,7 +17,7 @@ package io.github.nickid2018.smcl.functions;
 
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.util.Double2DoubleFunction;
 import io.github.nickid2018.smcl.util.DoubleSMCLFunction;
@@ -52,24 +52,16 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
         return new UnaryFunctionBuilder(name);
     }
 
-    /**
-     * {@inheritDoc}
-     * @param smcl a context
-     * @param statements an array contains arguments
-     * @return a statement
-     */
     @Override
-    public Statement create(SMCLContext smcl, Statement... statements) {
+    public Statement create(Statement... statements) {
         Statement source = statements[0];
         if (source instanceof NumberStatement) {
             double value = source.calculate(null);
-            value = resolveVariable.accept(value, smcl);
+            value = resolveVariable.accept(value, source.getSMCL());
             domainCheck.accept(value);
-            return NumberPool.getNumber(resolveEnd.accept(calcFunction.accept(value), smcl));
+            return NumberPool.getNumber(resolveEnd.accept(calcFunction.accept(value), source.getSMCL()));
         } else {
-            UnaryFunctionGenStatement statement = new UnaryFunctionGenStatement(source).setFunction(this);
-            statement.setSMCL(smcl);
-            return statement;
+            return new UnaryFunctionGenStatement(source, this);
         }
     }
 

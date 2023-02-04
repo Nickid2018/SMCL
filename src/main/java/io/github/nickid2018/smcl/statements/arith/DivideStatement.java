@@ -20,11 +20,12 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,21 +34,69 @@ import java.util.stream.Collectors;
  */
 public class DivideStatement extends Statement {
 
-    private final List<Statement> divisors = new ArrayList<>();
-    private Statement dividend;
+    private final List<Statement> divisors;
+    private final Statement dividend;
 
     /**
      * Create a statement with a context and a variable list
      * @param smcl a context
      * @param variables a variable list
+     * @param dividend a dividend
+     * @param divisors a list of divisors
      */
-    public DivideStatement(SMCLContext smcl, VariableList variables) {
-        super(smcl, variables);
+    public DivideStatement(SMCLContext smcl, VariableList variables, Statement dividend, Statement... divisors) {
+        this(smcl, variables, false, dividend, Arrays.asList(divisors));
     }
 
     /**
-     * {@inheritDoc}
+     * Create a statement with a context and a variable list
+     * @param smcl a context
+     * @param variables a variable list
+     * @param dividend a dividend
+     * @param divisors a list of divisors
      */
+    public DivideStatement(SMCLContext smcl, VariableList variables, Statement dividend, List<Statement> divisors) {
+        this(smcl, variables, false, dividend, divisors);
+    }
+
+    /**
+     * Create a statement with a context and a variable list
+     * @param smcl a context
+     * @param variables a variable list
+     * @param dividend a dividend
+     * @param divisors a list of divisors
+     * @param isNegative whether the statement is negative
+     */
+    public DivideStatement(SMCLContext smcl, VariableList variables, boolean isNegative, Statement dividend, Statement... divisors) {
+        this(smcl, variables, isNegative, dividend, Arrays.asList(divisors));
+    }
+
+    /**
+     * Create a statement with a context and a variable list
+     * @param smcl a context
+     * @param variables a variable list
+     * @param dividend a dividend
+     * @param divisors a list of divisors
+     * @param isNegative whether the statement is negative
+     */
+    public DivideStatement(SMCLContext smcl, VariableList variables, boolean isNegative, Statement dividend, List<Statement> divisors) {
+        super(smcl, variables, isNegative);
+        this.dividend = dividend;
+        this.divisors = Collections.unmodifiableList(divisors);
+    }
+
+    @Override
+    public Statement negate() {
+        return new DivideStatement(context, variables, !isNegative,
+                dividend.deepCopy(), divisors.stream().map(Statement::deepCopy).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Statement deepCopy() {
+        return new DivideStatement(context, variables, isNegative,
+                dividend.deepCopy(), divisors.stream().map(Statement::deepCopy).collect(Collectors.toList()));
+    }
+
     @Override
     public double calculateInternal(VariableValueList list) {
         double ret = dividend.calculate(list);
@@ -63,9 +112,6 @@ public class DivideStatement extends Statement {
         return ret;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -80,45 +126,14 @@ public class DivideStatement extends Statement {
         return sb + "";
     }
 
-    /**
-     * Add a divisor at end.
-     * @param statement a divisor
-     * @return this
-     */
-    public DivideStatement addDivisor(Statement statement) {
-        if (statement.equals(NumberPool.NUMBER_CONST_0))
-            throw new ArithmeticException("divide by 0");
-        if (statement.equals(NumberPool.NUMBER_CONST_1))
-            return this;
-        if (statement instanceof DivideStatement) {
-            merge(((DivideStatement) statement).getReverse());
-            return this;
-        }
-        if (statement.equals(NumberPool.NUMBER_CONST_M1))
-            return (DivideStatement) getNegative();
-        if (dividend instanceof NumberStatement && statement instanceof NumberStatement) {
-            dividend = NumberPool.getNumber(dividend.calculate(null) / statement.calculate(null));
-            return this;
-        }
-        divisors.add(statement);
-        return this;
+    public Statement getDividend() {
+        return dividend;
     }
 
-    /**
-     * Set dividend and divisors.
-     * @param statements dividend and divisors
-     * @return this
-     */
-    public DivideStatement putDividendAndDivisors(Statement... statements) {
-        dividend = statements[0];
-        for (int i = 1; i < statements.length; i++)
-            addDivisor(statements[i]);
-        return this;
+    public List<Statement> getDivisors() {
+        return divisors;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     // (f/g)' = (f'g-fg')/(g^2)
     // g = d1*d2*d3...
@@ -130,58 +145,45 @@ public class DivideStatement extends Statement {
         Statement funcf = dividend;
         Statement funcg;
         if(divisors.size() > 1) {
-            funcg = new MultiplyStatement(context, variables);
-            for(Statement statement : divisors)
-                ((MultiplyStatement) funcg).addMultiplier(statement.getClone());
+            funcg = new MultiplyStatement(context, variables, divisors.stream().map(Statement::deepCopy).collect(Collectors.toList()));
         } else
-            funcg = divisors.get(0).getClone();
+            funcg = divisors.get(0).deepCopy();
         boolean funcfN = funcf instanceof NumberStatement;
         boolean funcgN = funcg instanceof NumberStatement;
         if (funcfN && funcgN)
             return NumberPool.NUMBER_CONST_0;
         if (funcfN) {
-            PowerStatement pws = new PowerStatement(context, variables).putBaseAndExponents(funcg,
-                    NumberPool.getNumber(2));
-            return new DivideStatement(context, variables).putDividendAndDivisors(funcf.getClone(), pws).getNegative();
+            PowerStatement pws = new PowerStatement(context, variables, funcg.deepCopy(), NumberPool.getNumber(2));
+            return new DivideStatement(context, variables, funcf.deepCopy(), pws).negate();
         }
         if (funcgN)
-            return new DivideStatement(context, variables).putDividendAndDivisors(funcf.derivative(), funcg);
+            return new DivideStatement(context, variables, funcf.derivative(), funcg.deepCopy());
         Statement derif = funcf.derivative();
         Statement derig = funcg.derivative();
         Statement add1;
         if (derif.equals(NumberPool.NUMBER_CONST_1))
-            add1 = funcg.getClone();
+            add1 = funcg.deepCopy();
         else if (derif.equals(NumberPool.NUMBER_CONST_M1))
-            add1 = funcg.getNewNegative();
+            add1 = funcg.negate();
         else
-            add1 = new MultiplyStatement(context, variables).addMultipliers(derif, funcg);
+            add1 = new MultiplyStatement(context, variables, derif, funcg.deepCopy());
         Statement add2;
         if (derig.equals(NumberPool.NUMBER_CONST_1))
-            add2 = funcf.getClone();
+            add2 = funcf.deepCopy();
         else if (derig.equals(NumberPool.NUMBER_CONST_M1))
-            add2 = funcf.getNewNegative();
+            add2 = funcf.negate();
         else
-            add2 = new MultiplyStatement(context, variables).addMultipliers(funcf.getClone(), derig);
-        MathStatement ms = new MathStatement(context, variables).addStatements(add1, add2.getNegative());
-        PowerStatement pws = new PowerStatement(context, variables).putBaseAndExponents(funcg, NumberPool.getNumber(2));
-        return new DivideStatement(context, variables).putDividendAndDivisors(ms, pws);
+            add2 = new MultiplyStatement(context, variables, funcf.deepCopy(), derig);
+        MathStatement ms = new MathStatement(context, variables, add1, add2.negate());
+        PowerStatement pws = new PowerStatement(context, variables, funcg.deepCopy(), NumberPool.getNumber(2));
+        return new DivideStatement(context, variables, ms, pws);
     }
 
     public DivideStatement getReverse() {
-        return new DivideStatement(context, variables).putDividendAndDivisors(
-                new MultiplyStatement(context, variables).addMultipliers(divisors.toArray(new Statement[0])),
+        return new DivideStatement(context, variables,
+                new MultiplyStatement(context, variables, divisors.stream().map(Statement::deepCopy).collect(Collectors.toList())),
                 dividend
         );
     }
 
-    @Override
-    public boolean merge(Statement statement) {
-        if (!(statement instanceof DivideStatement))
-            return false;
-        MultiplyStatement newDividend = new MultiplyStatement(context, variables);
-        newDividend.addMultipliers(dividend, ((DivideStatement) statement).dividend);
-        dividend = newDividend;
-        divisors.addAll(((DivideStatement) statement).divisors.stream().map(Statement::getClone).collect(Collectors.toList()));
-        return true;
-    }
 }

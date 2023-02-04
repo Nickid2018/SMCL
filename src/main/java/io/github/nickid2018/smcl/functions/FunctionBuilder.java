@@ -125,9 +125,8 @@ public abstract class FunctionBuilder {
 
     /**
      * Create a new function statement.
-     * @param smcl a context
      * @param statements an array contains arguments
      * @return a statement
      */
-    public abstract Statement create(SMCLContext smcl, Statement... statements);
+    public abstract Statement create(Statement... statements);
 }

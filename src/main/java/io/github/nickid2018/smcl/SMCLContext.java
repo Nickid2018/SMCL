@@ -16,12 +16,16 @@
 package io.github.nickid2018.smcl;
 
 import io.github.nickid2018.smcl.functions.Functions;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.parser.*;
 import io.github.nickid2018.smcl.statements.arith.DivideStatement;
 import io.github.nickid2018.smcl.statements.arith.MathStatement;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 import io.github.nickid2018.smcl.statements.arith.PowerStatement;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The context of the SMCL System, which controls the parsing, derivative and computing operations
@@ -71,30 +75,32 @@ public class SMCLContext {
         register.registerConstant("pi", NumberPool.getNumber(Math.PI));
         register.registerConstant("e", NumberPool.getNumber(Math.E));
         register.registerOperator("+", new BinaryOperatorParser(20, true,
-                (smcl, statements, variables) -> new MathStatement(smcl, variables).addStatements(statements)));
+                (smcl, statements, variables) -> new MathStatement(smcl, variables, statements)));
         register.registerUnaryOperator("+",
                 new UnaryOperatorParser(60, false, (smcl, statement, variables) -> statement));
         register.registerOperator("-", new BinaryOperatorParser(20, true, (smcl, statements, variables) ->
-                new MathStatement(smcl, variables).addStatements(statements[0], statements[1].getNegative())));
+                new MathStatement(smcl, variables, statements[0], statements[1].negate())));
         register.registerUnaryOperator("-",
-                new UnaryOperatorParser(60, false, (smcl, statement, variables) -> statement.getNegative()));
+                new UnaryOperatorParser(60, false, (smcl, statement, variables) -> statement.negate()));
         register.registerOperator("*", new BinaryOperatorParser(30, true,
-                (smcl, statements, variables) -> new MultiplyStatement(smcl, variables).addMultipliers(statements)));
+                (smcl, statements, variables) -> new MultiplyStatement(smcl, variables, statements)));
         register.registerOperator("/", new BinaryOperatorParser(30, true, (smcl, statements, variables) -> {
-            if (statements[0] instanceof DivideStatement)
-                return ((DivideStatement) statements[0]).addDivisor(statements[1]);
-            else
-                return new DivideStatement(smcl, variables).putDividendAndDivisors(statements);
+            if (statements[0] instanceof DivideStatement) {
+                DivideStatement statement = (DivideStatement) statements[0];
+                List<Statement> list = new ArrayList<>(statement.getDivisors());
+                list.add(statements[1]);
+                return new DivideStatement(smcl, variables, statement.getDividend(), list);
+            } else
+                return new DivideStatement(smcl, variables, statements[0], statements[1]);
         }));
         register.registerOperator("^", new BinaryOperatorParser(40, true, (smcl, statements, variables) -> {
             if (statements[0] instanceof PowerStatement) {
                 PowerStatement get = (PowerStatement) statements[0];
-                Statement other = statements[1];
-                return get.addExponent(other);
-            } else {
-                PowerStatement statement = new PowerStatement(smcl, variables);
-                return statement.putBaseAndExponents(statements);
-            }
+                List<Statement> list = new ArrayList<>(get.getExponents());
+                list.add(statements[1]);
+                return new PowerStatement(smcl, variables, get.getBase(), list);
+            } else
+                return new PowerStatement(smcl, variables, statements[0], statements[1]);
         }));
         register.registerFunction("sin", new UnaryFunctionParser(Functions.SIN));
         register.registerFunction("cos", new UnaryFunctionParser(Functions.COS));

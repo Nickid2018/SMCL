@@ -18,7 +18,7 @@ package io.github.nickid2018.smcl.functions;
 
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.util.BiDouble2DoubleFunction;
 import io.github.nickid2018.smcl.util.DoubleSMCLFunction;
@@ -121,21 +121,19 @@ public class BinaryFunctionBuilder extends FunctionBuilder {
     }
 
     @Override
-    public Statement create(SMCLContext smcl, Statement... statements) {
+    public Statement create(Statement... statements) {
         Statement source1 = statements[0];
         Statement source2 = statements[1];
         if(source1 instanceof NumberStatement && source2 instanceof NumberStatement) {
             double value1 = source1.calculate(null);
-            value1 = resolveVariable1.accept(value1, smcl);
+            value1 = resolveVariable1.accept(value1, source1.getSMCL());
             domainCheck1.accept(value1);
             double value2 = source2.calculate(null);
-            value2 = resolveVariable2.accept(value2, smcl);
+            value2 = resolveVariable2.accept(value2, source2.getSMCL());
             domainCheck2.accept(value2);
-            return NumberPool.getNumber(resolveEnd.accept(calcFunction.accept(value1, value2), smcl));
+            return NumberPool.getNumber(resolveEnd.accept(calcFunction.accept(value1, value2), source1.getSMCL()));
         } else {
-            BiFunctionGenStatement statement = new BiFunctionGenStatement(source1, source2).setFunction(this);
-            statement.setSMCL(smcl);
-            return statement;
+            return new BiFunctionGenStatement(source1, source2, this);
         }
     }
 }

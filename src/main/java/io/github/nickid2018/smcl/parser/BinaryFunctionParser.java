@@ -23,13 +23,14 @@ import io.github.nickid2018.smcl.functions.UnaryFunctionBuilder;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Parser for unary function.
  */
 public class BinaryFunctionParser extends FunctionParser {
 
-    private final BiFunction<SMCLContext, Statement[], ? extends Statement> map;
+    private final Function<Statement[], ? extends Statement> map;
 
     /**
      * Construct a parser.
@@ -39,36 +40,19 @@ public class BinaryFunctionParser extends FunctionParser {
         map = unary::create;
     }
 
-    /**
-     * Construct a parser.
-     * @param map function to map the statement
-     */
-    public BinaryFunctionParser(BiFunction<SMCLContext, Statement[], UnaryFunctionStatement> map) {
-        this.map = map;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean numParamsVaries() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumParams() {
         return 2;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Statement parseStatement(SMCLContext smcl, Statement... statements) {
-        return map.apply(smcl, statements);
+        return map.apply(statements);
     }
 
 }

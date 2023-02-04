@@ -33,7 +33,7 @@ public class MathStatementDemo {
 //        smcl.settings.degreeAngle = true;
 //        smcl.settings.invalidArgumentWarn =true;
         timer = System.nanoTime();
-        Statement s = smcl.parse("x^ln(x)^x");
+        Statement s = smcl.parse("sin(x)/x-sin(x)/x+x");
         timeOutput();
         System.out.println(s);
         timeOutput();

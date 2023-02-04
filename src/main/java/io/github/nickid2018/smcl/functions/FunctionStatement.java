@@ -21,8 +21,8 @@ import io.github.nickid2018.smcl.Statement;
 
 public abstract class FunctionStatement extends Statement {
 
-    public FunctionStatement(SMCLContext smcl, VariableList variables) {
-        super(smcl, variables);
+    public FunctionStatement(SMCLContext smcl, VariableList variables, boolean isNegative) {
+        super(smcl, variables, isNegative);
     }
 
 }

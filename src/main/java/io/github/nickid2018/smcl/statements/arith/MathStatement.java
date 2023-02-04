@@ -20,11 +20,13 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.FunctionStatement;
-import io.github.nickid2018.smcl.optimize.NumberPool;
+import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,20 +35,62 @@ import java.util.stream.Collectors;
  */
 public class MathStatement extends Statement {
 
-    private final List<Statement> subStatements = new ArrayList<>();
+    private final List<Statement> subStatements;
 
     /**
      * Construct a math statement with a context and a variable list.
      * @param smcl a context
      * @param variables a variable list
+     * @param subStatements sub statements
      */
-    public MathStatement(SMCLContext smcl, VariableList variables) {
-        super(smcl, variables);
+    public MathStatement(SMCLContext smcl, VariableList variables, Statement... subStatements) {
+        this(smcl, variables, false, subStatements);
     }
 
     /**
-     * {@inheritDoc}
+     * Construct a math statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     * @param subStatements sub statements
      */
+    public MathStatement(SMCLContext smcl, VariableList variables, List<Statement> subStatements) {
+        this(smcl, variables, false, subStatements);
+    }
+
+    /**
+     * Construct a math statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     * @param subStatements sub statements
+     * @param isNegative whether the statement is negative
+     */
+    public MathStatement(SMCLContext smcl, VariableList variables, boolean isNegative, Statement... subStatements) {
+        this(smcl, variables, isNegative, Arrays.asList(subStatements));
+    }
+
+    /**
+     * Construct a math statement with a context and a variable list.
+     * @param smcl a context
+     * @param variables a variable list
+     * @param subStatements sub statements
+     * @param isNegative whether the statement is negative
+     */
+    public MathStatement(SMCLContext smcl, VariableList variables, boolean isNegative, List<Statement> subStatements) {
+        super(smcl, variables, isNegative);
+        this.subStatements = Collections.unmodifiableList(subStatements);
+    }
+
+
+    @Override
+    public Statement negate() {
+        return new MathStatement(context, variables, !isNegative, subStatements.stream().map(Statement::deepCopy).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Statement deepCopy() {
+        return new MathStatement(context, variables, isNegative, subStatements.stream().map(Statement::deepCopy).collect(Collectors.toList()));
+    }
+
     public double calculateInternal(VariableValueList list) {
         double t = 0;
         for (Statement en : subStatements) {
@@ -55,9 +99,6 @@ public class MathStatement extends Statement {
         return t;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -73,7 +114,7 @@ public class MathStatement extends Statement {
             sb.append((isNoSign(subStatement) && subStatement.isNegative()) ? ""
                     : (subStatement.isNegative() ? "-" : "+")).append(subStatement);
         }
-        return isNegative ? "-(" + sb.toString() + ")" : sb.toString();
+        return isNegative ? "-(" + sb + ")" : sb.toString();
     }
 
     private static boolean isNoSign(Statement statement) {
@@ -95,64 +136,21 @@ public class MathStatement extends Statement {
         return true;
     }
 
-    /**
-     * Add a statement into the math statement.
-     * @param statement another statement
-     * @return this
-     */
-    public MathStatement addStatement(Statement statement) {
-        if (statement.equals(this))
-            throw new ArithmeticException("Add itself");
-        if (statement.equals(NumberPool.NUMBER_CONST_0))
-            return this;
-        if (merge(statement))
-            return this;
-        subStatements.add(statement);
-        if (isAllNum()) {
-            Statement number = NumberPool.getNumber(calculate(null));
-            subStatements.clear();
-            subStatements.add(number);
-        }
-        return this;
-    }
-
-    /**
-     * Add several statements in the math statement.
-     * @param statements a set of statements
-     * @return this
-     */
-    public MathStatement addStatements(Statement... statements) {
-        for (Statement statement : statements)
-            addStatement(statement);
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Statement derivativeInternal() {
-        MathStatement end = new MathStatement(context, variables);
+        List<Statement> list = new ArrayList<>();
         for (Statement s : subStatements) {
             Statement derivative = s.derivative();
             if (derivative.equals(NumberPool.NUMBER_CONST_0))
                 continue;
             if (derivative instanceof MathStatement)
-                end.addStatements(((MathStatement) derivative).subStatements.toArray(new Statement[0]));
+                ((MathStatement) derivative).subStatements.stream().map(Statement::deepCopy).forEach(list::add);
             else
-                end.addStatement(derivative);
+                list.add(derivative);
         }
+        MathStatement end = new MathStatement(context, variables, list);
         return end.subStatements.size() > 0 ? (end.isAllNum() ? NumberPool.getNumber(end.calculate(null)) : end)
                 : NumberPool.NUMBER_CONST_0;
     }
 
-    @Override
-    public boolean merge(Statement statement) {
-        if (!(statement instanceof MathStatement))
-            return false;
-        MathStatement other = (MathStatement) statement;
-        subStatements.addAll(other.subStatements.stream()
-                .map(st -> other.isNegative ? st.getNegative() : st.getClone()).collect(Collectors.toList()));
-        return true;
-    }
 }

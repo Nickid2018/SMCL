@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.nickid2018.smcl.optimize;
+package io.github.nickid2018.smcl.number;
 
 import io.github.nickid2018.smcl.statements.NumberStatement;
 

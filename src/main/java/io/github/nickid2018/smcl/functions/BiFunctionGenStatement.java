@@ -21,36 +21,42 @@ import io.github.nickid2018.smcl.VariableValueList;
 
 import java.util.function.BiFunction;
 
-public class BiFunctionGenStatement extends BiFunctionStatement{
+public class BiFunctionGenStatement extends BiFunctionStatement {
 
-    private BinaryFunctionBuilder function;
+    private final BinaryFunctionBuilder function;
 
     /**
      * Construct with arguments.
      *
      * @param statement1 the first statement
      * @param statement2 the second statement
+     * @param function the function
      */
-    public BiFunctionGenStatement(Statement statement1, Statement statement2) {
-        super(statement1, statement2);
+    public BiFunctionGenStatement(Statement statement1, Statement statement2, BinaryFunctionBuilder function) {
+        this(statement1, statement2, function, false);
     }
 
     /**
-     * Get the function builder.
-     * @return a function builder
+     * Construct with arguments.
+     *
+     * @param statement1 the first statement
+     * @param statement2 the second statement
+     * @param isNegative whether the statement is negative
+     * @param function   the function
      */
-    public BinaryFunctionBuilder getFunction() {
-        return function;
-    }
-
-    /**
-     * Set the function builder.
-     * @param function a function builder
-     * @return this
-     */
-    public BiFunctionGenStatement setFunction(BinaryFunctionBuilder function) {
+    public BiFunctionGenStatement(Statement statement1, Statement statement2, BinaryFunctionBuilder function, boolean isNegative) {
+        super(statement1, statement2, isNegative);
         this.function = function;
-        return this;
+    }
+
+    @Override
+    public Statement negate() {
+        return new BiFunctionGenStatement(innerStatement1.deepCopy(), innerStatement2.deepCopy(), function, !isNegative);
+    }
+
+    @Override
+    public Statement deepCopy() {
+        return new BiFunctionGenStatement(innerStatement1.deepCopy(), innerStatement2.deepCopy(), function, isNegative);
     }
 
     @Override
@@ -80,7 +86,7 @@ public class BiFunctionGenStatement extends BiFunctionStatement{
     protected Statement derivativeInternal() {
         BiFunction<Statement, Statement, Statement> derivative = function.getDerivativeResolver();
         if(derivative == null)
-            throw new ArithmeticException("Unsupported or illegal function to derivative: " + getFunction().getName());
+            throw new ArithmeticException("Unsupported or illegal function to derivative: " + function.getName());
         return derivative.apply(innerStatement1, innerStatement2);
     }
 }
