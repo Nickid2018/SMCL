@@ -34,8 +34,9 @@
         </license>
     </licenses>
     <scm>
-        <url>https://github.com/Nickid2018/SMCL</url>
-        <connection>https://github.com/Nickid2018/SMCL.git</connection>
+        <url>https://github.com/Nickid2018/SMCL.git</url>
+        <connection>scm:git:https://github.com/Nickid2018/SMCL.git</connection>
+        <developerConnection>scm:git:https://github.com/Nickid2018/SMCL.git</developerConnection>
     </scm>
     <developers>
         <developer>

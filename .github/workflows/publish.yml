@@ -1,0 +1,29 @@
+name: Maven Package Publishing
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Publish
+        uses: samuelmeuli/action-maven-publish@v1
+        with:
+          gpg_private_key: ${{ secrets.GPG_SECRET }}
+          gpg_passphrase: ${{ secrets.GPG_PASSWORD }}
+          nexus_username: ${{ secrets.OSSRH_USER }}
+          nexus_password: ${{ secrets.OSSRH_PASSWORD }}
