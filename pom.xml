@@ -65,7 +65,7 @@
     </distributionManagement>
     <profiles>
         <profile>
-            <id>default</id>
+            <id>deploy</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
