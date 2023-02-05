@@ -77,7 +77,6 @@ public class VariableList {
     /**
      * Unregister a variable.
      * @param var the name of the variable
-     * @return this
      */
     public void unregister(String var) {
         variables.remove(var);

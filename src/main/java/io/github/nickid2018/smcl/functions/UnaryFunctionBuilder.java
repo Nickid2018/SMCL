@@ -35,9 +35,6 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
     private UnaryFunctionWithContext resolveEnd = DEFAULT_RESOLVE;
     private Function<Statement, Statement> derivativeResolver;
 
-    /**
-     * {@inheritDoc}
-     */
     public UnaryFunctionBuilder(String name) {
         super(name);
     }
