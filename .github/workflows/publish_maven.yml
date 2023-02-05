@@ -1,17 +1,13 @@
 name: Maven Package Publishing
-
 on:
   release:
-    types: [released]
-
+    types: [published]
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 8
@@ -19,7 +15,6 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-
       - name: Publish
         uses: samuelmeuli/action-maven-publish@v1
         with:
