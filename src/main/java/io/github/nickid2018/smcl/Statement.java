@@ -15,7 +15,10 @@
  */
 package io.github.nickid2018.smcl;
 
+import io.github.nickid2018.smcl.functions.FunctionStatement;
 import io.github.nickid2018.smcl.number.NumberObject;
+import io.github.nickid2018.smcl.statements.NumberStatement;
+import io.github.nickid2018.smcl.statements.Variable;
 
 /**
  * A statement can use it to compute and derivative
@@ -57,6 +60,12 @@ public abstract class Statement implements Cloneable {
         this.context = smcl;
         this.variables = variables;
         this.isNegative = isNegative;
+    }
+
+    protected static boolean shouldAddParentheses(Statement statement) {
+        if (statement.isNegative())
+            return true;
+        return !(statement instanceof NumberStatement || statement instanceof Variable || statement instanceof FunctionStatement);
     }
 
     // Statement Base Functions

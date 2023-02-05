@@ -19,6 +19,7 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.VariableValueList;
+import io.github.nickid2018.smcl.functions.FunctionStatement;
 import io.github.nickid2018.smcl.functions.Functions;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 import io.github.nickid2018.smcl.number.NumberObject;
@@ -102,18 +103,19 @@ public class PowerStatement extends Statement {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (!(base instanceof NumberStatement) && !(base instanceof Variable))
-            sb.append("(").append(base).append(")");
+        if (isNegative)
+            sb.append('-');
+        if (shouldAddParentheses(base))
+            sb.append('(').append(base).append(')');
         else
             sb.append(base);
         for (Statement en : exponents) {
-            if ((!(en instanceof NumberStatement) && !(en instanceof Variable)
-                    && !(en instanceof UnaryFunctionStatement)) || en.isNegative())
+            if (shouldAddParentheses(en))
                 sb.append("^(").append(en).append(")");
             else
                 sb.append("^").append(en);
         }
-        return sb + "";
+        return sb.toString();
     }
 
     public Statement getBase() {

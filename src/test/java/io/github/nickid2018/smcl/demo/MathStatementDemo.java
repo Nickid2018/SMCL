@@ -32,7 +32,8 @@ public class MathStatementDemo {
         smcl.init();
         smcl.globalvars.registerVariables("x");
         smcl.globalvars.registerVariables("y");
-        Statement s = smcl.parse("y^det(-2+x^2*y)*x");
+        Statement s = smcl.parse("det(y^det(-2+x^2*y)*x)-543/4^y");
+        System.out.println(s);
         VariableValueList list = new VariableValueList(smcl);
         list.addVariableValue("x", new MatrixObject(new NumberObject[][]{
                 {StdNumberObject.PROVIDER.fromStdNumber(0.5), StdNumberObject.PROVIDER.fromStdNumber(Math.sqrt(3) / 2)},

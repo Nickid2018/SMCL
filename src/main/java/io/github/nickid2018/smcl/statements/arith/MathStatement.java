@@ -105,22 +105,13 @@ public class MathStatement extends Statement {
         for (Statement subStatement : subStatements) {
             if (first) {
                 first = false;
-                if (subStatement.isNegative() && !isNoSign(subStatement))
-                    sb.append("-");
                 sb.append(subStatement);
-                continue;
-            }
-            sb.append((isNoSign(subStatement) && subStatement.isNegative()) ? ""
-                    : (subStatement.isNegative() ? "-" : "+")).append(subStatement);
+            } else if (subStatement.isNegative())
+                sb.append(subStatement);
+            else
+                sb.append('+').append(subStatement);
         }
         return isNegative ? "-(" + sb + ")" : sb.toString();
-    }
-
-    private static boolean isNoSign(Statement statement) {
-        return statement instanceof NumberStatement ||
-                statement instanceof Variable ||
-                statement instanceof FunctionStatement ||
-                statement instanceof MathStatement;
     }
 
     /**

@@ -110,15 +110,19 @@ public class DivideStatement extends Statement {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(dividend.toString());
+        if (isNegative)
+            sb.append("-");
+        if (shouldAddParentheses(dividend))
+            sb.append("(").append(dividend).append(")");
+        else
+            sb.append(dividend);
         for (Statement en : divisors) {
-            if (!(en instanceof NumberStatement) && !(en instanceof Variable)
-                    && !(en instanceof UnaryFunctionStatement))
+            if (shouldAddParentheses(en))
                 sb.append("/(").append(en).append(")");
             else
                 sb.append("/").append(en);
         }
-        return sb + "";
+        return sb.toString();
     }
 
     public Statement getDividend() {

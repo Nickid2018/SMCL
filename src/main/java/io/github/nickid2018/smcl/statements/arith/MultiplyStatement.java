@@ -19,10 +19,8 @@ import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
-import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
 import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
-import io.github.nickid2018.smcl.statements.Variable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,19 +102,16 @@ public class MultiplyStatement extends Statement {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        boolean first = true;
+        List<String> pieces = new ArrayList<>();
+        if (isNegative)
+            sb.append("-");
         for (Statement ms : multipliers) {
-            if (first)
-                first = false;
+            if (shouldAddParentheses(ms))
+                pieces.add("(" + ms + ")");
             else
-                sb.append("*");
-            if ((ms.getClass().equals(Variable.class)
-                    || ms.getClass().getSuperclass().equals(UnaryFunctionStatement.class)
-                    || ms instanceof NumberStatement) && !ms.isNegative())
-                sb.append(ms);
-            else
-                sb.append("(").append(ms).append(")");
+                pieces.add(ms.toString());
         }
+        sb.append(String.join("*", pieces));
         return sb.toString();
     }
 
