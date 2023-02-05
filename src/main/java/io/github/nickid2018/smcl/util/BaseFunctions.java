@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.nickid2018.smcl.functions;
+package io.github.nickid2018.smcl.util;
 
 public class BaseFunctions {
 

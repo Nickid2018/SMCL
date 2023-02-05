@@ -30,8 +30,8 @@ import java.util.function.Consumer;
  */
 public class BinaryFunctionBuilder extends FunctionBuilder {
 
-    private Consumer<NumberObject> domainCheck1 = ALL_DOMAIN;
-    private Consumer<NumberObject> domainCheck2 = ALL_DOMAIN;
+    private Consumer<NumberObject> domainCheck1 = ALL_REALS;
+    private Consumer<NumberObject> domainCheck2 = ALL_REALS;
     private BinaryFunction calcFunction = (a, b) -> a;
     private UnaryFunctionWithContext resolveVariable1 = DEFAULT_RESOLVE;
     private UnaryFunctionWithContext resolveVariable2 = DEFAULT_RESOLVE;

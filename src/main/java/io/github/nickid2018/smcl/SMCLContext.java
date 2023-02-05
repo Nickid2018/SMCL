@@ -51,6 +51,9 @@ public class SMCLContext {
      */
     public final GlobalVariables globalvars;
 
+    /**
+     * The global number provider of the context
+     */
     public NumberProvider<?> numberProvider = StdNumberObject.PROVIDER;
 
     /**
@@ -86,7 +89,16 @@ public class SMCLContext {
         register.registerUnaryOperator("-",
                 new UnaryOperatorParser(60, false, (smcl, statement, variables) -> statement.negate()));
         register.registerOperator("*", new BinaryOperatorParser(30, true,
-                (smcl, statements, variables) -> new MultiplyStatement(smcl, variables, statements)));
+                (smcl, statements, variables) -> {
+                    List<Statement> list = new ArrayList<>();
+                    for (Statement statement : statements) {
+                        if (statement instanceof MultiplyStatement)
+                            list.addAll(((MultiplyStatement) statement).getMultipliers());
+                        else
+                            list.add(statement);
+                    }
+                    return new MultiplyStatement(smcl, variables, list);
+                }));
         register.registerOperator("/", new BinaryOperatorParser(30, true, (smcl, statements, variables) -> {
             if (statements[0] instanceof DivideStatement) {
                 DivideStatement statement = (DivideStatement) statements[0];
@@ -99,8 +111,9 @@ public class SMCLContext {
         register.registerOperator("^", new BinaryOperatorParser(40, true, (smcl, statements, variables) -> {
             if (statements[0] instanceof PowerStatement) {
                 PowerStatement get = (PowerStatement) statements[0];
-                List<Statement> list = new ArrayList<>(get.getExponents());
+                List<Statement> list = new ArrayList<>();
                 list.add(statements[1]);
+                list.addAll(get.getExponents());
                 return new PowerStatement(smcl, variables, get.getBase(), list);
             } else
                 return new PowerStatement(smcl, variables, statements[0], statements[1]);
@@ -136,6 +149,9 @@ public class SMCLContext {
         register.registerFunction("fact", new UnaryFunctionParser(Functions.FACTORIAL));
         register.registerFunction("mod", new BinaryFunctionParser(Functions.MOD));
         register.registerFunction("log", new BinaryFunctionParser(Functions.LOG));
+        register.registerFunction("det", new UnaryFunctionParser(Functions.DET));
+        register.registerFunction("inv", new UnaryFunctionParser(Functions.INV));
+        register.registerFunction("transpose", new UnaryFunctionParser(Functions.TRANSPOSE));
     }
 
     /**

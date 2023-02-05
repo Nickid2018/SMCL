@@ -16,7 +16,7 @@
 
 package io.github.nickid2018.smcl.number;
 
-public class StdNumberObject extends NumberObject {
+public class StdNumberObject extends NumberObject implements LongConvertable, SingleValue {
 
     private final double value;
 
@@ -26,21 +26,32 @@ public class StdNumberObject extends NumberObject {
 
     @Override
     public NumberObject add(NumberObject number) {
-        return new StdNumberObject(value + number.toStdNumber());
+        if (number.isReal())
+            return new StdNumberObject(value + number.toStdNumber());
+        else
+            return number.add(this);
     }
 
     @Override
     public NumberObject subtract(NumberObject number) {
-        return new StdNumberObject(value - number.toStdNumber());
+        if (number.isReal())
+            return new StdNumberObject(value - number.toStdNumber());
+        else
+            return number.negate().add(this);
     }
 
     @Override
     public NumberObject multiply(NumberObject number) {
-        return new StdNumberObject(value * number.toStdNumber());
+        if (number.isReal())
+            return new StdNumberObject(value * number.toStdNumber());
+        else
+            return number.multiply(this);
     }
 
     @Override
     public NumberObject divide(NumberObject number) {
+        if (!number.isReal())
+            return number.multiply(reciprocal());
         if (number.toStdNumber() == 0)
             throw new ArithmeticException("Divide by zero");
         return new StdNumberObject(value / number.toStdNumber());
@@ -48,13 +59,10 @@ public class StdNumberObject extends NumberObject {
 
     @Override
     public NumberObject power(NumberObject number) {
-        if (value == 0 && toStdNumber() <= 0)
-            throw new ArithmeticException("0 is multiplied by an exponent not greater than 0");
-        if (value < 0) {
-            int intPrev = (int) number.toStdNumber();
-            if (Math.abs(intPrev - number.toStdNumber()) > 1E-5)
-                throw new ArithmeticException("A negative number is multiplied by a fraction");
-        }
+        if (!number.isReal())
+            throw new ArithmeticException("A standard number is powered with a non-real number");
+        if (value < 0 && (!(number instanceof LongConvertable) || !((LongConvertable) number).canConvertToLong()))
+            throw new ArithmeticException("A negative number is multiplied by a fraction");
         return new StdNumberObject(Math.pow(value, number.toStdNumber()));
     }
 
@@ -164,8 +172,18 @@ public class StdNumberObject extends NumberObject {
     }
 
     @Override
-    public String toString() {
-        return toPlainString();
+    public NumberProvider<? extends NumberObject> getProvider() {
+        return PROVIDER;
+    }
+
+    @Override
+    public boolean canConvertToLong() {
+        return Math.abs(Math.round(value) - value) <= 1e-7;
+    }
+
+    @Override
+    public long toLong() {
+        return Math.round(value);
     }
 
     public static final NumberProvider<StdNumberObject> PROVIDER = new NumberProvider<StdNumberObject>() {
@@ -173,6 +191,11 @@ public class StdNumberObject extends NumberObject {
         @Override
         public StdNumberObject fromStdNumber(double value) {
             return new StdNumberObject(value);
+        }
+
+        @Override
+        public StdNumberObject fromStdNumberDivided(double dividend, double divisor) {
+            return new StdNumberObject(dividend / divisor);
         }
     };
 }

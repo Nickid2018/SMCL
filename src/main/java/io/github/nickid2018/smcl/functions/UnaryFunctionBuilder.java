@@ -29,7 +29,7 @@ import java.util.function.Function;
  */
 public class UnaryFunctionBuilder extends FunctionBuilder {
 
-    private Consumer<NumberObject> domainCheck = ALL_DOMAIN;
+    private Consumer<NumberObject> domainCheck = ALL_REALS;
     private UnaryFunction calcFunction = DEFAULT_RESULT;
     private UnaryFunctionWithContext resolveVariable = DEFAULT_RESOLVE;
     private UnaryFunctionWithContext resolveEnd = DEFAULT_RESOLVE;

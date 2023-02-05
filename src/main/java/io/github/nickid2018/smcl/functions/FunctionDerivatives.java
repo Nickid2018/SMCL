@@ -114,11 +114,11 @@ public class FunctionDerivatives {
 
     public static final Function<Statement, Statement> DERIVATIVE_SQRT = statement -> new PowerStatement(
             statement.getSMCL(), statement.getVariables(), statement.deepCopy(),
-            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(0.5)));
+            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumberDivided(1, 2)));
 
     public static final Function<Statement, Statement> DERIVATIVE_CBRT = statement -> new PowerStatement(
             statement.getSMCL(), statement.getVariables(), statement.deepCopy(),
-            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(-2 / 3.0)));
+            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumberDivided(-2, 3)));
 
     public static final Function<Statement, Statement> DERIVATIVE_EXP = statement -> new PowerStatement(
             statement.getSMCL(), statement.getVariables(),

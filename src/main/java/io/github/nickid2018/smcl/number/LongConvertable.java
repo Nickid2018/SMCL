@@ -16,30 +16,9 @@
 
 package io.github.nickid2018.smcl.number;
 
-public abstract class NumberProvider<T extends NumberObject> {
+public interface LongConvertable {
 
-    private final T zero;
-    private final T one;
-    private final T minusOne;
+    boolean canConvertToLong();
 
-    public NumberProvider() {
-        zero = fromStdNumber(0);
-        one = fromStdNumber(1);
-        minusOne = fromStdNumber(-1);
-    }
-
-    public abstract T fromStdNumber(double value);
-    public abstract T fromStdNumberDivided(double dividend, double divisor);
-
-    public T getZero() {
-        return zero;
-    }
-
-    public T getOne() {
-        return one;
-    }
-
-    public T getMinusOne() {
-        return minusOne;
-    }
+    long toLong();
 }

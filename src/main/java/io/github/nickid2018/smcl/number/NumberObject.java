@@ -45,5 +45,10 @@ public abstract class NumberObject {
     public abstract boolean isMinusOne();
     public abstract double toStdNumber();
     public abstract String toPlainString();
+    public abstract NumberProvider<? extends  NumberObject> getProvider();
 
+    @Override
+    public String toString() {
+        return toPlainString();
+    }
 }

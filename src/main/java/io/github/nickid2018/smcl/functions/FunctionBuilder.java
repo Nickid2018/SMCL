@@ -17,11 +17,14 @@ package io.github.nickid2018.smcl.functions;
 
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.number.NumberObject;
+import io.github.nickid2018.smcl.number.SingleValue;
 import io.github.nickid2018.smcl.set.NumberSet;
 import io.github.nickid2018.smcl.util.UnaryFunction;
 import io.github.nickid2018.smcl.util.UnaryFunctionWithContext;
 
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A builder for functions to build.
@@ -31,10 +34,11 @@ public abstract class FunctionBuilder {
     /**
      * Domain "R"
      */
-    public static final Consumer<NumberObject> ALL_DOMAIN = arg -> {
-        if (arg.isReal() && !Double.isFinite(arg.toStdNumber()))
-            throw new ArithmeticException("Infinite numbers and NaNs are not supported");
-    };
+    public static final Consumer<NumberObject> ALL_REALS = checkNumberTypeInclude(SingleValue.class)
+            .andThen(arg -> {
+                if (arg.isReal() && !Double.isFinite(arg.toStdNumber()))
+                    throw new ArithmeticException("Infinite numbers and NaNs are not supported");
+            });
 
     /**
      * Default function
@@ -59,6 +63,7 @@ public abstract class FunctionBuilder {
 
     /**
      * Construct a builder with a name.
+     *
      * @param name the name of the function
      */
     public FunctionBuilder(String name) {
@@ -67,7 +72,8 @@ public abstract class FunctionBuilder {
 
     /**
      * Returns a checker to check if the value is excluded the domain.
-     * @param exclude a predicate to check the value
+     *
+     * @param exclude     a predicate to check the value
      * @param errorString a string supplier for error string
      * @return a checker
      */
@@ -82,7 +88,8 @@ public abstract class FunctionBuilder {
 
     /**
      * Returns a checker to check if the value is included the domain.
-     * @param include a predicate to check the value
+     *
+     * @param include     a predicate to check the value
      * @param errorString a string supplier for error string
      * @return a checker
      */
@@ -118,7 +125,41 @@ public abstract class FunctionBuilder {
     }
 
     /**
+     * Returns a checker to check if the value is excluded the set of the domain.
+     *
+     * @param clazz classes to check the value
+     * @return a checker
+     */
+    public static Consumer<NumberObject> checkNumberTypeExclude(Class<?>... clazz) {
+        return number -> {
+            for (Class<?> c : clazz)
+                if (c.isInstance(number))
+                    throw new ArithmeticException("The number type " + number.getClass().getSimpleName() + " is not supported");
+        };
+    }
+
+    /**
+     * Returns a checker to check if the value is excluded the set of the domain.
+     *
+     * @param clazz classes to check the value
+     * @return a checker
+     */
+    public static Consumer<NumberObject> checkNumberTypeInclude(Class<?>... clazz) {
+        return number -> {
+            boolean flag = false;
+            for (Class<?> c : clazz)
+                if (c.isInstance(number)) {
+                    flag = true;
+                    break;
+                }
+            if (!flag)
+                throw new ArithmeticException("The number type " + number.getClass().getSimpleName() + " is not supported");
+        };
+    }
+
+    /**
      * Get the name of the function.
+     *
      * @return the name
      */
     public String getName() {
@@ -127,6 +168,7 @@ public abstract class FunctionBuilder {
 
     /**
      * Create a new function statement.
+     *
      * @param statements an array contains arguments
      * @return a statement
      */

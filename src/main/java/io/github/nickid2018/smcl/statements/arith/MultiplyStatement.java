@@ -131,6 +131,10 @@ public class MultiplyStatement extends Statement {
         return true;
     }
 
+    public List<Statement> getMultipliers() {
+        return multipliers;
+    }
+
     @Override
     // (f1f2..fn)' = f1'f2f3...fn+f1f2'f3...fn+f1f2f3'...fn+...+f1f2f3...fn'
     // Optimize

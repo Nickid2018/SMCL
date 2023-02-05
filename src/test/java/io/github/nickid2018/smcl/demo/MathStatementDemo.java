@@ -18,39 +18,27 @@ package io.github.nickid2018.smcl.demo;
 import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
+import io.github.nickid2018.smcl.number.MatrixObject;
+import io.github.nickid2018.smcl.number.NumberObject;
+import io.github.nickid2018.smcl.number.StdNumberObject;
 
 /**
  * A demo for statement.
  */
 public class MathStatementDemo {
 
-    static long timer;
-
     public static void main(String[] args) throws Exception {
         SMCLContext smcl = SMCLContext.getInstance();
         smcl.init();
         smcl.globalvars.registerVariables("x");
-//        smcl.settings.degreeAngle = true;
-//        smcl.settings.invalidArgumentWarn =true;
-        timer = System.nanoTime();
-        Statement s = smcl.parse("sin(x)/x-sin(x)/x+x");
-        timeOutput();
-        System.out.println(s);
-        timeOutput();
+        smcl.globalvars.registerVariables("y");
+        Statement s = smcl.parse("y^det(-2+x^2*y)*x");
         VariableValueList list = new VariableValueList(smcl);
-        list.addVariableValue("x", 0.53);
+        list.addVariableValue("x", new MatrixObject(new NumberObject[][]{
+                {StdNumberObject.PROVIDER.fromStdNumber(0.5), StdNumberObject.PROVIDER.fromStdNumber(Math.sqrt(3) / 2)},
+                {StdNumberObject.PROVIDER.fromStdNumber(Math.sqrt(3) / 2), StdNumberObject.PROVIDER.fromStdNumber(0.5)}
+        }));
+        list.addVariableValue("y", StdNumberObject.PROVIDER.fromStdNumber(2));
         System.out.println(s.calculate(list));
-        timeOutput();
-        Statement s2;
-        System.out.println(s2 = s.derivative());
-        timeOutput();
-        System.out.println(s2.calculate(list));
-        timeOutput();
-    }
-
-    static void timeOutput() {
-        long time = System.nanoTime();
-        System.out.println((time - timer) / 1000_000D);
-        timer = System.nanoTime();
     }
 }
