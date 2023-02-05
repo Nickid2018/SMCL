@@ -15,6 +15,8 @@
  */
 package io.github.nickid2018.smcl;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +25,13 @@ import java.util.Map;
  */
 public class VariableValueList {
 
-    private final Map<String, Double> value = new HashMap<>();
+    private final SMCLContext context;
+
+    private final Map<String, NumberObject> value = new HashMap<>();
+
+    public VariableValueList(SMCLContext context) {
+        this.context = context;
+    }
 
     /**
      * Fill the variable with the value.
@@ -32,6 +40,17 @@ public class VariableValueList {
      * @return this
      */
     public final VariableValueList addVariableValue(String var, double v) {
+        value.put(var, context.numberProvider.fromStdNumber(v));
+        return this;
+    }
+
+    /**
+     * Fill the variable with the value.
+     * @param var the name of the variable
+     * @param v the value
+     * @return this
+     */
+    public final VariableValueList addVariableValue(String var, NumberObject v) {
         value.put(var, v);
         return this;
     }
@@ -41,7 +60,7 @@ public class VariableValueList {
      * @param var the name of the variable
      * @return the value of the variable
      */
-    public final double getVariableValue(String var) {
+    public final NumberObject getVariableValue(String var) {
         if (!value.containsKey(var))
             throw new ArithmeticException("Variable \"" + var + "\" is not declared in list");
         return value.get(var);
@@ -54,16 +73,5 @@ public class VariableValueList {
      */
     public final boolean containsValue(String var) {
         return value.containsKey(var);
-    }
-
-    /**
-     * Update the value in the list
-     * @param var the name of the variable
-     * @param v the value of the variable
-     * @return this
-     */
-    public final VariableValueList changeValue(String var, double v) {
-        value.put(var, v);
-        return this;
     }
 }

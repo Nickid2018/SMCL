@@ -16,7 +16,29 @@
 
 package io.github.nickid2018.smcl.number;
 
-public interface NumberProvider<T extends NumberObject> {
+public abstract class NumberProvider<T extends NumberObject> {
 
-    T fromStdNumber(double value);
+    private final T zero;
+    private final T one;
+    private final T minusOne;
+
+    public NumberProvider() {
+        zero = fromStdNumber(0);
+        one = fromStdNumber(1);
+        minusOne = fromStdNumber(-1);
+    }
+
+    public abstract T fromStdNumber(double value);
+
+    public T getZero() {
+        return zero;
+    }
+
+    public T getOne() {
+        return one;
+    }
+
+    public T getMinusOne() {
+        return minusOne;
+    }
 }

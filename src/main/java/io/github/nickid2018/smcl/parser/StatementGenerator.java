@@ -15,7 +15,7 @@
  */
 package io.github.nickid2018.smcl.parser;
 import io.github.nickid2018.smcl.*;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 import io.github.nickid2018.smcl.statements.VoidStatement;
 
@@ -80,14 +80,15 @@ public class StatementGenerator {
                     continue;
                 case NUMBER:
                     try {
-                        operationStack.push(NumberPool.getNumber(Double.parseDouble(token.detail)));
+                        operationStack.push(new NumberStatement(smcl, smcl.numberProvider.fromStdNumber(Double.parseDouble(token.detail))));
                     } catch (NumberFormatException e) {
                         error("Can't parse the string \"" + token.detail + "\" into a number", input, token);
                     }
                     continue;
                 case HEX_NUMBER:
                     try {
-                        operationStack.push(NumberPool.getNumber(Long.parseLong(token.detail.substring(2), 16)));
+                        operationStack.push(new NumberStatement(smcl, smcl.numberProvider.fromStdNumber(
+                                Long.parseLong(token.detail.substring(2), 16))));
                     } catch (NumberFormatException e) {
                         error("Can't parse the string \"" + token.detail + "\" into a hex number", input, token);
                     }

@@ -15,6 +15,8 @@
  */
 package io.github.nickid2018.smcl.set;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+
 /**
  * A number set is an object that can store numbers in it.
  */
@@ -37,7 +39,7 @@ public abstract class NumberSet {
      * @param value a number
      * @return true if the number is in the set
      */
-    public abstract boolean isBelongTo(double value);
+    public abstract boolean isBelongTo(NumberObject value);
 
     /**
      * Returns whether another number set is included in the set.

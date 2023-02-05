@@ -15,10 +15,9 @@
  */
 package io.github.nickid2018.smcl.functions;
 
-import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 
@@ -66,8 +65,8 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
     }
 
     @Override
-    protected final double calculateInternal(VariableValueList list) {
-        double innerResult = innerStatement.calculate(list);
+    protected final NumberObject calculateInternal(VariableValueList list) {
+        NumberObject innerResult = innerStatement.calculate(list);
         innerResult = function.getResolveVariable().accept(innerResult, context);
         try {
             function.getDomainCheck().accept(innerResult);
@@ -92,12 +91,12 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
         Statement partDesi = resolver.apply(innerStatement);
         Statement end = innerStatement.derivative();
         if (end instanceof NumberStatement) {
-            double get = end.calculate(null);
-            if (get == 0)
-                return NumberPool.NUMBER_CONST_0;
-            if (get == 1)
+            NumberObject get = end.calculate(null);
+            if (get.isZero())
+                return new NumberStatement(context, context.numberProvider.getZero());
+            if (get.isOne())
                 return partDesi;
-            if (get == -1)
+            if (get.isMinusOne())
                 return partDesi.negate();
         }
         return new MultiplyStatement(context, variables, end, partDesi);

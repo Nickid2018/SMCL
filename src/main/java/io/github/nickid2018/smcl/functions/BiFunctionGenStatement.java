@@ -18,6 +18,7 @@ package io.github.nickid2018.smcl.functions;
 
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
+import io.github.nickid2018.smcl.number.NumberObject;
 
 import java.util.function.BiFunction;
 
@@ -65,9 +66,9 @@ public class BiFunctionGenStatement extends BiFunctionStatement {
     }
 
     @Override
-    protected double calculateInternal(VariableValueList list) {
-        double compute1 = innerStatement1.calculate(list);
-        double compute2 = innerStatement2.calculate(list);
+    protected NumberObject calculateInternal(VariableValueList list) {
+        NumberObject compute1 = innerStatement1.calculate(list);
+        NumberObject compute2 = innerStatement2.calculate(list);
         compute1 = function.getResolveVariable1().accept(compute1, context);
         compute2 = function.getResolveVariable2().accept(compute2, context);
         try {

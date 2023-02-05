@@ -18,7 +18,7 @@ package io.github.nickid2018.smcl.statements;
 import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.number.NumberObject;
 
 /**
  * A statement stands for a variable.
@@ -57,7 +57,7 @@ public class Variable extends Statement {
     }
 
     @Override
-    public double calculateInternal(VariableValueList list) {
+    public NumberObject calculateInternal(VariableValueList list) {
         return list.getVariableValue(name);
     }
 
@@ -80,6 +80,6 @@ public class Variable extends Statement {
 
     @Override
     protected Statement derivativeInternal() {
-        return NumberPool.NUMBER_CONST_1;
+        return new NumberStatement(context, context.numberProvider.getOne());
     }
 }

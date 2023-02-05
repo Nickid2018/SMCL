@@ -20,7 +20,7 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
@@ -94,11 +94,10 @@ public class MultiplyStatement extends Statement {
      * {@inheritDoc}
      */
     @Override
-    public double calculateInternal(VariableValueList list) {
-        double all = 1;
-        for (Statement ms : multipliers) {
-            all *= ms.calculate(list);
-        }
+    public NumberObject calculateInternal(VariableValueList list) {
+        NumberObject all = context.numberProvider.getOne();
+        for (Statement ms : multipliers)
+            all = all.multiply(ms.calculate(list));
         return all;
     }
 
@@ -137,16 +136,16 @@ public class MultiplyStatement extends Statement {
     // Optimize
     // 0..., =0
     protected Statement derivativeInternal() {
-        double constNumber = 1.0;
+        NumberObject constNumber = context.numberProvider.getOne();
         List<Statement> normal = new ArrayList<>();
         for (Statement statement : multipliers) {
             if (statement instanceof NumberStatement)
-                constNumber *= statement.calculate(null);
+                constNumber = constNumber.multiply(statement.calculate(null));
             else
                 normal.add(statement.deepCopy());
         }
-        if (constNumber == 0)
-            return NumberPool.NUMBER_CONST_0;
+        if (constNumber.isZero())
+            return new NumberStatement(context, context.numberProvider.getZero());
         List<Statement> statements = new ArrayList<>();
         for (int i = 0; i < normal.size(); i++) {
             List<Statement> list = new ArrayList<>();
@@ -167,18 +166,18 @@ public class MultiplyStatement extends Statement {
             }
             MultiplyStatement multi = new MultiplyStatement(context, variables, list);
             if (multi.isAllNum())
-                statements.add(NumberPool.getNumber(multi.calculate(null)));
+                statements.add(new NumberStatement(context, multi.calculate(null)));
             else
                 statements.add(multi);
         }
         MathStatement ms = new MathStatement(context, variables, statements);
         if (ms.isAllNum())
-            return NumberPool.getNumber(constNumber * ms.calculate(null));
-        if (constNumber == 1)
+            return new NumberStatement(ms.getSMCL(), constNumber.multiply(ms.calculate(null)));
+        if (constNumber.isOne())
             return ms;
-        if (constNumber == -1)
+        if (constNumber.isMinusOne())
             return ms.negate();
-        return new MultiplyStatement(context, variables, NumberPool.getNumber(constNumber), ms);
+        return new MultiplyStatement(context, variables, new NumberStatement(context, constNumber), ms);
     }
 
 }

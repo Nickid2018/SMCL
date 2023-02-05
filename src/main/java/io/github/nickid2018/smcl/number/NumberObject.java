@@ -38,6 +38,12 @@ public abstract class NumberObject {
     public abstract NumberObject tanh();
     public abstract NumberObject log();
     public abstract NumberObject log10();
+    public abstract NumberObject reciprocal();
+    public abstract boolean isReal();
+    public abstract boolean isZero();
+    public abstract boolean isOne();
+    public abstract boolean isMinusOne();
     public abstract double toStdNumber();
     public abstract String toPlainString();
+
 }

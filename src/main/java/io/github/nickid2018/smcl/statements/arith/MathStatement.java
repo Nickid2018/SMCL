@@ -20,7 +20,7 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.FunctionStatement;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
@@ -91,11 +91,10 @@ public class MathStatement extends Statement {
         return new MathStatement(context, variables, isNegative, subStatements.stream().map(Statement::deepCopy).collect(Collectors.toList()));
     }
 
-    public double calculateInternal(VariableValueList list) {
-        double t = 0;
-        for (Statement en : subStatements) {
-            t += en.calculate(list);
-        }
+    public NumberObject calculateInternal(VariableValueList list) {
+        NumberObject t = context.numberProvider.getZero();
+        for (Statement en : subStatements)
+            t = t.add(en.calculate(list));
         return t;
     }
 
@@ -141,7 +140,7 @@ public class MathStatement extends Statement {
         List<Statement> list = new ArrayList<>();
         for (Statement s : subStatements) {
             Statement derivative = s.derivative();
-            if (derivative.equals(NumberPool.NUMBER_CONST_0))
+            if (derivative instanceof NumberStatement && ((NumberStatement) derivative).getNumber().isZero())
                 continue;
             if (derivative instanceof MathStatement)
                 ((MathStatement) derivative).subStatements.stream().map(Statement::deepCopy).forEach(list::add);
@@ -149,8 +148,8 @@ public class MathStatement extends Statement {
                 list.add(derivative);
         }
         MathStatement end = new MathStatement(context, variables, list);
-        return end.subStatements.size() > 0 ? (end.isAllNum() ? NumberPool.getNumber(end.calculate(null)) : end)
-                : NumberPool.NUMBER_CONST_0;
+        return end.subStatements.size() > 0 ? (end.isAllNum() ? new NumberStatement(end.getSMCL(), end.calculate(null)) : end)
+                : new NumberStatement(context, context.numberProvider.getZero());
     }
 
 }

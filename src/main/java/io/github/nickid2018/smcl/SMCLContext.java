@@ -16,15 +16,16 @@
 package io.github.nickid2018.smcl;
 
 import io.github.nickid2018.smcl.functions.Functions;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.number.NumberProvider;
+import io.github.nickid2018.smcl.number.StdNumberObject;
 import io.github.nickid2018.smcl.parser.*;
+import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.arith.DivideStatement;
 import io.github.nickid2018.smcl.statements.arith.MathStatement;
 import io.github.nickid2018.smcl.statements.arith.MultiplyStatement;
 import io.github.nickid2018.smcl.statements.arith.PowerStatement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,6 +51,8 @@ public class SMCLContext {
      */
     public final GlobalVariables globalvars;
 
+    public NumberProvider<?> numberProvider = StdNumberObject.PROVIDER;
+
     /**
      * Construct a context with a settings.
      * @param setting a SMCL settings
@@ -72,8 +75,8 @@ public class SMCLContext {
      * Initialize the SMCL System, register the basic constant, operators and functions.
      */
     public final void init() {
-        register.registerConstant("pi", NumberPool.getNumber(Math.PI));
-        register.registerConstant("e", NumberPool.getNumber(Math.E));
+        register.registerConstant("pi", new NumberStatement(this, numberProvider.fromStdNumber(Math.PI)));
+        register.registerConstant("e", new NumberStatement(this, numberProvider.fromStdNumber(Math.E)));
         register.registerOperator("+", new BinaryOperatorParser(20, true,
                 (smcl, statements, variables) -> new MathStatement(smcl, variables, statements)));
         register.registerUnaryOperator("+",

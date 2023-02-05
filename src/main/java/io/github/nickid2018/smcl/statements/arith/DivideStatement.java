@@ -20,7 +20,7 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
@@ -98,16 +98,11 @@ public class DivideStatement extends Statement {
     }
 
     @Override
-    public double calculateInternal(VariableValueList list) {
-        double ret = dividend.calculate(list);
+    public NumberObject calculateInternal(VariableValueList list) {
+        NumberObject ret = dividend.calculate(list);
         for (Statement ms : divisors) {
-            double v = ms.calculate(list);
-            if (v == 0)
-                if (context.settings.invalidArgumentWarn)
-                    System.err.println("Warning: divide by 0 at " + this);
-                else
-                    throw new ArithmeticException("divide by 0");
-            ret /= v;
+            NumberObject v = ms.calculate(list);
+            ret = ret.divide(v);
         }
         return ret;
     }
@@ -151,9 +146,10 @@ public class DivideStatement extends Statement {
         boolean funcfN = funcf instanceof NumberStatement;
         boolean funcgN = funcg instanceof NumberStatement;
         if (funcfN && funcgN)
-            return NumberPool.NUMBER_CONST_0;
+            return new NumberStatement(context, context.numberProvider.getZero());
         if (funcfN) {
-            PowerStatement pws = new PowerStatement(context, variables, funcg.deepCopy(), NumberPool.getNumber(2));
+            PowerStatement pws = new PowerStatement(context, variables, funcg.deepCopy(),
+                    new NumberStatement(context, context.numberProvider.fromStdNumber(2)));
             return new DivideStatement(context, variables, funcf.deepCopy(), pws).negate();
         }
         if (funcgN)
@@ -161,21 +157,22 @@ public class DivideStatement extends Statement {
         Statement derif = funcf.derivative();
         Statement derig = funcg.derivative();
         Statement add1;
-        if (derif.equals(NumberPool.NUMBER_CONST_1))
+        if (derif instanceof NumberStatement && ((NumberStatement) derif).getNumber().isOne())
             add1 = funcg.deepCopy();
-        else if (derif.equals(NumberPool.NUMBER_CONST_M1))
+        else if (derif instanceof NumberStatement && ((NumberStatement) derif).getNumber().isMinusOne())
             add1 = funcg.negate();
         else
             add1 = new MultiplyStatement(context, variables, derif, funcg.deepCopy());
         Statement add2;
-        if (derig.equals(NumberPool.NUMBER_CONST_1))
+        if (derig instanceof NumberStatement && ((NumberStatement) derig).getNumber().isOne())
             add2 = funcf.deepCopy();
-        else if (derig.equals(NumberPool.NUMBER_CONST_M1))
+        else if (derig instanceof NumberStatement && ((NumberStatement) derig).getNumber().isMinusOne())
             add2 = funcf.negate();
         else
             add2 = new MultiplyStatement(context, variables, funcf.deepCopy(), derig);
         MathStatement ms = new MathStatement(context, variables, add1, add2.negate());
-        PowerStatement pws = new PowerStatement(context, variables, funcg.deepCopy(), NumberPool.getNumber(2));
+        PowerStatement pws = new PowerStatement(context, variables, funcg.deepCopy(),
+                new NumberStatement(context, context.numberProvider.fromStdNumber(2)));
         return new DivideStatement(context, variables, ms, pws);
     }
 

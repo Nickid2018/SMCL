@@ -21,7 +21,7 @@ import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.VariableValueList;
 import io.github.nickid2018.smcl.functions.Functions;
 import io.github.nickid2018.smcl.functions.UnaryFunctionStatement;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
 
@@ -90,24 +90,11 @@ public class PowerStatement extends Statement {
     }
 
     @Override
-    public double calculateInternal(VariableValueList list) {
-        double prevExp = exponents.get(exponents.size() - 1).calculate(list);
+    public NumberObject calculateInternal(VariableValueList list) {
+        NumberObject prevExp = exponents.get(exponents.size() - 1).calculate(list);
         for (int now = exponents.size() - 2; now > -2; now--) {
-            double currentBase = now == -1 ? base.calculate(list) : exponents.get(now).calculate(list);
-            if (currentBase == 0 && prevExp <= 0)
-                if (context.settings.invalidArgumentWarn)
-                    System.err.println("Warning: 0 is multiplied by an exponent not greater than 0 at " + this);
-                else
-                    throw new ArithmeticException("0 is multiplied by an exponent not greater than 0");
-            if (currentBase < 0) {
-                int intPrev = (int) prevExp;
-                if (Math.abs(intPrev - prevExp) > 1E-5)
-                    if (context.settings.invalidArgumentWarn)
-                        System.err.println("Warning: A negative number is multiplied by a fraction at " + this);
-                    else
-                        throw new ArithmeticException("A negative number is multiplied by a fraction");
-            }
-            prevExp = Math.pow(currentBase, prevExp);
+            NumberObject currentBase = now == -1 ? base.calculate(list) : exponents.get(now).calculate(list);
+            prevExp = currentBase.power(prevExp);
         }
         return prevExp;
     }
@@ -153,60 +140,62 @@ public class PowerStatement extends Statement {
         boolean baseN = base instanceof NumberStatement;
         boolean exponentN = exponent instanceof NumberStatement;
         if (baseN && exponentN)
-            return NumberPool.NUMBER_CONST_0;
+            return new NumberStatement(context, context.numberProvider.getZero());
         if (baseN) {
-            double constNumber = Math.log(base.calculate(null));
+            NumberObject constNumber = base.calculate(null).log();
             Statement derivative = exponent.derivative();
             if (derivative instanceof NumberStatement)
-                constNumber *= derivative.calculate(null);
-            if (constNumber == 0)
-                return NumberPool.NUMBER_CONST_0;
-            if (constNumber == 1 || constNumber == -1)
-                return new MultiplyStatement(context, variables, constNumber == -1,
+                constNumber = constNumber.multiply(derivative.calculate(null));
+            if (constNumber.isZero())
+                return new NumberStatement(context, context.numberProvider.getZero());
+            if (constNumber.isOne() || constNumber.isMinusOne())
+                return new MultiplyStatement(context, variables, constNumber.isMinusOne(),
                         derivative instanceof NumberStatement ?
                                 Collections.singletonList(deepCopy()) :
                                 Arrays.asList(deepCopy(), derivative));
             else
                 return new MultiplyStatement(context, variables,
                         derivative instanceof NumberStatement ?
-                                Arrays.asList(NumberPool.getNumber(constNumber), deepCopy()) :
-                                Arrays.asList(NumberPool.getNumber(constNumber), deepCopy(), derivative));
+                                Arrays.asList(new NumberStatement(context, constNumber), deepCopy()) :
+                                Arrays.asList(new NumberStatement(context, constNumber), deepCopy(), derivative));
         }
         if (exponentN) {
-            double exp = exponent.calculate(null);
-            double constNumber = exp;
-            if (exp == 0)
-                return NumberPool.NUMBER_CONST_0;
-            if (exp == 1)
+            NumberObject exp = exponent.calculate(null);
+            NumberObject constNumber = exp;
+            if (exp.isZero())
+                return new NumberStatement(context, context.numberProvider.getZero());
+            if (exp.isOne())
                 return base.derivative();
             Statement derivative = base.derivative();
             if (derivative instanceof NumberStatement)
-                constNumber *= derivative.calculate(null);
-            if (constNumber == 0)
-                return NumberPool.NUMBER_CONST_0;
-            Statement trexp = exp == 2 ? base.deepCopy()
-                    : new PowerStatement(context, variables, base.deepCopy(), NumberPool.getNumber(exp - 1));
-            if (constNumber == 1 || constNumber == -1) {
-                return new MultiplyStatement(context, variables, constNumber == -1,
+                constNumber = constNumber.multiply(derivative.calculate(null));
+            if (constNumber.isZero())
+                return new NumberStatement(context, context.numberProvider.getZero());
+            Statement trexp = exp.isReal() && exp.toStdNumber() == 2 ?
+                    base.deepCopy() :
+                    new PowerStatement(context, variables, base.deepCopy(),
+                            new NumberStatement(context, exp.subtract(context.numberProvider.getOne())));
+            if (constNumber.isOne() || constNumber.isMinusOne()) {
+                return new MultiplyStatement(context, variables, constNumber.isMinusOne(),
                         derivative instanceof NumberStatement ?
                                 Collections.singletonList(trexp) :
                                 Arrays.asList(trexp, derivative));
             } else {
                 return new MultiplyStatement(context, variables,
                         derivative instanceof NumberStatement ?
-                                Arrays.asList(NumberPool.getNumber(constNumber), trexp) :
-                                Arrays.asList(NumberPool.getNumber(constNumber), trexp, derivative));
+                                Arrays.asList(new NumberStatement(context, constNumber), trexp) :
+                                Arrays.asList(new NumberStatement(context, constNumber), trexp, derivative));
             }
         }
         Statement multi = new MultiplyStatement(context, variables,
                 exponent.deepCopy(), Functions.LN.create(base.deepCopy())).derivative();
         if (multi instanceof NumberStatement) {
-            double constNumber = multi.calculate(null);
-            if (constNumber == 0)
-                return NumberPool.NUMBER_CONST_0;
-            if (constNumber == 1)
+            NumberObject constNumber = multi.calculate(null);
+            if (constNumber.isZero())
+                return new NumberStatement(context, context.numberProvider.getZero());
+            if (constNumber.isOne())
                 return deepCopy();
-            if (constNumber == -1)
+            if (constNumber.isMinusOne())
                 return negate();
             return new MultiplyStatement(context, variables, multi, deepCopy());
         } else

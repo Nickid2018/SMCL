@@ -15,6 +15,8 @@
  */
 package io.github.nickid2018.smcl.set;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,17 +42,11 @@ public class ComplexSet extends NumberSet {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isValid() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isInfinite() {
         for (NumberSet set : subSets)
@@ -59,20 +55,14 @@ public class ComplexSet extends NumberSet {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean isBelongTo(double value) {
+    public boolean isBelongTo(NumberObject value) {
         for (NumberSet set : subSets)
             if (set.isBelongTo(value))
                 return true;
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Deprecated
     public boolean isInclude(NumberSet other) {
@@ -82,9 +72,6 @@ public class ComplexSet extends NumberSet {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCross(NumberSet other) {
         for (NumberSet set : subSets)

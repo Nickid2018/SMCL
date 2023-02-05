@@ -37,7 +37,7 @@ public class MathStatementDemo {
         timeOutput();
         System.out.println(s);
         timeOutput();
-        VariableValueList list = new VariableValueList();
+        VariableValueList list = new VariableValueList(smcl);
         list.addVariableValue("x", 0.53);
         System.out.println(s.calculate(list));
         timeOutput();

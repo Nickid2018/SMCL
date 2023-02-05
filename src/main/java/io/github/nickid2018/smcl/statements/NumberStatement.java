@@ -15,24 +15,25 @@
  */
 package io.github.nickid2018.smcl.statements;
 
+import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
-import io.github.nickid2018.smcl.number.NumberPool;
+import io.github.nickid2018.smcl.number.NumberObject;
 
 /**
  * A statement stores the number.
  */
 public class NumberStatement extends Statement {
 
-    private final double num;
+    private final NumberObject num;
 
     /**
      * Construct a number statement with a number.
      * @param num a number
      */
-    public NumberStatement(double num) {
-        super(null, VariableList.EMPTY_VARIABLES, num < 0);
+    public NumberStatement(SMCLContext smcl, NumberObject num) {
+        super(smcl, VariableList.EMPTY_VARIABLES, num.isReal() && num.toStdNumber() < 0);
         this.num = num;
     }
 
@@ -40,30 +41,28 @@ public class NumberStatement extends Statement {
      * Get the number.
      * @return a number
      */
-    public double getNumber() {
+    public NumberObject getNumber() {
         return num;
     }
 
     @Override
-    public double calculate(VariableValueList list) {
+    public NumberObject calculate(VariableValueList list) {
         return num;
     }
 
     @Override
-    protected double calculateInternal(VariableValueList list) {
-        return Math.abs(num);
+    protected NumberObject calculateInternal(VariableValueList list) {
+        return num.abs();
     }
 
     @Override
     public String toString() {
-        return Double.toString(num);
+        return num.toPlainString();
     }
 
     @Override
     public Statement negate() {
-        if (num == 0)
-            return this;
-        return NumberPool.getNumber(-num);
+        return new NumberStatement(context, num.negate());
     }
 
     @Override
@@ -73,6 +72,6 @@ public class NumberStatement extends Statement {
 
     @Override
     protected Statement derivativeInternal() {
-        return NumberPool.NUMBER_CONST_0;
+        return new NumberStatement(context, context.numberProvider.fromStdNumber(0));
     }
 }

@@ -16,6 +16,7 @@
 package io.github.nickid2018.smcl.util;
 
 import io.github.nickid2018.smcl.SMCLContext;
+import io.github.nickid2018.smcl.number.NumberObject;
 
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ import java.util.Objects;
 @FunctionalInterface
 public interface DoubleSMCLFunction {
 
-    double accept(double arg, SMCLContext smcl);
+    NumberObject accept(NumberObject arg, SMCLContext smcl);
 
     default DoubleSMCLFunction addThen(DoubleSMCLFunction after) {
         Objects.requireNonNull(after);

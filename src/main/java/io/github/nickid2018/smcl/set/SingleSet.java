@@ -15,6 +15,9 @@
  */
 package io.github.nickid2018.smcl.set;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+import io.github.nickid2018.smcl.number.StdNumberObject;
+
 /**
  * A set that only has one number.
  */
@@ -33,35 +36,23 @@ public class SingleSet extends Interval {
         rightClose = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean isBelongTo(double value) {
-        return leftRange == value;
+    public boolean isBelongTo(NumberObject value) {
+        return value.isReal() && leftRange == value.toStdNumber();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCross(NumberSet other) {
-        return other.isBelongTo(leftRange);
+        return other.isBelongTo(StdNumberObject.PROVIDER.fromStdNumber(leftRange));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isInclude(NumberSet other) {
-        return other.isBelongTo(leftRange);
+        return other.isBelongTo(StdNumberObject.PROVIDER.fromStdNumber(leftRange));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NumberSet getIntersection(NumberSet other) {
-        return other.isBelongTo(leftRange) ? this : EmptySet.EMPTY_SET;
+        return other.isBelongTo(StdNumberObject.PROVIDER.fromStdNumber(leftRange)) ? this : EmptySet.EMPTY_SET;
     }
 }

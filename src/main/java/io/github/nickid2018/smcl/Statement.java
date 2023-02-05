@@ -15,6 +15,8 @@
  */
 package io.github.nickid2018.smcl;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+
 /**
  * A statement can use it to compute and derivative
  */
@@ -111,16 +113,16 @@ public abstract class Statement implements Cloneable {
      * @param list a variable list
      * @return the result without sign
      */
-    protected abstract double calculateInternal(VariableValueList list);
+    protected abstract NumberObject calculateInternal(VariableValueList list);
 
     /**
      * Calculate the statement with a variable list.
      * @param list a variable list
      * @return the result
      */
-    public double calculate(VariableValueList list) {
-        list = list == null ? new VariableValueList() : list;
-        return isNegative ? -calculateInternal(list) : calculateInternal(list);
+    public NumberObject calculate(VariableValueList list) {
+        list = list == null ? new VariableValueList(context) : list;
+        return isNegative ? calculateInternal(list).negate() : calculateInternal(list);
     }
 
     // Only single variable

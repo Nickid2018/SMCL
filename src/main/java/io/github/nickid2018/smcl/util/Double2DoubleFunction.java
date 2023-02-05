@@ -15,6 +15,8 @@
  */
 package io.github.nickid2018.smcl.util;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+
 import java.util.Objects;
 
 /**
@@ -23,7 +25,7 @@ import java.util.Objects;
 @FunctionalInterface
 public interface Double2DoubleFunction {
 
-    double accept(double arg);
+    NumberObject accept(NumberObject arg);
 
     default Double2DoubleFunction addThen(Double2DoubleFunction after) {
         Objects.requireNonNull(after);

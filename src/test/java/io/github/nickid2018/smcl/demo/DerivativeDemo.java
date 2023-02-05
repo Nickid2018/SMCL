@@ -42,7 +42,7 @@ public class DerivativeDemo {
             timeOutput();
             System.out.println(d);
             timeOutput();
-            VariableValueList list = new VariableValueList().addVariableValue("x", 100);
+            VariableValueList list = new VariableValueList(smcl).addVariableValue("x", 100);
             System.out.println(s.calculate(list));
             timeOutput();
             System.out.println(d.calculate(list));

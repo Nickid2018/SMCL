@@ -15,6 +15,8 @@
  */
 package io.github.nickid2018.smcl.set;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+
 /**
  * A set that has no element.
  */
@@ -28,49 +30,31 @@ public class EmptySet extends NumberSet {
     private EmptySet() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isValid() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isInfinite() {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean isBelongTo(double value) {
+    public boolean isBelongTo(NumberObject value) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isInclude(NumberSet other) {
         return other instanceof EmptySet;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCross(NumberSet other) {
         return other instanceof EmptySet;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NumberSet getIntersection(NumberSet other) {
         return other;

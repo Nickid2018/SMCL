@@ -16,11 +16,13 @@
 
 package io.github.nickid2018.smcl.util;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+
 /**
  * Utility class for resolvers.
  */
 @FunctionalInterface
 public interface BiDouble2DoubleFunction {
 
-    double accept(double arg1, double arg2);
+    NumberObject accept(NumberObject arg1, NumberObject arg2);
 }

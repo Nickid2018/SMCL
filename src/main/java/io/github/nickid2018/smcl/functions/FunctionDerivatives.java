@@ -16,7 +16,6 @@
 package io.github.nickid2018.smcl.functions;
 
 import io.github.nickid2018.smcl.Statement;
-import io.github.nickid2018.smcl.number.NumberPool;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.arith.DivideStatement;
 import io.github.nickid2018.smcl.statements.arith.MathStatement;
@@ -40,7 +39,7 @@ public class FunctionDerivatives {
     public static final Function<Statement, Statement> DERIVATIVE_TAN = statement -> {
         Statement base = Functions.SEC.create(statement.deepCopy());
         return new PowerStatement(statement.getSMCL(), statement.getVariables(), base,
-                NumberPool.getNumber(2));
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(2)));
     };
 
     public static final Function<Statement, Statement> DERIVATIVE_SEC = statement -> {
@@ -52,36 +51,42 @@ public class FunctionDerivatives {
     public static final Function<Statement, Statement> DERIVATIVE_CSC = statement -> {
         Statement base = Functions.CSC.create(statement.deepCopy());
         Statement base2 = Functions.COT.create(statement.deepCopy());
-        return new MultiplyStatement(statement.getSMCL(), statement.getVariables(), false,
-                base, base2);
+        return new MultiplyStatement(statement.getSMCL(), statement.getVariables(), false, base, base2);
     };
 
     public static final Function<Statement, Statement> DERIVATIVE_COT = statement -> {
         Statement base = Functions.CSC.create(statement.deepCopy());
         return new PowerStatement(statement.getSMCL(), statement.getVariables(), false,
-                base, NumberPool.getNumber(2));
+                base, new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(2)));
     };
 
     public static final Function<Statement, Statement> DERIVATIVE_ASIN = statement -> {
         Statement pws = new PowerStatement(statement.getSMCL(), statement.getVariables(), false,
-                statement.deepCopy(), NumberPool.getNumber(2));
-        MathStatement base = new MathStatement(statement.getSMCL(), statement.getVariables(), NumberPool.NUMBER_CONST_1, pws);
+                statement.deepCopy(), new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(2)));
+        MathStatement base = new MathStatement(statement.getSMCL(), statement.getVariables(),
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()), pws);
         Statement sqrt = Functions.SQRT.create(base);
-        return new DivideStatement(statement.getSMCL(), statement.getVariables(), NumberPool.NUMBER_CONST_1, sqrt);
+        return new DivideStatement(statement.getSMCL(), statement.getVariables(),
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()), sqrt);
     };
 
     public static final Function<Statement, Statement> DERIVATIVE_ACOS = statement -> {
         Statement pws = new PowerStatement(statement.getSMCL(), statement.getVariables(), false,
-                statement.deepCopy(), NumberPool.getNumber(2));
-        MathStatement base = new MathStatement(statement.getSMCL(), statement.getVariables(), NumberPool.NUMBER_CONST_1, pws);
+                statement.deepCopy(), new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(2)));
+        MathStatement base = new MathStatement(statement.getSMCL(), statement.getVariables(),
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()), pws);
         Statement sqrt = Functions.SQRT.create(base);
-        return new DivideStatement(statement.getSMCL(), statement.getVariables(), false, NumberPool.NUMBER_CONST_1, sqrt);
+        return new DivideStatement(statement.getSMCL(), statement.getVariables(), false,
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()), sqrt);
     };
 
     public static final Function<Statement, Statement> DERIVATIVE_ATAN = statement -> {
-        Statement pws = new PowerStatement(statement.getSMCL(), statement.getVariables(), statement.deepCopy(), NumberPool.getNumber(2));
-        MathStatement base = new MathStatement(statement.getSMCL(), statement.getVariables(), NumberPool.NUMBER_CONST_1, pws);
-        return new DivideStatement(statement.getSMCL(), statement.getVariables(), NumberPool.NUMBER_CONST_1, base);
+        Statement pws = new PowerStatement(statement.getSMCL(), statement.getVariables(), statement.deepCopy(),
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(2)));
+        MathStatement base = new MathStatement(statement.getSMCL(), statement.getVariables(),
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()), pws);
+        return new DivideStatement(statement.getSMCL(), statement.getVariables(),
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()), base);
     };
 
     public static final Function<Statement, Statement> DERIVATIVE_SINH = statement -> Functions.COSH
@@ -93,35 +98,41 @@ public class FunctionDerivatives {
     public static final Function<Statement, Statement> DERIVATIVE_TANH = statement -> {
         Statement base = Functions.COSH.create(statement.deepCopy());
         return new DivideStatement(statement.getSMCL(), statement.getVariables(),
-                NumberPool.NUMBER_CONST_1,
-                new PowerStatement(statement.getSMCL(), statement.getVariables(), base, NumberPool.getNumber(2)));
+                new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()),
+                new PowerStatement(statement.getSMCL(), statement.getVariables(), base,
+                        new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(2))));
     };
 
     public static final Function<Statement, Statement> DERIVATIVE_LN = statement -> new DivideStatement(
-            statement.getSMCL(), statement.getVariables(), NumberPool.NUMBER_CONST_1, statement.deepCopy());
+            statement.getSMCL(), statement.getVariables(),
+            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()), statement.deepCopy());
 
     public static final Function<Statement, Statement> DERIVATIVE_LG = statement -> new DivideStatement(
-            statement.getSMCL(), statement.getVariables(), NumberPool.NUMBER_CONST_1, statement.deepCopy(),
-            NumberPool.getNumber(Math.log(10)));
+            statement.getSMCL(), statement.getVariables(),
+            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.getOne()), statement.deepCopy(),
+            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(Math.log(10))));
 
     public static final Function<Statement, Statement> DERIVATIVE_SQRT = statement -> new PowerStatement(
-            statement.getSMCL(), statement.getVariables(), statement.deepCopy(), NumberPool.getNumber(-0.5));
+            statement.getSMCL(), statement.getVariables(), statement.deepCopy(),
+            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(0.5)));
 
     public static final Function<Statement, Statement> DERIVATIVE_CBRT = statement -> new PowerStatement(
-            statement.getSMCL(), statement.getVariables(), statement.deepCopy(), NumberPool.getNumber(-2 / 3.0));
+            statement.getSMCL(), statement.getVariables(), statement.deepCopy(),
+            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(-2 / 3.0)));
 
     public static final Function<Statement, Statement> DERIVATIVE_EXP = statement -> new PowerStatement(
-            statement.getSMCL(), statement.getVariables(), NumberPool.getNumber(Math.E), statement.deepCopy());
+            statement.getSMCL(), statement.getVariables(),
+            new NumberStatement(statement.getSMCL(), statement.getSMCL().numberProvider.fromStdNumber(Math.E)), statement.deepCopy());
 
     // Warning: Assigned x=0, the derivative doesn't exist!
     public static final Function<Statement, Statement> DERIVATIVE_ABS = statement -> Functions.SGN
             .create(statement.deepCopy());
 
     public static final BiFunction<Statement, Statement, Statement> DERIVATIVE_LOG = (statement1, statement2) -> {
-        if(statement2 instanceof NumberStatement)
+        if (statement2 instanceof NumberStatement)
             return new DivideStatement(statement1.getSMCL(), statement1.getVariables(),
-                    NumberPool.NUMBER_CONST_1, statement1.deepCopy(),
-                    NumberPool.getNumber(Math.log(((NumberStatement)statement2).getNumber())));
+                    new NumberStatement(statement1.getSMCL(), statement1.getSMCL().numberProvider.getOne()), statement1.deepCopy(),
+                    new NumberStatement(statement1.getSMCL(), ((NumberStatement) statement2).getNumber().log()));
         // log(f, g) = lnf/lng => (f'/f*lng-g'/g*lnf)/ln2g
         DivideStatement ds = new DivideStatement(statement1.getSMCL(), statement1.getVariables(),
                 Functions.LN.create(statement1.deepCopy()),

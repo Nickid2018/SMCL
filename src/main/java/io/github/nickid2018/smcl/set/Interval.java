@@ -15,6 +15,8 @@
  */
 package io.github.nickid2018.smcl.set;
 
+import io.github.nickid2018.smcl.number.NumberObject;
+
 public class Interval extends NumberSet {
 
     public double leftRange;
@@ -144,35 +146,25 @@ public class Interval extends NumberSet {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isValid() {
         return (leftRange < rightRange)
                 || (!(leftInfinite || rightInfinite) && (leftClose && rightClose) && leftRange == rightRange);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isInfinite() {
         return isValid() && leftRange != rightRange;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean isBelongTo(double value) {
-        return (leftClose && leftRange == value && !leftInfinite)
-                || (rightClose && rightRange == value && !rightInfinite) || (leftRange < value && rightRange > value);
+    public boolean isBelongTo(NumberObject value) {
+        return !value.isReal() ||
+                (leftClose && leftRange == value.toStdNumber() && !leftInfinite) ||
+                (rightClose && rightRange == value.toStdNumber() && !rightInfinite) ||
+                (leftRange < value.toStdNumber() && rightRange > value.toStdNumber());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isInclude(NumberSet other) {
         if (other instanceof EmptySet)
@@ -186,9 +178,6 @@ public class Interval extends NumberSet {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCross(NumberSet other) {
         if (other instanceof EmptySet)
@@ -202,9 +191,6 @@ public class Interval extends NumberSet {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NumberSet getIntersection(NumberSet other) {
         if (other instanceof EmptySet)

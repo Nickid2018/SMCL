@@ -18,6 +18,7 @@ package io.github.nickid2018.smcl.statements;
 import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
+import io.github.nickid2018.smcl.number.NumberObject;
 
 /**
  * A void statement, which will not calculate or derivative.
@@ -52,7 +53,7 @@ public class VoidStatement extends Statement {
     }
 
     @Override
-    public double calculateInternal(VariableValueList list) {
+    public NumberObject calculateInternal(VariableValueList list) {
         throw new UnsupportedOperationException();
     }
 

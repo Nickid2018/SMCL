@@ -15,15 +15,13 @@
  */
 package io.github.nickid2018.smcl.functions;
 
-import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
+import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.set.NumberSet;
 import io.github.nickid2018.smcl.util.Double2DoubleFunction;
 import io.github.nickid2018.smcl.util.DoubleSMCLFunction;
 
-import java.util.function.DoubleConsumer;
-import java.util.function.DoubleFunction;
-import java.util.function.DoublePredicate;
+import java.util.function.*;
 
 /**
  * A builder for functions to build.
@@ -33,8 +31,8 @@ public abstract class FunctionBuilder {
     /**
      * Domain "R"
      */
-    public static final DoubleConsumer ALL_DOMAIN = arg -> {
-        if (!Double.isFinite(arg))
+    public static final Consumer<NumberObject> ALL_DOMAIN = arg -> {
+        if (arg.isReal() && !Double.isFinite(arg.toStdNumber()))
             throw new ArithmeticException("Infinite numbers and NaNs are not supported");
     };
 
@@ -49,11 +47,13 @@ public abstract class FunctionBuilder {
     /**
      * Resolution for radian angles
      */
-    public static final DoubleSMCLFunction RESOLVE_RADIANS = (arg, smcl) -> smcl.settings.degreeAngle ? Math.toRadians(arg) : arg;
+    public static final DoubleSMCLFunction RESOLVE_RADIANS = (arg, smcl) ->
+            smcl.settings.degreeAngle && arg.isReal() ? smcl.numberProvider.fromStdNumber(Math.toRadians(arg.toStdNumber())) : arg;
     /**
      * Resolution for degree angles
      */
-    public static final DoubleSMCLFunction RESOLVE_DEGREES = (arg, smcl) -> smcl.settings.degreeAngle ? Math.toDegrees(arg) : arg;
+    public static final DoubleSMCLFunction RESOLVE_DEGREES = (arg, smcl) ->
+            smcl.settings.degreeAngle && arg.isReal() ? smcl.numberProvider.fromStdNumber(Math.toDegrees(arg.toStdNumber())) : arg;
 
     protected final String name;
 
@@ -71,9 +71,9 @@ public abstract class FunctionBuilder {
      * @param errorString a string supplier for error string
      * @return a checker
      */
-    public static DoubleConsumer checkDomainExclude(DoublePredicate exclude, DoubleFunction<String> errorString) {
+    public static Consumer<NumberObject> checkDomainExclude(Predicate<NumberObject> exclude, Function<NumberObject, String> errorString) {
         return arg -> {
-            if (!Double.isFinite(arg))
+            if (arg.isReal() && !Double.isFinite(arg.toStdNumber()))
                 throw new ArithmeticException("Infinite numbers and NaNs are not supported");
             if (exclude.test(arg))
                 throw new ArithmeticException(errorString.apply(arg));
@@ -86,9 +86,9 @@ public abstract class FunctionBuilder {
      * @param errorString a string supplier for error string
      * @return a checker
      */
-    public static DoubleConsumer checkDomainInclude(DoublePredicate include, DoubleFunction<String> errorString) {
+    public static Consumer<NumberObject> checkDomainInclude(Predicate<NumberObject> include, Function<NumberObject, String> errorString) {
         return arg -> {
-            if (!Double.isFinite(arg))
+            if (arg.isReal() && !Double.isFinite(arg.toStdNumber()))
                 throw new ArithmeticException("Infinite numbers and NaNs are not supported");
             if (!include.test(arg))
                 throw new ArithmeticException(errorString.apply(arg));
@@ -97,21 +97,23 @@ public abstract class FunctionBuilder {
 
     /**
      * Returns a checker to check if the value is excluded the set of the domain.
-     * @param set a set to check the value
+     *
+     * @param set         a set to check the value
      * @param errorString a string supplier for error string
      * @return a checker
      */
-    public static DoubleConsumer checkDomainExclude(NumberSet set, DoubleFunction<String> errorString) {
+    public static Consumer<NumberObject> checkDomainExclude(NumberSet set, Function<NumberObject, String> errorString) {
         return checkDomainExclude(set::isBelongTo, errorString);
     }
 
     /**
      * Returns a checker to check if the value is included the set of the domain.
-     * @param set a set to check the value
+     *
+     * @param set         a set to check the value
      * @param errorString a string supplier for error string
      * @return a checker
      */
-    public static DoubleConsumer checkDomainInclude(NumberSet set, DoubleFunction<String> errorString) {
+    public static Consumer<NumberObject> checkDomainInclude(NumberSet set, Function<NumberObject, String> errorString) {
         return checkDomainInclude(set::isBelongTo, errorString);
     }
 

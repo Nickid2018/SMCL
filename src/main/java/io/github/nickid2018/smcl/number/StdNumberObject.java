@@ -41,11 +41,20 @@ public class StdNumberObject extends NumberObject {
 
     @Override
     public NumberObject divide(NumberObject number) {
+        if (number.toStdNumber() == 0)
+            throw new ArithmeticException("Divide by zero");
         return new StdNumberObject(value / number.toStdNumber());
     }
 
     @Override
     public NumberObject power(NumberObject number) {
+        if (value == 0 && toStdNumber() <= 0)
+            throw new ArithmeticException("0 is multiplied by an exponent not greater than 0");
+        if (value < 0) {
+            int intPrev = (int) number.toStdNumber();
+            if (Math.abs(intPrev - number.toStdNumber()) > 1E-5)
+                throw new ArithmeticException("A negative number is multiplied by a fraction");
+        }
         return new StdNumberObject(Math.pow(value, number.toStdNumber()));
     }
 
@@ -120,6 +129,31 @@ public class StdNumberObject extends NumberObject {
     }
 
     @Override
+    public NumberObject reciprocal() {
+        return new StdNumberObject(1 / value);
+    }
+
+    @Override
+    public boolean isReal() {
+        return true;
+    }
+
+    @Override
+    public boolean isZero() {
+        return value == 0;
+    }
+
+    @Override
+    public boolean isOne() {
+        return value == 1;
+    }
+
+    @Override
+    public boolean isMinusOne() {
+        return value == -1;
+    }
+
+    @Override
     public double toStdNumber() {
         return value;
     }
@@ -129,5 +163,16 @@ public class StdNumberObject extends NumberObject {
         return String.valueOf(value);
     }
 
-    public static final NumberProvider<StdNumberObject> PROVIDER = StdNumberObject::new;
+    @Override
+    public String toString() {
+        return toPlainString();
+    }
+
+    public static final NumberProvider<StdNumberObject> PROVIDER = new NumberProvider<StdNumberObject>() {
+
+        @Override
+        public StdNumberObject fromStdNumber(double value) {
+            return new StdNumberObject(value);
+        }
+    };
 }
