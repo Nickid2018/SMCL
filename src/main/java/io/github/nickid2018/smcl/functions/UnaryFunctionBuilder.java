@@ -18,8 +18,8 @@ package io.github.nickid2018.smcl.functions;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
-import io.github.nickid2018.smcl.util.Double2DoubleFunction;
-import io.github.nickid2018.smcl.util.DoubleSMCLFunction;
+import io.github.nickid2018.smcl.util.UnaryFunction;
+import io.github.nickid2018.smcl.util.UnaryFunctionWithContext;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -30,9 +30,9 @@ import java.util.function.Function;
 public class UnaryFunctionBuilder extends FunctionBuilder {
 
     private Consumer<NumberObject> domainCheck = ALL_DOMAIN;
-    private Double2DoubleFunction calcFunction = DEFAULT_RESULT;
-    private DoubleSMCLFunction resolveVariable = DEFAULT_RESOLVE;
-    private DoubleSMCLFunction resolveEnd = DEFAULT_RESOLVE;
+    private UnaryFunction calcFunction = DEFAULT_RESULT;
+    private UnaryFunctionWithContext resolveVariable = DEFAULT_RESOLVE;
+    private UnaryFunctionWithContext resolveEnd = DEFAULT_RESOLVE;
     private Function<Statement, Statement> derivativeResolver;
 
     /**
@@ -69,7 +69,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * @param resolve a resolver
      * @return this
      */
-    public UnaryFunctionBuilder withResolve(DoubleSMCLFunction resolve) {
+    public UnaryFunctionBuilder withResolve(UnaryFunctionWithContext resolve) {
         resolveVariable = resolve;
         return this;
     }
@@ -79,7 +79,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * @param resolve a resolver
      * @return this
      */
-    public UnaryFunctionBuilder andResolve(DoubleSMCLFunction resolve) {
+    public UnaryFunctionBuilder andResolve(UnaryFunctionWithContext resolve) {
         resolveVariable = resolveVariable.addThen(resolve);
         return this;
     }
@@ -89,7 +89,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * @param resolve a resolver
      * @return this
      */
-    public UnaryFunctionBuilder withResolveEnd(DoubleSMCLFunction resolve) {
+    public UnaryFunctionBuilder withResolveEnd(UnaryFunctionWithContext resolve) {
         resolveEnd = resolve;
         return this;
     }
@@ -99,7 +99,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * @param resolve a resolver
      * @return this
      */
-    public UnaryFunctionBuilder andResolveEnd(DoubleSMCLFunction resolve) {
+    public UnaryFunctionBuilder andResolveEnd(UnaryFunctionWithContext resolve) {
         resolveEnd = resolveEnd.addThen(resolve);
         return this;
     }
@@ -129,7 +129,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * @param function a resolver to calculate
      * @return this
      */
-    public UnaryFunctionBuilder withFunction(Double2DoubleFunction function) {
+    public UnaryFunctionBuilder withFunction(UnaryFunction function) {
         this.calcFunction = function;
         return this;
     }
@@ -139,7 +139,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * @param function a resolver to calculate
      * @return this
      */
-    public UnaryFunctionBuilder andFunction(Double2DoubleFunction function) {
+    public UnaryFunctionBuilder andFunction(UnaryFunction function) {
         calcFunction = calcFunction.addThen(function);
         return this;
     }
@@ -175,7 +175,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * Get the resolver for the function.
      * @return a resolver
      */
-    public Double2DoubleFunction getCalcFunction() {
+    public UnaryFunction getCalcFunction() {
         return calcFunction;
     }
 
@@ -183,7 +183,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * Get the resolver before the calculation.
      * @return a resolver
      */
-    public DoubleSMCLFunction getResolveVariable() {
+    public UnaryFunctionWithContext getResolveVariable() {
         return resolveVariable;
     }
 
@@ -191,7 +191,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * Get the resolver behind the calculation.
      * @return a resolver
      */
-    public DoubleSMCLFunction getResolveEnd() {
+    public UnaryFunctionWithContext getResolveEnd() {
         return resolveEnd;
     }
 

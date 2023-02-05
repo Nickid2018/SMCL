@@ -18,8 +18,8 @@ package io.github.nickid2018.smcl.functions;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.set.NumberSet;
-import io.github.nickid2018.smcl.util.Double2DoubleFunction;
-import io.github.nickid2018.smcl.util.DoubleSMCLFunction;
+import io.github.nickid2018.smcl.util.UnaryFunction;
+import io.github.nickid2018.smcl.util.UnaryFunctionWithContext;
 
 import java.util.function.*;
 
@@ -39,20 +39,20 @@ public abstract class FunctionBuilder {
     /**
      * Default function
      */
-    public static final Double2DoubleFunction DEFAULT_RESULT = arg -> arg;
+    public static final UnaryFunction DEFAULT_RESULT = arg -> arg;
     /**
      * Default result resolver
      */
-    public static final DoubleSMCLFunction DEFAULT_RESOLVE = (arg, smcl) -> arg;
+    public static final UnaryFunctionWithContext DEFAULT_RESOLVE = (arg, smcl) -> arg;
     /**
      * Resolution for radian angles
      */
-    public static final DoubleSMCLFunction RESOLVE_RADIANS = (arg, smcl) ->
+    public static final UnaryFunctionWithContext RESOLVE_RADIANS = (arg, smcl) ->
             smcl.settings.degreeAngle && arg.isReal() ? smcl.numberProvider.fromStdNumber(Math.toRadians(arg.toStdNumber())) : arg;
     /**
      * Resolution for degree angles
      */
-    public static final DoubleSMCLFunction RESOLVE_DEGREES = (arg, smcl) ->
+    public static final UnaryFunctionWithContext RESOLVE_DEGREES = (arg, smcl) ->
             smcl.settings.degreeAngle && arg.isReal() ? smcl.numberProvider.fromStdNumber(Math.toDegrees(arg.toStdNumber())) : arg;
 
     protected final String name;

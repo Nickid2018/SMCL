@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.github.nickid2018.smcl.util;
 
 import io.github.nickid2018.smcl.number.NumberObject;
+
+import java.util.Objects;
 
 /**
  * Utility class for resolvers.
  */
 @FunctionalInterface
-public interface BiDouble2DoubleFunction {
+public interface UnaryFunction {
 
-    NumberObject accept(NumberObject arg1, NumberObject arg2);
+    NumberObject accept(NumberObject arg);
+
+    default UnaryFunction addThen(UnaryFunction after) {
+        Objects.requireNonNull(after);
+        return arg -> after.accept(accept(arg));
+    }
 }

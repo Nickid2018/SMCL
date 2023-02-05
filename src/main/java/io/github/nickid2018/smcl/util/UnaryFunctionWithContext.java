@@ -24,11 +24,11 @@ import java.util.Objects;
  * Utility class for resolvers.
  */
 @FunctionalInterface
-public interface DoubleSMCLFunction {
+public interface UnaryFunctionWithContext {
 
     NumberObject accept(NumberObject arg, SMCLContext smcl);
 
-    default DoubleSMCLFunction addThen(DoubleSMCLFunction after) {
+    default UnaryFunctionWithContext addThen(UnaryFunctionWithContext after) {
         Objects.requireNonNull(after);
         return (arg, smcl) -> after.accept(accept(arg, smcl), smcl);
     }

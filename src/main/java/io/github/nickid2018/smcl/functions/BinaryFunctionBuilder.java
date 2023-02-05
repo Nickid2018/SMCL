@@ -19,8 +19,8 @@ package io.github.nickid2018.smcl.functions;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
-import io.github.nickid2018.smcl.util.BiDouble2DoubleFunction;
-import io.github.nickid2018.smcl.util.DoubleSMCLFunction;
+import io.github.nickid2018.smcl.util.BinaryFunction;
+import io.github.nickid2018.smcl.util.UnaryFunctionWithContext;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -32,10 +32,10 @@ public class BinaryFunctionBuilder extends FunctionBuilder {
 
     private Consumer<NumberObject> domainCheck1 = ALL_DOMAIN;
     private Consumer<NumberObject> domainCheck2 = ALL_DOMAIN;
-    private BiDouble2DoubleFunction calcFunction = (a, b) -> a;
-    private DoubleSMCLFunction resolveVariable1 = DEFAULT_RESOLVE;
-    private DoubleSMCLFunction resolveVariable2 = DEFAULT_RESOLVE;
-    private DoubleSMCLFunction resolveEnd = DEFAULT_RESOLVE;
+    private BinaryFunction calcFunction = (a, b) -> a;
+    private UnaryFunctionWithContext resolveVariable1 = DEFAULT_RESOLVE;
+    private UnaryFunctionWithContext resolveVariable2 = DEFAULT_RESOLVE;
+    private UnaryFunctionWithContext resolveEnd = DEFAULT_RESOLVE;
     private BiFunction<Statement, Statement, Statement> derivativeResolver;
 
     /**
@@ -65,38 +65,38 @@ public class BinaryFunctionBuilder extends FunctionBuilder {
         return this;
     }
 
-    public BiDouble2DoubleFunction getCalcFunction() {
+    public BinaryFunction getCalcFunction() {
         return calcFunction;
     }
 
-    public BinaryFunctionBuilder withCalcFunction(BiDouble2DoubleFunction calcFunction) {
+    public BinaryFunctionBuilder withCalcFunction(BinaryFunction calcFunction) {
         this.calcFunction = calcFunction;
         return this;
     }
 
-    public DoubleSMCLFunction getResolveVariable1() {
+    public UnaryFunctionWithContext getResolveVariable1() {
         return resolveVariable1;
     }
 
-    public BinaryFunctionBuilder withResolveVariable1(DoubleSMCLFunction resolveVariable1) {
+    public BinaryFunctionBuilder withResolveVariable1(UnaryFunctionWithContext resolveVariable1) {
         this.resolveVariable1 = resolveVariable1;
         return this;
     }
 
-    public DoubleSMCLFunction getResolveVariable2() {
+    public UnaryFunctionWithContext getResolveVariable2() {
         return resolveVariable2;
     }
 
-    public BinaryFunctionBuilder withResolveVariable2(DoubleSMCLFunction resolveVariable2) {
+    public BinaryFunctionBuilder withResolveVariable2(UnaryFunctionWithContext resolveVariable2) {
         this.resolveVariable2 = resolveVariable2;
         return this;
     }
 
-    public DoubleSMCLFunction getResolveEnd() {
+    public UnaryFunctionWithContext getResolveEnd() {
         return resolveEnd;
     }
 
-    public BinaryFunctionBuilder withResolveEnd(DoubleSMCLFunction resolveEnd) {
+    public BinaryFunctionBuilder withResolveEnd(UnaryFunctionWithContext resolveEnd) {
         this.resolveEnd = resolveEnd;
         return this;
     }
