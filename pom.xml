@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.nickid2018</groupId>
     <artifactId>smcl</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
     <name>smcl</name>
     <url>https://github.com/Nickid2018/SMCL</url>

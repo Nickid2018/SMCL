@@ -24,6 +24,13 @@ import io.github.nickid2018.smcl.functions.FunctionStatement;
  */
 public abstract class FunctionParser {
 
+    protected boolean optimize = true;
+
+    public FunctionParser noOptimize() {
+        optimize = false;
+        return this;
+    }
+
     /**
      * Returns whether it has two or more arguments.
      * @return true if the arguments count >1

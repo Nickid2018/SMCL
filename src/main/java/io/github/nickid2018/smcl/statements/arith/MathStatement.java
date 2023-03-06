@@ -77,9 +77,21 @@ public class MathStatement extends Statement {
      */
     public MathStatement(SMCLContext smcl, VariableList variables, boolean isNegative, List<Statement> subStatements) {
         super(smcl, variables, isNegative);
-        this.subStatements = Collections.unmodifiableList(subStatements);
+        this.subStatements = Collections.unmodifiableList(expand(subStatements));
     }
 
+    private static List<Statement> expand(List<Statement> statement) {
+        List<Statement> list = new ArrayList<>();
+        for (Statement en : statement) {
+            if (en instanceof MathStatement)
+                expand(((MathStatement) en).subStatements).stream()
+                        .map(s -> en.isNegative() ? s.negate() : s)
+                        .forEach(list::add);
+            else
+                list.add(en);
+        }
+        return list;
+    }
 
     @Override
     public Statement negate() {

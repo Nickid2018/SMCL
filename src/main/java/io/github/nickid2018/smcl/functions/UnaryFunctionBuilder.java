@@ -48,10 +48,14 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
         return new UnaryFunctionBuilder(name);
     }
 
-    @Override
     public Statement create(Statement... statements) {
+        return create(true, statements);
+    }
+
+    @Override
+    public Statement create(boolean optimize, Statement... statements) {
         Statement source = statements[0];
-        if (source instanceof NumberStatement) {
+        if (source instanceof NumberStatement && optimize) {
             NumberObject value = source.calculate(null);
             value = resolveVariable.accept(value, source.getSMCL());
             domainCheck.accept(value);

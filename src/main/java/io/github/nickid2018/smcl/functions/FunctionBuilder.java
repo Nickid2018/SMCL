@@ -172,5 +172,5 @@ public abstract class FunctionBuilder {
      * @param statements an array contains arguments
      * @return a statement
      */
-    public abstract Statement create(Statement... statements);
+    public abstract Statement create(boolean optimize, Statement... statements);
 }

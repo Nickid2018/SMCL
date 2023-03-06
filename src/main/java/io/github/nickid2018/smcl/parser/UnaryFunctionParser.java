@@ -35,7 +35,7 @@ public class UnaryFunctionParser extends FunctionParser {
      * @param unary the function builder
      */
     public UnaryFunctionParser(UnaryFunctionBuilder unary) {
-        map = unary::create;
+        map = statements -> unary.create(optimize, statements);
     }
 
     @Override

@@ -120,10 +120,10 @@ public class BinaryFunctionBuilder extends FunctionBuilder {
     }
 
     @Override
-    public Statement create(Statement... statements) {
+    public Statement create(boolean optimize, Statement... statements) {
         Statement source1 = statements[0];
         Statement source2 = statements[1];
-        if(source1 instanceof NumberStatement && source2 instanceof NumberStatement) {
+        if(source1 instanceof NumberStatement && source2 instanceof NumberStatement && optimize) {
             NumberObject value1 = source1.calculate(null);
             value1 = resolveVariable1.accept(value1, source1.getSMCL());
             domainCheck1.accept(value1);

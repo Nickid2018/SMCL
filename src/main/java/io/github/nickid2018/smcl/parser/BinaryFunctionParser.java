@@ -34,10 +34,10 @@ public class BinaryFunctionParser extends FunctionParser {
 
     /**
      * Construct a parser.
-     * @param unary the function builder
+     * @param binary the function builder
      */
-    public BinaryFunctionParser(BinaryFunctionBuilder unary) {
-        map = unary::create;
+    public BinaryFunctionParser(BinaryFunctionBuilder binary) {
+        map = statements -> binary.create(optimize, statements);
     }
 
     @Override
