@@ -15,6 +15,7 @@
  */
 package io.github.nickid2018.smcl.statements;
 
+import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.VariableList;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.VariableValueList;
@@ -32,8 +33,8 @@ public class Variable extends Statement {
      * Construct a variable with a name.
      * @param s a name
      */
-    public Variable(String s) {
-        this(s, false);
+    public Variable(SMCLContext smcl, String s) {
+        this(smcl, s, false);
     }
 
     /**
@@ -41,10 +42,11 @@ public class Variable extends Statement {
      * @param s a name
      * @param isNegative a negative flag
      */
-    public Variable(String s, boolean isNegative) {
-        super(null, VariableList.EMPTY_VARIABLES, isNegative);
+    public Variable(SMCLContext smcl, String s, boolean isNegative) {
+        super(smcl, VariableList.EMPTY_VARIABLES, isNegative);
         if (!s.matches("[a-zA-Z]+"))
-            throw new IllegalArgumentException("Illegal variable name:" + s);
+            throw new IllegalArgumentException(String.format(
+                    smcl.settings.resourceBundle.getString("smcl.parse.error.invalid_variable"), s));
         name = s;
     }
 
@@ -69,7 +71,7 @@ public class Variable extends Statement {
     @Override
     public Statement negate() {
         if (negativeVar == null)
-            negativeVar = new Variable(name, !isNegative);
+            negativeVar = new Variable(getSMCL(), name, !isNegative);
         return negativeVar;
     }
 

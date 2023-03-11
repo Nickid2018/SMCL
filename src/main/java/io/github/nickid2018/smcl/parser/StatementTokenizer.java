@@ -188,8 +188,9 @@ public class StatementTokenizer {
                 && previousToken.type != StatementTokenType.HEX_NUMBER) {
             return previousToken = token;
         } else {
-            throw new StatementParseException(
-                    "The token \"" + token.detail + "\" can't be after the token \"" + previousToken.detail + "\"",
+            throw new StatementParseException(smcl,
+                    String.format(smcl.settings.resourceBundle.getString("smcl.parse.error.tokenizer"),
+                            token.detail, previousToken.detail),
                     input, token);
         }
     }

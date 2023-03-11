@@ -16,6 +16,9 @@
 package io.github.nickid2018.smcl;
 
 import io.github.nickid2018.smcl.parser.StatementToken;
+import io.github.nickid2018.smcl.parser.StatementTokenType;
+
+import java.util.ResourceBundle;
 
 /**
  * The exception throws when parser can't parse the string into a correct statement.
@@ -26,27 +29,41 @@ public class StatementParseException extends Exception {
      *
      */
     private static final long serialVersionUID = -7821386249067385803L;
+    private final SMCLContext context;
     private final StatementToken token;
     private String statement;
 
     /**
      * Construct the exception.
+     * @param context the context of the exception
      * @param desc the description of the exception
      * @param statement the statement of the exception
      * @param token the token when the exception occurred
      */
-    public StatementParseException(String desc, String statement, StatementToken token) {
+    public StatementParseException(SMCLContext context, String desc, String statement, StatementToken token) {
         super(desc);
+        this.context = context;
         this.statement = statement;
         this.token = token;
     }
 
     @Override
     public String getMessage() {
-        return super.getMessage() + (token != null
-                ? " (Position: " + token.pos + ", type: " + token.type + "): " + statement.substring(0, token.pos) + "["
-                + token + "]" + (token.pos + token.length > statement.length() ? "" : statement.substring(token.pos + token.length))
-                : ": [" + statement + "]");
+        ResourceBundle bundle = context.settings.resourceBundle;
+        String tokenString = token != null ? tokenToString() : "[" + statement + "]";
+        return String.format(bundle.getString("smcl.parse.error"), super.getMessage(), tokenString);
+    }
+
+    private String tokenToString() {
+        ResourceBundle bundle = context.settings.resourceBundle;
+        StringBuilder builder = new StringBuilder();
+        String nameTokenType = bundle.getString("smcl.parse.token_type." + token.type.name().toLowerCase());
+        String detailToken = token.detail;
+        String tokenString = statement.substring(0, token.pos)
+                + "[" + (token.type == StatementTokenType.UNARY_OPERATOR ? detailToken.substring(0, detailToken.length() - 1) : detailToken) + "]"
+                + (token.pos + token.length > statement.length() ? "" : statement.substring(token.pos + token.length));
+        builder.append(String.format(bundle.getString("smcl.parse.token"), token.pos, nameTokenType, tokenString));
+        return builder.toString();
     }
 
     /**

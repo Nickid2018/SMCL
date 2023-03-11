@@ -39,7 +39,7 @@ public class GlobalVariables {
      * @return this
      */
     public GlobalVariables registerVariable(String var) {
-        variablemap.put(var, new Variable(var));
+        variablemap.put(var, new Variable(smcl, var));
         return this;
     }
 
@@ -50,7 +50,7 @@ public class GlobalVariables {
      */
     public GlobalVariables registerVariables(String... vars) {
         for (String var : vars)
-            variablemap.put(var, new Variable(var));
+            variablemap.put(var, new Variable(smcl, var));
         return this;
     }
 

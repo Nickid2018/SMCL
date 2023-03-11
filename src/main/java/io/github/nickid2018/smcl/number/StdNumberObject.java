@@ -16,6 +16,8 @@
 
 package io.github.nickid2018.smcl.number;
 
+import io.github.nickid2018.smcl.MetaArithmeticException;
+
 public class StdNumberObject extends NumberObject implements LongConvertable, SingleValue {
 
     private final double value;
@@ -53,16 +55,18 @@ public class StdNumberObject extends NumberObject implements LongConvertable, Si
         if (!number.isReal())
             return number.multiply(reciprocal());
         if (number.toStdNumber() == 0)
-            throw new ArithmeticException("Divide by zero");
+            throw new MetaArithmeticException("smcl.compute.std.divide_by_zero");
         return new StdNumberObject(value / number.toStdNumber());
     }
 
     @Override
     public NumberObject power(NumberObject number) {
         if (!number.isReal())
-            throw new ArithmeticException("A standard number is powered with a non-real number");
+            throw new MetaArithmeticException("smcl.compute.std.no_std_power");
         if (value < 0 && (!(number instanceof LongConvertable) || !((LongConvertable) number).canConvertToLong()))
-            throw new ArithmeticException("A negative number is multiplied by a fraction");
+            throw new MetaArithmeticException("smcl.compute.std.no_fraction_power");
+        if (value == 0 && number.toStdNumber() < 0)
+            throw new MetaArithmeticException("smcl.compute.std.zero_power_negative");
         return new StdNumberObject(Math.pow(value, number.toStdNumber()));
     }
 
@@ -196,6 +200,11 @@ public class StdNumberObject extends NumberObject implements LongConvertable, Si
         @Override
         public StdNumberObject fromStdNumberDivided(double dividend, double divisor) {
             return new StdNumberObject(dividend / divisor);
+        }
+
+        @Override
+        public StdNumberObject fromString(String value) {
+            return new StdNumberObject(Double.parseDouble(value));
         }
     };
 }

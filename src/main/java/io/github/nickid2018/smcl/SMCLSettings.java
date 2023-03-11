@@ -15,6 +15,8 @@
  */
 package io.github.nickid2018.smcl;
 
+import java.util.ResourceBundle;
+
 /**
  * The settings of the SMCL System
  */
@@ -25,8 +27,7 @@ public class SMCLSettings {
      * Using degree function to compute trigonometric functions if true
      */
     public boolean degreeAngle = false;
-    /**
-     * Ignore errors in computing and print the information if true
-     */
-    public boolean invalidArgumentWarn = false;
+
+    @SnapshotAPI
+    public ResourceBundle resourceBundle = ResourceBundle.getBundle("smcl");
 }

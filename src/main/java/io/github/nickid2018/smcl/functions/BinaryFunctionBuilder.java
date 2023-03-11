@@ -16,12 +16,14 @@
 
 package io.github.nickid2018.smcl.functions;
 
+import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.util.BinaryFunction;
 import io.github.nickid2018.smcl.util.UnaryFunctionWithContext;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -30,8 +32,8 @@ import java.util.function.Consumer;
  */
 public class BinaryFunctionBuilder extends FunctionBuilder {
 
-    private Consumer<NumberObject> domainCheck1 = ALL_REALS;
-    private Consumer<NumberObject> domainCheck2 = ALL_REALS;
+    private BiConsumer<SMCLContext, NumberObject> domainCheck1 = ALL_REALS;
+    private BiConsumer<SMCLContext, NumberObject> domainCheck2 = ALL_REALS;
     private BinaryFunction calcFunction = (a, b) -> a;
     private UnaryFunctionWithContext resolveVariable1 = DEFAULT_RESOLVE;
     private UnaryFunctionWithContext resolveVariable2 = DEFAULT_RESOLVE;
@@ -47,20 +49,20 @@ public class BinaryFunctionBuilder extends FunctionBuilder {
         super(name);
     }
 
-    public Consumer<NumberObject> getDomainCheck1() {
+    public BiConsumer<SMCLContext, NumberObject> getDomainCheck1() {
         return domainCheck1;
     }
 
-    public BinaryFunctionBuilder withDomainCheck1(Consumer<NumberObject> domainCheck1) {
+    public BinaryFunctionBuilder withDomainCheck1(BiConsumer<SMCLContext, NumberObject> domainCheck1) {
         this.domainCheck1 = domainCheck1;
         return this;
     }
 
-    public Consumer<NumberObject> getDomainCheck2() {
+    public BiConsumer<SMCLContext, NumberObject> getDomainCheck2() {
         return domainCheck2;
     }
 
-    public BinaryFunctionBuilder withDomainCheck2(Consumer<NumberObject> domainCheck2) {
+    public BinaryFunctionBuilder withDomainCheck2(BiConsumer<SMCLContext, NumberObject> domainCheck2) {
         this.domainCheck2 = domainCheck2;
         return this;
     }
@@ -126,13 +128,12 @@ public class BinaryFunctionBuilder extends FunctionBuilder {
         if(source1 instanceof NumberStatement && source2 instanceof NumberStatement && optimize) {
             NumberObject value1 = source1.calculate(null);
             value1 = resolveVariable1.accept(value1, source1.getSMCL());
-            domainCheck1.accept(value1);
+            domainCheck1.accept(source1.getSMCL(), value1);
             NumberObject value2 = source2.calculate(null);
             value2 = resolveVariable2.accept(value2, source2.getSMCL());
-            domainCheck2.accept(value2);
+            domainCheck2.accept(source1.getSMCL(), value2);
             return new NumberStatement(source1.getSMCL(), resolveEnd.accept(calcFunction.accept(value1, value2), source1.getSMCL()));
-        } else {
+        } else
             return new BiFunctionGenStatement(source1, source2, this);
-        }
     }
 }

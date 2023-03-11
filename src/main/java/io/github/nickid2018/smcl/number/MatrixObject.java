@@ -16,6 +16,7 @@
 
 package io.github.nickid2018.smcl.number;
 
+import io.github.nickid2018.smcl.MetaArithmeticException;
 import io.github.nickid2018.smcl.util.MatrixFunctions;
 
 public class MatrixObject extends NumberObject {
@@ -26,7 +27,7 @@ public class MatrixObject extends NumberObject {
         int col = matrix[0].length;
         for (NumberObject[] numberObjects : matrix)
             if (numberObjects.length != col)
-                throw new IllegalArgumentException("The matrix is not a rectangle");
+                throw new MetaArithmeticException("smcl.compute.matrix.not_rectangle");
         this.matrix = matrix;
     }
 
@@ -43,7 +44,8 @@ public class MatrixObject extends NumberObject {
         if (number instanceof MatrixObject) {
             NumberObject[][] m = ((MatrixObject) number).matrix;
             if (m.length != matrix.length || m[0].length != matrix[0].length)
-                throw new ArithmeticException("Matrix size mismatch");
+                throw new MetaArithmeticException("smcl.compute.matrix.size_mismatch",
+                        m.length, m[0].length, matrix.length, matrix[0].length);
             NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
             for (int i = 0; i < matrix.length; i++)
                 for (int j = 0; j < matrix[0].length; j++)
@@ -63,7 +65,8 @@ public class MatrixObject extends NumberObject {
         if (number instanceof MatrixObject) {
             NumberObject[][] m = ((MatrixObject) number).matrix;
             if (m.length != matrix.length || m[0].length != matrix[0].length)
-                throw new ArithmeticException("Matrix size mismatch");
+                throw new MetaArithmeticException("smcl.compute.matrix.size_mismatch",
+                        m.length, m[0].length, matrix.length, matrix[0].length);
             NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
             for (int i = 0; i < matrix.length; i++)
                 for (int j = 0; j < matrix[0].length; j++)
@@ -83,7 +86,8 @@ public class MatrixObject extends NumberObject {
         if (number instanceof MatrixObject) {
             NumberObject[][] m = ((MatrixObject) number).matrix;
             if (matrix[0].length != m.length)
-                throw new ArithmeticException("Matrix size mismatch");
+                throw new MetaArithmeticException("smcl.compute.matrix.invalid_multiply",
+                        m.length, m[0].length, matrix.length, matrix[0].length);
             NumberObject[][] result = new NumberObject[matrix.length][m[0].length];
             for (int i = 0; i < matrix.length; i++)
                 for (int j = 0; j < m[0].length; j++) {
@@ -104,7 +108,7 @@ public class MatrixObject extends NumberObject {
     @Override
     public NumberObject divide(NumberObject number) {
         if (number instanceof MatrixObject)
-            throw new UnsupportedOperationException("Matrix division is not supported");
+            return multiply(MatrixFunctions.invert((MatrixObject) number));
         NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++)
             for (int j = 0; j < matrix[0].length; j++)
@@ -115,9 +119,9 @@ public class MatrixObject extends NumberObject {
     @Override
     public MatrixObject power(NumberObject number) {
         if (!isSquare())
-            throw new ArithmeticException("The matrix is not square");
+            throw new MetaArithmeticException("smcl.compute.matrix.not_square");
         if (!(number instanceof LongConvertable) || !((LongConvertable) number).canConvertToLong())
-            throw new UnsupportedOperationException("Matrix power with non-int is not supported");
+            throw new MetaArithmeticException("smcl.compute.matrix.power_fraction");
         long n = ((LongConvertable) number).toLong();
         MatrixObject multiplier = this;
         if (n < 0) {
@@ -145,72 +149,128 @@ public class MatrixObject extends NumberObject {
 
     @Override
     public NumberObject abs() {
-        throw new UnsupportedOperationException("Matrix absolute value is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].abs();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject sgn() {
-        throw new UnsupportedOperationException("Matrix signum is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].sgn();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject sin() {
-        throw new UnsupportedOperationException("Matrix sine is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].sin();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject cos() {
-        throw new UnsupportedOperationException("Matrix cosine is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].cos();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject tan() {
-        throw new UnsupportedOperationException("Matrix tangent is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].tan();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject asin() {
-        throw new UnsupportedOperationException("Matrix arcsine is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].asin();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject acos() {
-        throw new UnsupportedOperationException("Matrix arccosine is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].acos();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject atan() {
-        throw new UnsupportedOperationException("Matrix arctangent is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].atan();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject sinh() {
-        throw new UnsupportedOperationException("Matrix hyperbolic sine is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].sinh();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject cosh() {
-        throw new UnsupportedOperationException("Matrix hyperbolic cosine is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].cosh();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject tanh() {
-        throw new UnsupportedOperationException("Matrix hyperbolic tangent is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].tanh();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject log() {
-        throw new UnsupportedOperationException("Matrix logarithm is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].log();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject log10() {
-        throw new UnsupportedOperationException("Matrix logarithm base 10 is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].log10();
+        return new MatrixObject(result);
     }
 
     @Override
     public NumberObject reciprocal() {
-        throw new UnsupportedOperationException("Matrix reciprocal is not supported");
+        NumberObject[][] result = new NumberObject[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[0].length; j++)
+                result[i][j] = matrix[i][j].reciprocal();
+        return new MatrixObject(result);
     }
 
     @Override
@@ -287,6 +347,12 @@ public class MatrixObject extends NumberObject {
         @Override
         public MatrixObject fromStdNumberDivided(double dividend, double divisor) {
             return new MatrixObject(new NumberObject[][]{{StdNumberObject.PROVIDER.fromStdNumberDivided(dividend, divisor)}});
+        }
+
+        @Override
+        public MatrixObject fromString(String value) {
+            // Unsupported now
+            return null;
         }
     };
 }

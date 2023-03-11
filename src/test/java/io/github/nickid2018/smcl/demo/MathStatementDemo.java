@@ -32,14 +32,14 @@ public class MathStatementDemo {
         smcl.init();
         smcl.globalvars.registerVariables("x");
         smcl.globalvars.registerVariables("y");
-        Statement s = smcl.parse("det(y^det(-2+x^2*y)*x)-543/4^y");
+        Statement s = smcl.parse("det(y^det(-2+x^2*y)*x)-0.9/4^y");
         System.out.println(s);
         VariableValueList list = new VariableValueList(smcl);
         list.addVariableValue("x", new MatrixObject(new NumberObject[][]{
                 {StdNumberObject.PROVIDER.fromStdNumber(0.5), StdNumberObject.PROVIDER.fromStdNumber(Math.sqrt(3) / 2)},
                 {StdNumberObject.PROVIDER.fromStdNumber(Math.sqrt(3) / 2), StdNumberObject.PROVIDER.fromStdNumber(0.5)}
         }));
-        list.addVariableValue("y", StdNumberObject.PROVIDER.fromStdNumber(2));
+        list.addVariableValue("y", StdNumberObject.PROVIDER.fromStdNumber(-2));
         System.out.println(s.calculate(list));
     }
 }

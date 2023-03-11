@@ -49,7 +49,7 @@ public class VariableList {
      * @return this
      */
     public VariableList register(String var) {
-        Variable v = new Variable(var);
+        Variable v = new Variable(smcl, var);
         v.setSMCL(smcl);
         variables.put(var, v);
         return this;

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.github.nickid2018.smcl.parser;
+
 import io.github.nickid2018.smcl.*;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.statements.Variable;
@@ -25,8 +26,9 @@ public class StatementGenerator {
 
     /**
      * Create a statement AST for the input string.
-     * @param input a string contains a statement
-     * @param smcl the context
+     *
+     * @param input     a string contains a statement
+     * @param smcl      the context
      * @param variables a variable list
      * @return a statement
      * @throws StatementParseException throws if the string isn't a valid statement
@@ -48,8 +50,7 @@ public class StatementGenerator {
                     Statement operand_o1 = operationStack.pop();
                     Statement operand_o2 = operationStack.pop();
                     operationStack.push(register.getRegisteredOperator(token.detail)
-                            .parseStatement(smcl, variableList, operand_o2,
-                            operand_o1));
+                            .parseStatement(smcl, variableList, operand_o2, operand_o1));
                     continue;
                 case VARIABLE:
                     String varName = token.detail;
@@ -58,7 +59,7 @@ public class StatementGenerator {
                     else {
                         Variable var = variableList.getVariable(varName);
                         if (var == null)
-                            error("Variable \"" + varName + "\" isn't declared", input, token);
+                            error(smcl, "smcl.parse.error.no_variable", input, token, varName);
                         operationStack.push(var);
                     }
                     continue;
@@ -66,7 +67,7 @@ public class StatementGenerator {
                     String name = token.detail.toLowerCase(Locale.ROOT);
                     FunctionParser function = register.getRegisteredFunction(name);
                     if (function == null)
-                        error("Unknown Function " + token.detail, input, token);
+                        error(smcl, "smcl.parse.error.no_function", input, token, token.detail);
                     ArrayList<Statement> subOperands = new ArrayList<>();
                     while (!operationStack.isEmpty() && operationStack.peek() != VoidStatement.PARAMS_START_STATEMENT)
                         subOperands.add(operationStack.pop());
@@ -80,9 +81,9 @@ public class StatementGenerator {
                     continue;
                 case NUMBER:
                     try {
-                        operationStack.push(new NumberStatement(smcl, smcl.numberProvider.fromStdNumber(Double.parseDouble(token.detail))));
+                        operationStack.push(new NumberStatement(smcl, smcl.numberProvider.fromString(token.detail)));
                     } catch (NumberFormatException e) {
-                        error("Can't parse the string \"" + token.detail + "\" into a number", input, token);
+                        error(smcl, "smcl.parse.error.number_format", input, token, token.detail);
                     }
                     continue;
                 case HEX_NUMBER:
@@ -90,11 +91,11 @@ public class StatementGenerator {
                         operationStack.push(new NumberStatement(smcl, smcl.numberProvider.fromStdNumber(
                                 Long.parseLong(token.detail.substring(2), 16))));
                     } catch (NumberFormatException e) {
-                        error("Can't parse the string \"" + token.detail + "\" into a hex number", input, token);
+                        error(smcl, "smcl.parse.error.hex_number_format", input, token, token.detail);
                     }
                     continue;
                 default:
-                    error("What's up? That's impossible!", input, token);
+                    error(smcl, "smcl.parse.error.impossible", input, token);
             }
         }
         return operationStack.pop();
@@ -102,8 +103,9 @@ public class StatementGenerator {
 
     /**
      * Parse a string into an RPN Queue.
+     *
      * @param input a string contains a statement
-     * @param smcl the context
+     * @param smcl  the context
      * @return a list of the RPN tokens
      * @throws StatementParseException throws if the RPN fails
      */
@@ -120,9 +122,9 @@ public class StatementGenerator {
             switch (token.type) {
                 case NUMBER:
                 case HEX_NUMBER:
-                    if (previousToken != null && (previousToken.type == StatementTokenType.NUMBER
-                            || previousToken.type == StatementTokenType.HEX_NUMBER))
-                        error("Missing an operator between two operands", input, token);
+                    if (previousToken != null
+                            && (previousToken.type == StatementTokenType.NUMBER || previousToken.type == StatementTokenType.HEX_NUMBER))
+                        error(smcl, "smcl.parse.error.missing_operator", input, token);
                     outputQueue.add(token);
                     break;
                 case VARIABLE:
@@ -134,34 +136,34 @@ public class StatementGenerator {
                     break;
                 case COMMA:
                     if (previousToken != null && previousToken.type == StatementTokenType.OPERATOR)
-                        error("Missing parameter(s) for operator ", input, token);
+                        error(smcl, "smcl.parse.error.missing_argument", input, token, previousToken.detail);
                     while (!stack.isEmpty() && stack.peek().type != StatementTokenType.OPEN_PAREN)
                         outputQueue.add(stack.pop());
                     if (!stack.isEmpty())
                         break;
                     if (lastFunction == null)
-                        error("Unexpected comma", input, token);
-                    error("Parse error for function " + lastFunction, input, token);
+                        error(smcl, "smcl.parse.error.comma_not_allowed", input, token);
+                    error(smcl, "smcl.parse.error.unknown_comma_error", input, token, lastFunction.detail);
                     break;
                 case OPERATOR:
-                    if (previousToken != null && (previousToken.type == StatementTokenType.COMMA
-                            || previousToken.type == StatementTokenType.OPEN_PAREN))
-                        error("Missing parameter(s) for operator '" + token + "'", input, token);
+                    if (previousToken != null
+                            && (previousToken.type == StatementTokenType.COMMA || previousToken.type == StatementTokenType.OPEN_PAREN))
+                        error(smcl, "smcl.parse.error.missing_argument", input, token, token.detail);
                     operator = register.getRegisteredOperator(token.detail);
                     if (operator == null)
-                        error("Unknown operator " + token.detail.substring(0, token.detail.length() - 1), input, token);
+                        error(smcl, "smcl.parse.error.no_operator", input, token, token.detail);
                     dealOperator(outputQueue, stack, operator, register);
                     stack.push(token);
                     break;
                 case UNARY_OPERATOR:
-                    if (previousToken != null && previousToken.type != StatementTokenType.OPERATOR
+                    if (previousToken != null
+                            && previousToken.type != StatementTokenType.OPERATOR
                             && previousToken.type != StatementTokenType.COMMA
                             && previousToken.type != StatementTokenType.OPEN_PAREN)
-                        error("Invalid position for unary operator " + token, input, token);
+                        error(smcl, "smcl.parse.error.invalid_unary_operator", input, token, token.detail.substring(0, token.detail.length() - 1));
                     operator = register.getRegisteredOperator(token.detail);
                     if (operator == null)
-                        error("Unknown unary operator " + token.detail.substring(0, token.detail.length() - 1), input,
-                                token);
+                        error(smcl, "smcl.parse.error.no_unary_operator", input, token, token.detail.substring(0, token.detail.length() - 1));
                     dealOperator(outputQueue, stack, operator, register);
                     stack.push(token);
                     break;
@@ -177,19 +179,18 @@ public class StatementGenerator {
                             multiplication.type = StatementTokenType.OPERATOR;
                             stack.push(multiplication);
                         }
-                        if (previousToken.type == StatementTokenType.FUNCTION) {
+                        if (previousToken.type == StatementTokenType.FUNCTION)
                             outputQueue.add(token);
-                        }
                     }
                     stack.push(token);
                     break;
                 case CLOSE_PAREN:
                     if (previousToken != null && previousToken.type == StatementTokenType.OPERATOR)
-                        error("Missing parameter(s) for operator " + previousToken, input, token);
+                        error(smcl, "smcl.parse.error.missing_argument", input, token, previousToken.detail);
                     while (!stack.isEmpty() && stack.peek().type != StatementTokenType.OPEN_PAREN)
                         outputQueue.add(stack.pop());
                     if (stack.isEmpty())
-                        error("Mismatched parentheses", input, token);
+                        error(smcl, "smcl.parse.error.mismatched_paren", input, token);
                     stack.pop();
                     if (!stack.isEmpty() && stack.peek().type == StatementTokenType.FUNCTION)
                         outputQueue.add(stack.pop());
@@ -199,7 +200,7 @@ public class StatementGenerator {
         while (!stack.isEmpty()) {
             StatementToken element = stack.pop();
             if (element.type == StatementTokenType.OPEN_PAREN || element.type == StatementTokenType.CLOSE_PAREN)
-                error("Mismatched parentheses", input, null);
+                error(smcl, "smcl.parse.error.mismatched_paren", input, null);
             outputQueue.add(element);
         }
         return outputQueue;
@@ -207,9 +208,10 @@ public class StatementGenerator {
 
     /**
      * Validate the math statement.
+     *
      * @param rpnQueue RPN Queue of the statement
-     * @param input the string of the statement
-     * @param smcl the context
+     * @param input    the string of the statement
+     * @param smcl     the context
      * @throws StatementParseException throws if the validation fails
      */
     public static void validate(List<StatementToken> rpnQueue, String input, SMCLContext smcl) throws StatementParseException {
@@ -220,10 +222,10 @@ public class StatementGenerator {
                 case UNARY_OPERATOR:
                     if (stack.peek() >= 1)
                         continue;
-                    error("Missing parameter(s) for operator " + token, input, token);
+                    error(smcl, "smcl.parse.error.missing_argument", input, token, token.detail);
                 case OPERATOR: {
                     if (stack.peek() < 2)
-                        error("Missing parameter(s) for operator " + token, input, token);
+                        error(smcl, "smcl.parse.error.missing_argument", input, token, token.detail);
                     stack.set(stack.size() - 1, stack.peek() - 2 + 1);
                     continue;
                 }
@@ -231,15 +233,12 @@ public class StatementGenerator {
                     FunctionParser f = smcl.register.getRegisteredFunction(token.detail.toLowerCase(Locale.ROOT));
                     int numParams = stack.pop();
                     if (f == null)
-                        error("Function " + token + " isn't defined.", input, token);
-                    if (numParams != f.getNumParams() && f.getNumParams() != -1 /* -1 means unknown arguments */) {
-                        error("Function " + token + (f.numParamsVaries() ? " (Multi-argument)" : "")
-                                        + " expected " + f.getNumParams() + " parameters, but got " + numParams,
-                                input, token);
-                    }
-                    if (stack.size() <= 0) {
-                        error("Too many function calls, maximum scope exceeded", input, token);
-                    }
+                        error(smcl, "smcl.parse.error.no_function", input, token, token.detail);
+                    if (numParams != f.getNumParams() && f.getNumParams() != -1 /* -1 means unknown arguments */)
+                        error(smcl, "smcl.parse.error.function_parameter_count", input, token,
+                                token.detail, f.getNumParams(), numParams);
+                    if (stack.isEmpty())
+                        error(smcl, "smcl.parse.error.function_too_many", input, token);
                     stack.set(stack.size() - 1, stack.peek() + 1);
                     continue;
                 }
@@ -252,32 +251,32 @@ public class StatementGenerator {
             stack.set(stack.size() - 1, stack.peek() + 1);
         }
         if (stack.size() > 1)
-            error("Too many unhandled function parameter lists", input, null);
+            error(smcl, "smcl.parse.error.function_unhandled", input, null);
         if (stack.peek() > 1)
-            error("Too many numbers or variables", input, null);
+            error(smcl, "smcl.parse.error.too_many_operands", input, null);
         if (stack.peek() < 1)
-            error("Empty expression", input, null);
+            error(smcl, "smcl.parse.error.empty_statement", input, null);
     }
 
     /*
      * Throws math parse exception.
      */
-    private static void error(String cause, String expr, StatementToken token) throws StatementParseException {
-        throw new StatementParseException(cause, expr, token);
+    private static void error(SMCLContext context, String cause, String expr, StatementToken token,
+                              Object... args) throws StatementParseException {
+        throw new StatementParseException(context,
+                String.format(context.settings.resourceBundle.getString(cause), args), expr, token);
     }
 
     /*
      * Deal with the operator
      */
-    private static void dealOperator(List<StatementToken> outputQueue, Stack<StatementToken> stack,
-                                     OperatorParser operator, SMCLRegister register) {
+    private static void dealOperator(List<StatementToken> outputQueue, Stack<StatementToken> stack, OperatorParser operator, SMCLRegister register) {
         StatementToken nextToken = stack.isEmpty() ? null : stack.peek();
         while (nextToken != null
-                && (nextToken.type == StatementTokenType.OPERATOR
-                || nextToken.type == StatementTokenType.UNARY_OPERATOR)
+                && (nextToken.type == StatementTokenType.OPERATOR || nextToken.type == StatementTokenType.UNARY_OPERATOR)
                 && (operator.isLeftAssoc()
-                && operator.getPriority() <= register.getRegisteredOperator(nextToken.detail).getPriority()
-                || operator.getPriority() < register.getRegisteredOperator(nextToken.detail).getPriority())) {
+                    && operator.getPriority() <= register.getRegisteredOperator(nextToken.detail).getPriority()
+                    || operator.getPriority() < register.getRegisteredOperator(nextToken.detail).getPriority())) {
             outputQueue.add(stack.pop());
             nextToken = stack.isEmpty() ? null : stack.peek();
         }

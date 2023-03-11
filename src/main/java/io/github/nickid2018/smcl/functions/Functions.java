@@ -15,6 +15,7 @@
  */
 package io.github.nickid2018.smcl.functions;
 
+import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.number.LongConvertable;
 import io.github.nickid2018.smcl.number.MatrixObject;
 import io.github.nickid2018.smcl.number.NumberObject;
@@ -23,6 +24,7 @@ import io.github.nickid2018.smcl.set.Interval;
 import io.github.nickid2018.smcl.util.BaseFunctions;
 import io.github.nickid2018.smcl.util.MatrixFunctions;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static io.github.nickid2018.smcl.functions.FunctionBuilder.*;
@@ -33,19 +35,19 @@ public class Functions {
     /**
      * Domain of the logarithm
      */
-    public static final Consumer<NumberObject> DOMAIN_LOG = checkNumberTypeInclude(SingleValue.class)
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_LOG = checkNumberTypeInclude(SingleValue.class)
             .andThen(checkDomainExclude(Interval.lessThanInclude(0),
                     arg -> "invalid argument for logarithm functions: " + arg + " <=0"));
     /**
      * Domain of the square root
      */
-    public static final Consumer<NumberObject> DOMAIN_SQRT = checkNumberTypeInclude(SingleValue.class)
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_SQRT = checkNumberTypeInclude(SingleValue.class)
             .andThen(checkDomainExclude(Interval.lessThanExclude(0),
                     arg -> "invalid argument for square root: " + arg + " <0"));
     /**
      * Domain of the tangent/cotangent
      */
-    public static final Consumer<NumberObject> DOMAIN_TAN = checkNumberTypeInclude(SingleValue.class)
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_TAN = checkNumberTypeInclude(SingleValue.class)
             .andThen(checkDomainExclude(arg -> {
                 if (!arg.isReal())
                     return false;
@@ -58,20 +60,20 @@ public class Functions {
     /**
      * Domain of the arcsin and arccos
      */
-    public static final Consumer<NumberObject> DOMAIN_ARC = checkNumberTypeInclude(SingleValue.class)
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_ARC = checkNumberTypeInclude(SingleValue.class)
             .andThen(checkDomainInclude(Interval.fromNonInfString("[-1,1]"),
                     arg -> "invalid argument for asin/acos: " + arg + " doesn't belong [-1,1]"));
     /**
      * Domain of N
      */
-    public static final Consumer<NumberObject> DOMAIN_NATURAL = checkNumberTypeInclude(SingleValue.class)
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_NATURAL = checkNumberTypeInclude(SingleValue.class)
             .andThen(checkDomainInclude(
                     arg -> arg instanceof LongConvertable && ((LongConvertable) arg).canConvertToLong() && ((LongConvertable) arg).toLong() >= 0,
                     arg -> "invalid argument - The number isn't a natural number"));
     /**
      * Domain of matrix
      */
-    public static final Consumer<NumberObject> DOMAIN_MATRIX = checkNumberTypeInclude(MatrixObject.class);
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_MATRIX = checkNumberTypeInclude(MatrixObject.class);
 
     // Basic trigonometric functions
     /**

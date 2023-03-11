@@ -179,12 +179,4 @@ public class DivideStatement extends Statement {
                 new NumberStatement(context, context.numberProvider.fromStdNumber(2)));
         return new DivideStatement(context, variables, ms, pws);
     }
-
-    public DivideStatement getReverse() {
-        return new DivideStatement(context, variables,
-                new MultiplyStatement(context, variables, divisors.stream().map(Statement::deepCopy).collect(Collectors.toList())),
-                dividend
-        );
-    }
-
 }

@@ -68,14 +68,7 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
     protected final NumberObject calculateInternal(VariableValueList list) {
         NumberObject innerResult = innerStatement.calculate(list);
         innerResult = function.getResolveVariable().accept(innerResult, context);
-        try {
-            function.getDomainCheck().accept(innerResult);
-        } catch (ArithmeticException e) {
-            if(context.settings.invalidArgumentWarn)
-                System.err.println("Warning: " + e.getLocalizedMessage() + " at " + this);
-            else
-                throw e;
-        }
+        function.getDomainCheck().accept(getSMCL(), innerResult);
         return function.getResolveEnd().accept(getFunction().getCalcFunction().accept(innerResult), context);
     }
 
@@ -87,7 +80,8 @@ public class UnaryFunctionGenStatement extends UnaryFunctionStatement {
     protected Statement derivativeInternal() {
         Function<Statement, Statement> resolver = function.getDerivativeResolver();
         if (resolver == null)
-            throw new ArithmeticException("Unsupported or illegal function to derivative: " + getFunction().getName());
+            throw new ArithmeticException(String.format(
+                    getSMCL().settings.resourceBundle.getString("smcl.derivative.function_unsupported"), getFunction().getName()));
         Statement partDesi = resolver.apply(innerStatement);
         Statement end = innerStatement.derivative();
         if (end instanceof NumberStatement) {

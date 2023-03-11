@@ -15,12 +15,14 @@
  */
 package io.github.nickid2018.smcl.functions;
 
+import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.statements.NumberStatement;
 import io.github.nickid2018.smcl.util.UnaryFunction;
 import io.github.nickid2018.smcl.util.UnaryFunctionWithContext;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -29,7 +31,7 @@ import java.util.function.Function;
  */
 public class UnaryFunctionBuilder extends FunctionBuilder {
 
-    private Consumer<NumberObject> domainCheck = ALL_REALS;
+    private BiConsumer<SMCLContext, NumberObject> domainCheck = ALL_REALS;
     private UnaryFunction calcFunction = DEFAULT_RESULT;
     private UnaryFunctionWithContext resolveVariable = DEFAULT_RESOLVE;
     private UnaryFunctionWithContext resolveEnd = DEFAULT_RESOLVE;
@@ -58,7 +60,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
         if (source instanceof NumberStatement && optimize) {
             NumberObject value = source.calculate(null);
             value = resolveVariable.accept(value, source.getSMCL());
-            domainCheck.accept(value);
+            domainCheck.accept(source.getSMCL(), value);
             return new NumberStatement(source.getSMCL(), resolveEnd.accept(calcFunction.accept(value), source.getSMCL()));
         } else {
             return new UnaryFunctionGenStatement(source, this);
@@ -110,7 +112,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * @param domainCheck a checker for domain
      * @return this
      */
-    public UnaryFunctionBuilder withDomain(Consumer<NumberObject> domainCheck) {
+    public UnaryFunctionBuilder withDomain(BiConsumer<SMCLContext, NumberObject> domainCheck) {
         this.domainCheck = domainCheck;
         return this;
     }
@@ -120,7 +122,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * @param domainCheck a checker for domain
      * @return this
      */
-    public UnaryFunctionBuilder andDomain(Consumer<NumberObject> domainCheck) {
+    public UnaryFunctionBuilder andDomain(BiConsumer<SMCLContext, NumberObject> domainCheck) {
         this.domainCheck = this.domainCheck.andThen(domainCheck);
         return this;
     }
@@ -168,7 +170,7 @@ public class UnaryFunctionBuilder extends FunctionBuilder {
      * Get the checker for domain.
      * @return a checker
      */
-    public Consumer<NumberObject> getDomainCheck() {
+    public BiConsumer<SMCLContext, NumberObject> getDomainCheck() {
         return domainCheck;
     }
 

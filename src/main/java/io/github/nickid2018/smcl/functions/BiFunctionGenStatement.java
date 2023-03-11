@@ -71,15 +71,8 @@ public class BiFunctionGenStatement extends BiFunctionStatement {
         NumberObject compute2 = innerStatement2.calculate(list);
         compute1 = function.getResolveVariable1().accept(compute1, context);
         compute2 = function.getResolveVariable2().accept(compute2, context);
-        try {
-            function.getDomainCheck1().accept(compute1);
-            function.getDomainCheck2().accept(compute2);
-        } catch (ArithmeticException e) {
-            if(context.settings.invalidArgumentWarn)
-                System.err.println("Warning: " + e.getLocalizedMessage() + " at " + this);
-            else
-                throw e;
-        }
+        function.getDomainCheck1().accept(getSMCL(), compute1);
+        function.getDomainCheck2().accept(getSMCL(), compute2);
         return function.getResolveEnd().accept(function.getCalcFunction().accept(compute1, compute2), context);
     }
 
@@ -87,7 +80,12 @@ public class BiFunctionGenStatement extends BiFunctionStatement {
     protected Statement derivativeInternal() {
         BiFunction<Statement, Statement, Statement> derivative = function.getDerivativeResolver();
         if(derivative == null)
-            throw new ArithmeticException("Unsupported or illegal function to derivative: " + function.getName());
+            throw new ArithmeticException(String.format(
+                    getSMCL().settings.resourceBundle.getString("smcl.derivative.function_unsupported"), function.getName()));
         return derivative.apply(innerStatement1, innerStatement2);
+    }
+
+    public BinaryFunctionBuilder getFunction() {
+        return function;
     }
 }

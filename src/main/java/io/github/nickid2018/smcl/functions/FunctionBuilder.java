@@ -15,6 +15,7 @@
  */
 package io.github.nickid2018.smcl.functions;
 
+import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.Statement;
 import io.github.nickid2018.smcl.number.NumberObject;
 import io.github.nickid2018.smcl.number.SingleValue;
@@ -22,7 +23,7 @@ import io.github.nickid2018.smcl.set.NumberSet;
 import io.github.nickid2018.smcl.util.UnaryFunction;
 import io.github.nickid2018.smcl.util.UnaryFunctionWithContext;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -34,10 +35,10 @@ public abstract class FunctionBuilder {
     /**
      * Domain "R"
      */
-    public static final Consumer<NumberObject> ALL_REALS = checkNumberTypeInclude(SingleValue.class)
-            .andThen(arg -> {
+    public static final BiConsumer<SMCLContext, NumberObject> ALL_REALS = checkNumberTypeInclude(SingleValue.class)
+            .andThen((smcl, arg) -> {
                 if (arg.isReal() && !Double.isFinite(arg.toStdNumber()))
-                    throw new ArithmeticException("Infinite numbers and NaNs are not supported");
+                    throw new ArithmeticException(smcl.settings.resourceBundle.getString("smcl.compute.no_regulars"));
             });
 
     /**
@@ -51,13 +52,15 @@ public abstract class FunctionBuilder {
     /**
      * Resolution for radian angles
      */
-    public static final UnaryFunctionWithContext RESOLVE_RADIANS = (arg, smcl) ->
-            smcl.settings.degreeAngle && arg.isReal() ? smcl.numberProvider.fromStdNumber(Math.toRadians(arg.toStdNumber())) : arg;
+    public static final UnaryFunctionWithContext RESOLVE_RADIANS =
+            (arg, smcl) -> smcl.settings.degreeAngle && arg.isReal() ?
+                    smcl.numberProvider.fromStdNumber(Math.toRadians(arg.toStdNumber())) : arg;
     /**
      * Resolution for degree angles
      */
-    public static final UnaryFunctionWithContext RESOLVE_DEGREES = (arg, smcl) ->
-            smcl.settings.degreeAngle && arg.isReal() ? smcl.numberProvider.fromStdNumber(Math.toDegrees(arg.toStdNumber())) : arg;
+    public static final UnaryFunctionWithContext RESOLVE_DEGREES =
+            (arg, smcl) -> smcl.settings.degreeAngle && arg.isReal() ?
+                    smcl.numberProvider.fromStdNumber(Math.toDegrees(arg.toStdNumber())) : arg;
 
     protected final String name;
 
@@ -77,13 +80,12 @@ public abstract class FunctionBuilder {
      * @param errorString a string supplier for error string
      * @return a checker
      */
-    public static Consumer<NumberObject> checkDomainExclude(Predicate<NumberObject> exclude, Function<NumberObject, String> errorString) {
-        return arg -> {
-            if (arg.isReal() && !Double.isFinite(arg.toStdNumber()))
-                throw new ArithmeticException("Infinite numbers and NaNs are not supported");
+    public static BiConsumer<SMCLContext, NumberObject> checkDomainExclude(
+            Predicate<NumberObject> exclude, Function<NumberObject, String> errorString) {
+        return ALL_REALS.andThen((smcl, arg) -> {
             if (exclude.test(arg))
                 throw new ArithmeticException(errorString.apply(arg));
-        };
+        });
     }
 
     /**
@@ -93,13 +95,12 @@ public abstract class FunctionBuilder {
      * @param errorString a string supplier for error string
      * @return a checker
      */
-    public static Consumer<NumberObject> checkDomainInclude(Predicate<NumberObject> include, Function<NumberObject, String> errorString) {
-        return arg -> {
-            if (arg.isReal() && !Double.isFinite(arg.toStdNumber()))
-                throw new ArithmeticException("Infinite numbers and NaNs are not supported");
+    public static BiConsumer<SMCLContext, NumberObject> checkDomainInclude(
+            Predicate<NumberObject> include, Function<NumberObject, String> errorString) {
+        return ALL_REALS.andThen((smcl, arg) -> {
             if (!include.test(arg))
                 throw new ArithmeticException(errorString.apply(arg));
-        };
+        });
     }
 
     /**
@@ -109,7 +110,8 @@ public abstract class FunctionBuilder {
      * @param errorString a string supplier for error string
      * @return a checker
      */
-    public static Consumer<NumberObject> checkDomainExclude(NumberSet set, Function<NumberObject, String> errorString) {
+    public static BiConsumer<SMCLContext, NumberObject> checkDomainExclude(
+            NumberSet set, Function<NumberObject, String> errorString) {
         return checkDomainExclude(set::isBelongTo, errorString);
     }
 
@@ -120,7 +122,8 @@ public abstract class FunctionBuilder {
      * @param errorString a string supplier for error string
      * @return a checker
      */
-    public static Consumer<NumberObject> checkDomainInclude(NumberSet set, Function<NumberObject, String> errorString) {
+    public static BiConsumer<SMCLContext, NumberObject> checkDomainInclude(
+            NumberSet set, Function<NumberObject, String> errorString) {
         return checkDomainInclude(set::isBelongTo, errorString);
     }
 
@@ -130,11 +133,12 @@ public abstract class FunctionBuilder {
      * @param clazz classes to check the value
      * @return a checker
      */
-    public static Consumer<NumberObject> checkNumberTypeExclude(Class<?>... clazz) {
-        return number -> {
+    public static BiConsumer<SMCLContext, NumberObject> checkNumberTypeExclude(Class<?>... clazz) {
+        return (smcl, number) -> {
             for (Class<?> c : clazz)
                 if (c.isInstance(number))
-                    throw new ArithmeticException("The number type " + number.getClass().getSimpleName() + " is not supported");
+                    throw new ArithmeticException(String.format(
+                            smcl.settings.resourceBundle.getString("smcl.compute.invalid_type"), number.getClass().getSimpleName()));
         };
     }
 
@@ -144,8 +148,8 @@ public abstract class FunctionBuilder {
      * @param clazz classes to check the value
      * @return a checker
      */
-    public static Consumer<NumberObject> checkNumberTypeInclude(Class<?>... clazz) {
-        return number -> {
+    public static BiConsumer<SMCLContext, NumberObject> checkNumberTypeInclude(Class<?>... clazz) {
+        return (smcl, number) -> {
             boolean flag = false;
             for (Class<?> c : clazz)
                 if (c.isInstance(number)) {
@@ -153,7 +157,8 @@ public abstract class FunctionBuilder {
                     break;
                 }
             if (!flag)
-                throw new ArithmeticException("The number type " + number.getClass().getSimpleName() + " is not supported");
+                throw new ArithmeticException(String.format(
+                        smcl.settings.resourceBundle.getString("smcl.compute.invalid_type"), number.getClass().getSimpleName()));
         };
     }
 

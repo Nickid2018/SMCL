@@ -31,6 +31,8 @@ public abstract class NumberProvider<T extends NumberObject> {
     public abstract T fromStdNumber(double value);
     public abstract T fromStdNumberDivided(double dividend, double divisor);
 
+    public abstract T fromString(String value);
+
     public T getZero() {
         return zero;
     }

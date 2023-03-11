@@ -131,7 +131,11 @@ public abstract class Statement implements Cloneable {
      */
     public NumberObject calculate(VariableValueList list) {
         list = list == null ? new VariableValueList(context) : list;
-        return isNegative ? calculateInternal(list).negate() : calculateInternal(list);
+        try {
+            return isNegative ? calculateInternal(list).negate() : calculateInternal(list);
+        } catch (MetaArithmeticException e) {
+            throw e.toArithmeticException(getSMCL());
+        }
     }
 
     // Only single variable
