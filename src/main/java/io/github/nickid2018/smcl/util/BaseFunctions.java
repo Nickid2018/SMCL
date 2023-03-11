@@ -16,6 +16,8 @@
 
 package io.github.nickid2018.smcl.util;
 
+import io.github.nickid2018.smcl.MetaArithmeticException;
+
 public class BaseFunctions {
 
     /**
@@ -28,20 +30,8 @@ public class BaseFunctions {
         for(int i = 2; i < arg; i++) {
             answer *= i;
             if(Double.isInfinite(answer))
-                throw new ArithmeticException("Number overflow in factorial computing - " + arg);
+                throw new MetaArithmeticException("smcl.compute.std.factorial_overflow", arg);
         }
         return answer;
-    }
-
-    /**
-     * Compute logarithm with a certain base.
-     * @param N a number
-     * @param a base
-     * @return the result
-     */
-    public static double log(double N, double a) {
-        if(a == 1)
-            throw new ArithmeticException("base is 1");
-        return Math.log(N) / Math.log(a);
     }
 }

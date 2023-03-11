@@ -19,13 +19,11 @@ import io.github.nickid2018.smcl.SMCLContext;
 import io.github.nickid2018.smcl.number.LongConvertable;
 import io.github.nickid2018.smcl.number.MatrixObject;
 import io.github.nickid2018.smcl.number.NumberObject;
-import io.github.nickid2018.smcl.number.SingleValue;
 import io.github.nickid2018.smcl.set.Interval;
 import io.github.nickid2018.smcl.util.BaseFunctions;
 import io.github.nickid2018.smcl.util.MatrixFunctions;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static io.github.nickid2018.smcl.functions.FunctionBuilder.*;
 import static io.github.nickid2018.smcl.functions.FunctionDerivatives.*;
@@ -35,41 +33,49 @@ public class Functions {
     /**
      * Domain of the logarithm
      */
-    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_LOG = checkNumberTypeInclude(SingleValue.class)
-            .andThen(checkDomainExclude(Interval.lessThanInclude(0),
-                    arg -> "invalid argument for logarithm functions: " + arg + " <=0"));
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_LOG = ALL_REALS.andThen(
+            checkDomainExclude(Interval.lessThanInclude(0), translatedError("smcl.compute.function.log")));
     /**
      * Domain of the square root
      */
-    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_SQRT = checkNumberTypeInclude(SingleValue.class)
-            .andThen(checkDomainExclude(Interval.lessThanExclude(0),
-                    arg -> "invalid argument for square root: " + arg + " <0"));
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_SQRT = ALL_REALS.andThen(
+            checkDomainExclude(Interval.lessThanExclude(0), translatedError("smcl.compute.function.sqrt")));
     /**
      * Domain of the tangent/cotangent
      */
-    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_TAN = checkNumberTypeInclude(SingleValue.class)
-            .andThen(checkDomainExclude(arg -> {
-                if (!arg.isReal())
-                    return false;
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_TAN = ALL_REALS.andThen(
+            checkDomainExclude(arg -> {
                 double deg = arg.toStdNumber() * 2 / Math.PI;
                 int multi = (int) deg;
                 if (Math.abs(deg - multi) > 1E-5)
                     return false;
                 return multi % 2 == 1;
-            }, arg -> "invalid argument for tan/cot: " + arg));
+            }, translatedError("smcl.compute.function.tan")));
+
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_COT = ALL_REALS.andThen(
+            checkDomainExclude(arg -> {
+                double deg = arg.toStdNumber() * 2 / Math.PI;
+                int multi = (int) deg;
+                if (Math.abs(deg - multi) > 1E-5)
+                    return false;
+                return multi % 2 != 1;
+            }, translatedError("smcl.compute.function.cot")));
+
     /**
      * Domain of the arcsin and arccos
      */
-    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_ARC = checkNumberTypeInclude(SingleValue.class)
-            .andThen(checkDomainInclude(Interval.fromNonInfString("[-1,1]"),
-                    arg -> "invalid argument for asin/acos: " + arg + " doesn't belong [-1,1]"));
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_ARC = ALL_REALS.andThen(
+            checkDomainInclude(Interval.fromNonInfString("[-1,1]"), translatedError("smcl.compute.function.asin")));
     /**
      * Domain of N
      */
-    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_NATURAL = checkNumberTypeInclude(SingleValue.class)
-            .andThen(checkDomainInclude(
-                    arg -> arg instanceof LongConvertable && ((LongConvertable) arg).canConvertToLong() && ((LongConvertable) arg).toLong() >= 0,
-                    arg -> "invalid argument - The number isn't a natural number"));
+    public static final BiConsumer<SMCLContext, NumberObject> DOMAIN_NATURAL = ALL_REALS.andThen(
+            checkDomainInclude(
+                    arg -> arg instanceof LongConvertable
+                            && ((LongConvertable) arg).canConvertToLong()
+                            && ((LongConvertable) arg).toLong() >= 0,
+                    translatedError("smcl.compute.function.natural")
+            ));
     /**
      * Domain of matrix
      */
@@ -94,8 +100,8 @@ public class Functions {
     /**
      * cotangent (cot)
      */
-    public static final UnaryFunctionBuilder COT = TAN.copyWithoutFunction("cot").withFunction(arg -> arg.tan().reciprocal())
-            .withDerivativeResolver(DERIVATIVE_COT);
+    public static final UnaryFunctionBuilder COT = TAN.copyWithoutFunction("cot").withDomain(DOMAIN_COT)
+            .withFunction(arg -> arg.tan().reciprocal()).withDerivativeResolver(DERIVATIVE_COT);
     // Advanced trigonometric functions
     /**
      * co-secant (csc)

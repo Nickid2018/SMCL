@@ -62,7 +62,7 @@ public class VariableValueList {
      */
     public final NumberObject getVariableValue(String var) {
         if (!value.containsKey(var))
-            throw new ArithmeticException("Variable \"" + var + "\" is not declared in list");
+            throw new MetaArithmeticException("smcl.compute.no_variable", var);
         return value.get(var);
     }
 

@@ -16,10 +16,11 @@
 
 package io.github.nickid2018.smcl.util;
 
+import io.github.nickid2018.smcl.SnapshotAPI;
 import io.github.nickid2018.smcl.number.MatrixObject;
 import io.github.nickid2018.smcl.number.NumberObject;
-import io.github.nickid2018.smcl.number.NumberProvider;
 
+@SnapshotAPI
 public class MatrixFunctions {
 
     public static MatrixObject transpose(MatrixObject matrix) {

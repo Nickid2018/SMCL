@@ -24,7 +24,7 @@ import io.github.nickid2018.smcl.util.UnaryFunction;
 import io.github.nickid2018.smcl.util.UnaryFunctionWithContext;
 
 import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 /**
@@ -73,6 +73,10 @@ public abstract class FunctionBuilder {
         this.name = name;
     }
 
+    public static BiFunction<SMCLContext, NumberObject, String> translatedError(String key) {
+        return (smcl, arg) -> String.format(smcl.settings.resourceBundle.getString(key), arg);
+    }
+
     /**
      * Returns a checker to check if the value is excluded the domain.
      *
@@ -81,10 +85,10 @@ public abstract class FunctionBuilder {
      * @return a checker
      */
     public static BiConsumer<SMCLContext, NumberObject> checkDomainExclude(
-            Predicate<NumberObject> exclude, Function<NumberObject, String> errorString) {
+            Predicate<NumberObject> exclude, BiFunction<SMCLContext, NumberObject, String> errorString) {
         return ALL_REALS.andThen((smcl, arg) -> {
             if (exclude.test(arg))
-                throw new ArithmeticException(errorString.apply(arg));
+                throw new ArithmeticException(errorString.apply(smcl, arg));
         });
     }
 
@@ -96,10 +100,10 @@ public abstract class FunctionBuilder {
      * @return a checker
      */
     public static BiConsumer<SMCLContext, NumberObject> checkDomainInclude(
-            Predicate<NumberObject> include, Function<NumberObject, String> errorString) {
+            Predicate<NumberObject> include, BiFunction<SMCLContext, NumberObject, String> errorString) {
         return ALL_REALS.andThen((smcl, arg) -> {
             if (!include.test(arg))
-                throw new ArithmeticException(errorString.apply(arg));
+                throw new ArithmeticException(errorString.apply(smcl, arg));
         });
     }
 
@@ -111,7 +115,7 @@ public abstract class FunctionBuilder {
      * @return a checker
      */
     public static BiConsumer<SMCLContext, NumberObject> checkDomainExclude(
-            NumberSet set, Function<NumberObject, String> errorString) {
+            NumberSet set, BiFunction<SMCLContext, NumberObject, String> errorString) {
         return checkDomainExclude(set::isBelongTo, errorString);
     }
 
@@ -123,7 +127,7 @@ public abstract class FunctionBuilder {
      * @return a checker
      */
     public static BiConsumer<SMCLContext, NumberObject> checkDomainInclude(
-            NumberSet set, Function<NumberObject, String> errorString) {
+            NumberSet set, BiFunction<SMCLContext, NumberObject, String> errorString) {
         return checkDomainInclude(set::isBelongTo, errorString);
     }
 
